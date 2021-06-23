@@ -42,7 +42,7 @@ app.get('*', (req, res) => {
 });
 
 const server = app.listen(PORT, () => {
-	open(this.authorizeUrl, {wait: false});
+	opn(this.authorizeUrl, {wait: false});
 });
 
 // app.listen(PORT, () => {
