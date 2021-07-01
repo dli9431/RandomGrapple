@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
-import { Switch } from '@material-ui/core';
-import logo from './logo.svg';
-import './App.css';
+import { Router, navigate } from '@reach/router';
+import { Button, Switch, Typography, Box } from '@material-ui/core';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
 import { ThemeProvider } from 'styled-components';
 import { light, dark } from './themes/theme';
 import { GlobalStyles } from './themes/global';
 import { useDarkMode } from './themes/useDarkMode';
+import { Start } from './components/start';
+import { Sparring } from './components/sparring';
+import { Tournament } from './components/tournament';
+import { Timer } from './components/timer';
+import { startClick } from './components/menu/navigation';
 
 function App() {
-	// const [data, setData] = useState(null);
-
-	const [theme, toggleTheme, componentMounted] = useDarkMode();
+	const [theme, handleChange, componentMounted, night] = useDarkMode();
 	const themeMode = theme === 'light' ? light : dark;
-	const [night, setNight] = useState(false);
-
-	const handleChange = (event) => {
-		setNight(event.target.checked);
-		toggleTheme();
-	};
+	const [logged, setLogged] = useState(false);
 
 	// useEffect(() => {
 	// 	fetch('/api')
@@ -25,26 +26,56 @@ function App() {
 	// 		.then((data) => setData(data.message));
 	// })
 
+	const loginFn = () => {
+		setLogged(true);
+	}
+
+	const logoutFn = () => {
+		setLogged(false);
+	}
+
 	if (!componentMounted) {
 		return <div />
 	};
 
+	const Home = () => {
+		return (
+			<Box>
+				<Typography align="center" style={{ fontSize: "2em", wordBreak: "break-word" }}>RandomGrapple</Typography>
+				<Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap">
+					<Box p={1}>
+						<Button onClick={startClick} variant="outlined" color={night ? 'secondary' : 'primary'} startIcon={<PlayArrowIcon />}>Start</Button>
+					</Box>
+					<Box p={1}>
+						{logged ?
+							<Button variant="outlined" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
+							:
+							<Button variant="outlined" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
+						}
+					</Box>
+				</Box>
+			</Box>
+		);
+	}
+
 	return (
 		<ThemeProvider theme={themeMode}>
 			<GlobalStyles />
-			<div className="App">
+			<Router>
+				<Home path="/" />
+				<Start path="start" logged={logged} night={night} />
+				<Sparring path="sparring" logged={logged} night={night} />
+				<Tournament path="tournament" logged={logged} night={night} />
+				<Timer path="timer" logged={logged} night={night} />
+			</Router>
+			<Box display="flex" flexDirection="row" justifyContent="center">
 				<Switch
 					checked={night}
 					onChange={handleChange}
 					name="night"
 				/>
-				<header className="App-header">
-					<img src={logo} className="App-logo" alt="logo" />
-					{/* <p>
-						{!data ? 'Loading...' : data}
-					</p> */}
-				</header>
-			</div>
+				<Brightness4Icon fontSize="large" />
+			</Box>
 		</ThemeProvider>
 	);
 }
