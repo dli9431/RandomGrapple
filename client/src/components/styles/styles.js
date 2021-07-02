@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
 	},
@@ -13,4 +13,24 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export { useStyles }
+export const regStyles = makeStyles((theme) => ({
+	root: {
+		spacing: 8,
+		flexGrow: 1,
+	},
+	paper: {
+		padding: theme.spacing(2),
+		textAlign: 'center',
+		color: ({ night }) => night ? 'white' : 'black',
+		backgroundColor: ({ night }) => night ? '#4B4845' : '#D2D2D2',
+	},
+	timer: {
+		fontSize: '6em',
+		[theme.breakpoints.up('sm')]: {
+			fontSize: '10rem',
+		},
+		[theme.breakpoints.up('md')]: {
+			fontSize: '15rem',
+		},
+	}
+}));

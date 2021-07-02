@@ -8,7 +8,7 @@ import { homeClick, startClick } from './navigation';
 
 export const Menu = (props) => {
 	return (
-		<Box display="flex" flexDirection="row" flexWrap="wrap" alignSelf="center">
+		<Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="center">
 			<Box p={1}>
 				<Tooltip title="Home" placement="top">
 					{props.night ?

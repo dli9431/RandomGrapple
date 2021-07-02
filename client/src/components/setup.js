@@ -4,7 +4,7 @@ import { useStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 
 export const Setup = (props) => {
-	
+	console.log(props.setup);
 	return (
 		<Box display="flex" flexDirection="column" height="90vh" p={1} width="90vw">
 			<Box display="flex" flexDirection="row" justifyContent="center" height="90vh" textAlign="center">
