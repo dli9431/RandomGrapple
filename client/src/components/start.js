@@ -15,7 +15,7 @@ export const Start = (props) => {
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-								<Button onClick={sparClick} variant="outlined" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
+								<Button onClick={sparClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
 									Sparring Mode
 								</Button>
 							</Box>
@@ -24,7 +24,7 @@ export const Start = (props) => {
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-								<Button onClick={tournClick} variant="outlined" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
+								<Button onClick={tournClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
 									Tournament Mode
 								</Button>
 							</Box>
@@ -33,7 +33,7 @@ export const Start = (props) => {
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-								<Button onClick={timerClick} variant="outlined" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
+								<Button onClick={timerClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
 									Timer
 								</Button>
 							</Box>
