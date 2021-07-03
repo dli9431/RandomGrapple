@@ -16,7 +16,7 @@ export const Timer = (props) => {
 			<Box display="flex" flexDirection="row" justifyContent="center" height="90vh" textAlign="center">
 				Timer
 			</Box>
-			<Menu night={props.night} logged={props.logged}/>
+			<Menu night={props.night} logged={props.logged} />
 		</Box>
 	);
 }

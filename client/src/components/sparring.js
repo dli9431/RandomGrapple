@@ -11,6 +11,7 @@ export const Sparring = (props) => {
 	const classes = regStyles({ night: props.night });
 	const [setup, setSetup] = useState({
 		isSet: false,
+		mode: 0,
 		p1: {
 			weight: 0,
 			exp: 0,
@@ -24,10 +25,15 @@ export const Sparring = (props) => {
 		handicaps: {},
 	});
 
+	const setupInfo = (info) => {
+		setSetup({...setup, info});
+		console.log(setup);
+	}
+
 	return (
 		<Box width="90vw" height="90vh">
 			{!setup.isSet ?
-				<Setup setup={setup} night={props.night} logged={props.logged} />
+				<Setup setupInfo={setupInfo} setup={setup} night={props.night} logged={props.logged} />
 				:
 				<Grid container spacing={3} direction="row" justify="space-between" alignItems="flex-start">
 					<Grid item xs={12} md={9}>

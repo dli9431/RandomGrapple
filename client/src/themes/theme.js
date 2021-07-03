@@ -4,6 +4,7 @@ export const light = {
 	toggleBorder: '#FFF',
 	gradient: 'linear-gradient(#39598A, #79D7ED)',
 	spacing: 8,
+    input: '#000'
 }
 
 export const dark = {
@@ -12,4 +13,5 @@ export const dark = {
 	toggleBorder: '#6B8096',
 	gradient: 'linear-gradient(#091236, #1E215D)',
 	spacing: 8,
+	input: '#fff'
 }

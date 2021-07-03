@@ -14,15 +14,19 @@ export const useStyles = makeStyles((theme) => ({
 }));
 
 export const regStyles = makeStyles((theme) => ({
-	root: {
-		spacing: 8,
-		flexGrow: 1,
+	inputAdd: {
+		height: 56,
+		color: ({ night }) => night ? 'white' : 'black',
 	},
 	paper: {
 		padding: theme.spacing(2),
 		textAlign: 'center',
 		color: ({ night }) => night ? 'white' : 'black',
 		backgroundColor: ({ night }) => night ? '#4B4845' : '#D2D2D2',
+	},
+	root: {
+		spacing: 8,
+		flexGrow: 1,
 	},
 	timer: {
 		fontSize: '6em',

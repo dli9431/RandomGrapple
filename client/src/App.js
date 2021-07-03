@@ -14,7 +14,6 @@ import { Sparring } from './components/sparring';
 import { Tournament } from './components/tournament';
 import { Timer } from './components/timer';
 import { startClick } from './components/menu/navigation';
-
 function App() {
 	const [theme, handleChange, componentMounted, night] = useDarkMode();
 	const themeMode = theme === 'light' ? light : dark;
@@ -63,10 +62,10 @@ function App() {
 			<GlobalStyles />
 			<Router>
 				<Home path="/" />
-				<Start path="start" logged={logged} night={night} />
-				<Sparring path="sparring" logged={logged} night={night} />
-				<Tournament path="tournament" logged={logged} night={night} />
-				<Timer path="timer" logged={logged} night={night} />
+				<Start path="start" night={night} logged={logged}/>
+				<Sparring path="sparring" night={night} logged={logged} />
+				<Tournament path="tournament" night={night} logged={logged} />
+				<Timer path="timer" night={night} logged={logged} />
 			</Router>
 			<Box display="flex" flexDirection="row" justifyContent="center">
 				<Switch

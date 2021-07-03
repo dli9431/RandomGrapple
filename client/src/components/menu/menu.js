@@ -43,13 +43,6 @@ export const Menu = (props) => {
 					</Tooltip>
 				</Box>
 			}
-
-			{/* <Box p={1}>
-				{props.night ?
-					<Typography><IconButton onClick={} color="inherit"><ExitToAppIcon fontSize="large" /></IconButton></Typography> :
-					<Typography><IconButton onClick={}><ExitToAppIcon fontSize="large" /></IconButton></Typography>
-				}
-			</Box> */}
 		</Box>
 	);
 }
