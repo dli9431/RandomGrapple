@@ -22,7 +22,7 @@ export const Sparring = (props) => {
 			exp: 0,
 			belt: ''
 		},
-		handicaps: {},
+		handicaps: [],
 	});
 
 	const setupInfo = (info) => {
