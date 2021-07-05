@@ -12,16 +12,7 @@ export const Sparring = (props) => {
 	const [setup, setSetup] = useState({
 		isSet: false,
 		mode: 0,
-		p1: {
-			weight: 0,
-			exp: 0,
-			belt: ''
-		},
-		p2: {
-			weight: 0,
-			exp: 0,
-			belt: ''
-		},
+		players: [],
 		handicaps: [],
 	});
 
