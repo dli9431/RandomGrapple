@@ -4,6 +4,113 @@ import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
+export const defaultPenalties = [
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start in side control",
+		pts: 1
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start in knee on belly",
+		pts: 2
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start in kesa gatame",
+		pts: 3
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start in mount",
+		pts: 4
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start in high mount",
+		pts: 5
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start on back",
+		pts: 6
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start on back with arm trap",
+		pts: 7
+	},
+	{
+		catgory: 1,
+		limit: 0,
+		random: false,
+		type: "positional",
+		desc: "Start on back with arm trap + deep collar grip",
+		pts: 8
+	},
+	{
+		catgory: 2,
+		limit: 0,
+		random: true,
+		type: "points/subs",
+		desc: "Subonly for opponent",
+		pts: 10
+	},
+	{
+		category: 2,
+		limit: 1,
+		random: true,
+		type: "points/subs",
+		desc: "Start match 4-0 in points",
+		pts: 10
+	},
+	{
+		catgory: 2,
+		limit: 1,
+		random: true,
+		type: "points/subs",
+		desc: "Start match 4-0 in points + Subonly for opponent",
+		pts: 10
+	},
+	{
+		category: 2,
+		limit: 1,
+		random: true,
+		type: "points/subs",
+		desc: "Start match 4-0 in points + Subonly for opponent + doubled points for self",
+		pts: 10
+	},
+	{
+		category: 2,
+		limit: 1,
+		random: true,
+		type: "points",
+		desc: "Opponent must sub 3x to win",
+		pts: 10
+	},
+];
+
 export const Setup = ({ setupInfo, setup, night, logged }) => {
 	const classes = regStyles({ night: night });
 	const [handicaps, setHandicaps] = useState(false);
@@ -11,7 +118,6 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 	const [handicapWeightPts, setHandicapWeightPts] = useState();
 	const [handicapExp, setHandicapExp] = useState();
 	const [handicapExpPts, setHandicapExpPts] = useState();
-	const [handicapTotal, setHandicapTotal] = useState(0);
 	const [playerWeight, setPlayerWeight] = useState(0);
 	const [playerName, setPlayerName] = useState('');
 	const [playerExpYr, setPlayerExpYr] = useState(0);
@@ -45,6 +151,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 			pts: 0
 		});
 		setHandicaps(true);
+		console.log(setup.handicaps);
 	}
 
 	function resetHandicap() {
@@ -64,8 +171,6 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setPlayerWeight(0);
 		setPlayerExpYr(0);
 		setPlayerExpMonth(0);
-
-		// console.log(setup.players[0].weight - setup.players[2].weight);
 	}
 
 	function removePlayer(index) {
@@ -77,8 +182,19 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		}
 	}
 
+	function importPenalties() {
+		setup.listPenalties = defaultPenalties;
+		if (renderList) {
+			setRenderList(false);
+		} else {
+			setRenderList(true);
+		}
+		console.log(setup);
+		console.log(setup.listPenalties);
+	}
+
 	return (
-		<Box display="flex" flexDirection="column" height="90vh" p={1} width="90vw" textAlign="center">
+		<Box display="flex" flexDirection="column" p={1} textAlign="center">
 			<Typography variant="h3">Setup</Typography>
 			<Typography variant="subtitle1">{setup.mode === 0 ? '[Sparring]' : '[Tournament]'}</Typography>
 			<form noValidate autoComplete="off">
@@ -126,46 +242,47 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 					<Paper className={classes.paper}>
 						<Typography variant="h5">Players</Typography>
 						<Grid container direction="row" justify="center">
-							<Grid item xs={12} sm={12} md={4} lg={4}>
+							<Grid item xs={12} sm={12} md={6} lg={4}>
 								<TextField value={playerName} onChange={(e) => { setPlayerName(e.target.value) }} label="Name" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={4} sm={4} md={2} lg={2}>
+							<Grid item xs={4} sm={4} md={2} lg={1}>
 								<TextField type="number" step="10" value={playerWeight} onChange={(e) => { setPlayerWeight(e.target.value) }} label="Weight (lbs)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={4} sm={3} md={2} lg={2} align="left">
+							<Grid item xs={4} sm={3} md={1} lg={1} align="left">
 								<TextField type="number" step="1" value={playerExpYr} onChange={(e) => { setPlayerExpYr(e.target.value) }} label="Exp (years)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={4} sm={3} md={2} lg={2} align="left">
+							<Grid item xs={4} sm={3} md={1} lg={1} align="left">
 								<TextField type="number" step="1" value={playerExpMonth} onChange={(e) => { setPlayerExpMonth(e.target.value) }} label="Exp (months)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={12} sm={2} md={2} lg={2}>
+							<Grid item xs={12} sm={2} md={1} lg={1}>
 								<Button fullWidth={true} onClick={() => addPlayer()} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
 							</Grid>
 						</Grid>
-						{setup.players.map((p, index) => { return <Box key={index}>{p.name} <IconButton onClick={() => removePlayer(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton></Box> })}
+
+						<Grid container direction="row" justify="center">
+							{setup.players.map((p, index) => { return <Box key={index}>{p.name} <IconButton onClick={() => removePlayer(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton></Box> })}
+						</Grid>
 					</Paper>
 				</Box>
 				{
-					(handicapTotal > 0) &&
+					(handicapWeightPts > 0 || handicapExpPts > 0) &&
 					<Box mb={2}>
 						<Paper className={classes.paper}>
 							<Typography variant="h5">Penalties</Typography>
+							<Button onClick={() => importPenalties()} >Import</Button>
 							<Grid container direction="row" justify="center">
-								<Grid item xs={12} sm={12} md={4} lg={4}>
-									<TextField label="Name" variant="outlined" fullWidth={true} />
+								<Grid item xs={9} sm={10} md={6} lg={6} align="left">
+									<TextField label="Description" variant="outlined" fullWidth={true} />
 								</Grid>
-								<Grid item xs={4} sm={4} md={2} lg={2}>
-									<TextField type="number" step="10" label="Weight (lbs)" variant="outlined" fullWidth={true} />
+								<Grid item xs={3} sm={2} md={1} lg={1} align="left">
+									<TextField type="number" step="1" label="Points" variant="outlined" fullWidth={true} />
 								</Grid>
-								<Grid item xs={4} sm={3} md={2} lg={2} align="left">
-									<TextField type="number" step="1" label="Exp (years)" variant="outlined" fullWidth={true} />
+								<Grid item xs={12} sm={2} md={1} lg={1}>
+									<Button fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
 								</Grid>
-								<Grid item xs={4} sm={3} md={2} lg={2} align="left">
-									<TextField type="number" step="1" label="Exp (months)" variant="outlined" fullWidth={true} />
-								</Grid>
-								<Grid item xs={12} sm={2} md={2} lg={2}>
-									<Button fullWidth={true} variant="outlined" className={classes.inputAdd} width="100%">Add</Button>
-								</Grid>
+							</Grid>
+							<Grid container direction="column">
+								{setup.listPenalties.map((p, index) => { return <Box key={index}>{p.desc} <IconButton onClick={() => removePlayer(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton></Box> })}
 							</Grid>
 						</Paper>
 					</Box>

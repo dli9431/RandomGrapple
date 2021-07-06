@@ -39,7 +39,7 @@ function App() {
 
 	const Home = () => {
 		return (
-			<Box>
+			<Box display="flex" justifyContent="flex-end" flexDirection="column" height="50vh">
 				<Typography align="center" style={{ fontSize: "2em", wordBreak: "break-word" }}>RandomGrapple</Typography>
 				<Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap">
 					<Box p={1}>
@@ -59,22 +59,25 @@ function App() {
 
 	return (
 		<ThemeProvider theme={themeMode}>
-			<GlobalStyles />
-			<Router>
-				<Home path="/" />
-				<Start path="start" night={night} logged={logged}/>
-				<Sparring path="sparring" night={night} logged={logged} />
-				<Tournament path="tournament" night={night} logged={logged} />
-				<Timer path="timer" night={night} logged={logged} />
-			</Router>
-			<Box display="flex" flexDirection="row" justifyContent="center">
-				<Switch
-					checked={night}
-					onChange={handleChange}
-					name="night"
-				/>
-				<Brightness4Icon fontSize="large" />
+			<Box display="flex" flexDirection="column" height="90vh" alignItems="center">
+				<GlobalStyles />
+				<Router>
+					<Home path="/" />
+					<Start path="start" night={night} logged={logged} />
+					<Sparring path="sparring" night={night} logged={logged} />
+					<Tournament path="tournament" night={night} logged={logged} />
+					<Timer path="timer" night={night} logged={logged} />
+				</Router>
+				<Box display="flex" flexDirection="row" justifyContent="center">
+					<Switch
+						checked={night}
+						onChange={handleChange}
+						name="night"
+					/>
+					<Brightness4Icon fontSize="large" />
+				</Box>
 			</Box>
+
 		</ThemeProvider>
 	);
 }

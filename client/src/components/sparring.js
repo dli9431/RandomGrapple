@@ -14,15 +14,16 @@ export const Sparring = (props) => {
 		mode: 0,
 		players: [],
 		handicaps: [],
+		listPenalties: [],
+		activePenalties: [],
 	});
 
 	const setupInfo = (info) => {
 		setSetup({...setup, info});
-		console.log(setup);
 	}
 
 	return (
-		<Box width="90vw" height="90vh">
+		<Box width="90vw">
 			{!setup.isSet ?
 				<Setup setupInfo={setupInfo} setup={setup} night={props.night} logged={props.logged} />
 				:

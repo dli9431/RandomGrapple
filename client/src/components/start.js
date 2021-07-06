@@ -9,8 +9,8 @@ export const Start = (props) => {
 	const classes = useStyles({ night: props.night });
 
 	return (
-		<Box display="flex" flexDirection="column" height="90vh" p={1} width="90vw">
-			<Box display="flex" flexDirection="row" justifyContent="center" height="90vh" textAlign="center">
+		<Box display="flex" flexDirection="column" p={1} width="90vw" height="65vh" justifyContent="flex-end">
+			<Box display="flex" flexDirection="row" textAlign="center">
 				<Grid container spacing={3}>
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
