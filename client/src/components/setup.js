@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { IconButton, Grid, Paper, Button, TextField, Tooltip, Typography, Box, Link } from '@material-ui/core';
+import { FormControlLabel, Checkbox, IconButton, Grid, Paper, Button, TextField, Tooltip, Typography, Box, Link } from '@material-ui/core';
 import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 export const defaultPenalties = [
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -14,7 +14,7 @@ export const defaultPenalties = [
 		pts: 1
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -22,7 +22,7 @@ export const defaultPenalties = [
 		pts: 2
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -30,7 +30,7 @@ export const defaultPenalties = [
 		pts: 3
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -38,7 +38,7 @@ export const defaultPenalties = [
 		pts: 4
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -46,7 +46,7 @@ export const defaultPenalties = [
 		pts: 5
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -54,7 +54,7 @@ export const defaultPenalties = [
 		pts: 6
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -62,7 +62,7 @@ export const defaultPenalties = [
 		pts: 7
 	},
 	{
-		catgory: 1,
+		category: 1,
 		limit: 0,
 		random: false,
 		type: "positional",
@@ -70,7 +70,7 @@ export const defaultPenalties = [
 		pts: 8
 	},
 	{
-		catgory: 2,
+		category: 2,
 		limit: 0,
 		random: true,
 		type: "points/subs",
@@ -86,7 +86,7 @@ export const defaultPenalties = [
 		pts: 10
 	},
 	{
-		catgory: 2,
+		category: 2,
 		limit: 1,
 		random: true,
 		type: "points/subs",
@@ -111,6 +111,35 @@ export const defaultPenalties = [
 	},
 ];
 
+export const Category = (props) => {
+	let color = '';
+	switch (props.id) {
+		case 1:
+			color = 'grey';
+			break;
+		case 2:
+			color = 'blue';
+			break;
+		case 3:
+			color = 'green';
+			break;
+		case 4:
+			color = 'purple';
+			break;
+		case 5:
+			color = 'orange';
+			break;
+		case 6:
+			color = 'red'
+			break;
+		default:
+			break;
+	}
+	return (
+		<Box p={1} display="flex" flexDirection="column" justifyContent="center" key={props.index} border={1} borderColor={color}>{props.type}</Box>
+	);
+}
+
 export const Setup = ({ setupInfo, setup, night, logged }) => {
 	const classes = regStyles({ night: night });
 	const [handicaps, setHandicaps] = useState(false);
@@ -123,6 +152,11 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 	const [playerExpYr, setPlayerExpYr] = useState(0);
 	const [playerExpMonth, setPlayerExpMonth] = useState(0);
 	const [renderList, setRenderList] = useState(false);
+	const [random, setRandom] = useState(false);
+
+	const handleCheck = (event) => {
+		setRandom(event.target.checked);
+	}
 
 	function addHandicap() {
 		setup.handicaps = [];
@@ -191,6 +225,15 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		}
 		console.log(setup);
 		console.log(setup.listPenalties);
+	}
+
+	function removePenalties(index) {
+		setup.listPenalties.splice(index, 1);
+		if (renderList) {
+			setRenderList(false);
+		} else {
+			setRenderList(true);
+		}
 	}
 
 	return (
@@ -265,24 +308,61 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 					</Paper>
 				</Box>
 				{
-					(handicapWeightPts > 0 || handicapExpPts > 0) &&
+					((handicapWeight > 0 && handicapWeightPts > 0) || (handicapExp > 0 && handicapExpPts > 0)) &&
 					<Box mb={2}>
 						<Paper className={classes.paper}>
 							<Typography variant="h5">Penalties</Typography>
 							<Button onClick={() => importPenalties()} >Import</Button>
 							<Grid container direction="row" justify="center">
-								<Grid item xs={9} sm={10} md={6} lg={6} align="left">
+								<Grid item xs={7} sm={9} md={9} lg={2}>
+									<TextField label="Type (ex: Positional)" variant="outlined" fullWidth={true} />
+								</Grid>
+								<Grid item xs={5} sm={3} md={3} lg={1}>
+									<TextField type="number" step="1" label="Category" variant="outlined" fullWidth={true} />
+								</Grid>
+								<Grid item xs={12} sm={12} md={9} lg={4}>
 									<TextField label="Description" variant="outlined" fullWidth={true} />
 								</Grid>
-								<Grid item xs={3} sm={2} md={1} lg={1} align="left">
+								<Grid item xs={6} sm={3} md={3} lg={1}>
 									<TextField type="number" step="1" label="Points" variant="outlined" fullWidth={true} />
 								</Grid>
-								<Grid item xs={12} sm={2} md={1} lg={1}>
+								<Grid item xs={6} sm={3} md={3} lg={2}>
+									<FormControlLabel
+										className={classes.label}
+										labelPlacement="start"
+										control={
+											<Checkbox
+												checked={random}
+												onChange={handleCheck}
+												name="random"
+												color={night ? "secondary" : "primary"}
+											/>
+										}
+										label="Random"
+									/>
+								</Grid>
+								<Grid item xs={6} sm={3} md={3} lg={1}>
+									<TextField type="number" step="1" label="Limit" variant="outlined" fullWidth={true} />
+								</Grid>
+								<Grid item xs={6} sm={3} md={3} lg={1}>
 									<Button fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
 								</Grid>
 							</Grid>
 							<Grid container direction="column">
-								{setup.listPenalties.map((p, index) => { return <Box key={index}>{p.desc} <IconButton onClick={() => removePlayer(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton></Box> })}
+								{setup.listPenalties.map((p, index) => {
+									return (
+										<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={p.id}>
+											<Category id={p.category} index={index} type={p.type} />
+											<Box ml={1}>
+												{p.desc}&nbsp;
+												[Points: {p.pts}]&nbsp;
+												[Random: {p.random.toString()}]&nbsp;
+												[Limit: {p.limit}]
+												<IconButton onClick={() => removePenalties(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton>
+											</Box>
+										</Box>
+									)
+								})}
 							</Grid>
 						</Paper>
 					</Box>

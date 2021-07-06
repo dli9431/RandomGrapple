@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withTheme } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles((theme) => ({
 	root: {
@@ -17,6 +17,9 @@ export const regStyles = makeStyles((theme) => ({
 	inputAdd: {
 		height: 56,
 		color: ({ night }) => night ? 'white' : 'black',
+	},
+	label: {
+		marginTop: '7px'
 	},
 	paper: {
 		padding: theme.spacing(2),

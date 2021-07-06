@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "server-destroy": "^1.0.1",
-    "open": "^8.0.0",
     "express": "^4.17.1",
-    "googleapis": "^78.0.0"
+    "googleapis": "^78.0.0",
+    "open": "^8.0.0",
+    "server-destroy": "^1.0.1"
   }
 }
