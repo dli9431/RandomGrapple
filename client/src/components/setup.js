@@ -105,7 +105,7 @@ export const defaultPenalties = [
 		category: 2,
 		limit: 1,
 		random: true,
-		type: "points",
+		type: "points/subs",
 		desc: "Opponent must sub 3x to win",
 		pts: 10
 	},
@@ -142,16 +142,25 @@ export const Category = (props) => {
 
 export const Setup = ({ setupInfo, setup, night, logged }) => {
 	const classes = regStyles({ night: night });
+	// handicap pts
 	const [handicaps, setHandicaps] = useState(false);
 	const [handicapWeight, setHandicapWeight] = useState();
 	const [handicapWeightPts, setHandicapWeightPts] = useState();
 	const [handicapExp, setHandicapExp] = useState();
 	const [handicapExpPts, setHandicapExpPts] = useState();
+	// player info
 	const [playerWeight, setPlayerWeight] = useState(0);
 	const [playerName, setPlayerName] = useState('');
 	const [playerExpYr, setPlayerExpYr] = useState(0);
 	const [playerExpMonth, setPlayerExpMonth] = useState(0);
+
 	const [renderList, setRenderList] = useState(false);
+	// penalty list
+	const [penaltyType, setPenaltyType] = useState('');
+	const [penaltyCat, setPenaltyCat] = useState(0);
+	const [penaltyDesc, setPenaltyDesc] = useState('');
+	const [penaltyPts, setPenaltyPts] = useState(0);
+	const [penaltyLimit, setPenaltyLimit] = useState(0);
 	const [random, setRandom] = useState(false);
 
 	const handleCheck = (event) => {
@@ -162,13 +171,13 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setup.handicaps = [];
 		setup.handicaps.push({
 			name: "Weight Handicap",
-			amount: handicapWeight,
-			pts: handicapWeightPts
+			amount: parseInt(handicapWeight),
+			pts: parseInt(handicapWeightPts)
 		});
 		setup.handicaps.push({
 			name: "Experience Handicap",
-			amount: handicapExp,
-			pts: handicapExpPts
+			amount: parseInt(handicapExp),
+			pts: parseInt(handicapExpPts)
 		});
 		setHandicaps(true);
 	}
@@ -185,7 +194,6 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 			pts: 0
 		});
 		setHandicaps(true);
-		console.log(setup.handicaps);
 	}
 
 	function resetHandicap() {
@@ -196,9 +204,9 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 	function addPlayer() {
 		setup.players.push({
 			name: playerName,
-			weight: playerWeight,
-			expYr: playerExpYr,
-			expMonth: playerExpMonth
+			weight: parseInt(playerWeight),
+			expYr: parseInt(playerExpYr),
+			expMonth: parseInt(playerExpMonth)
 		});
 		// reset form
 		setPlayerName('');
@@ -223,12 +231,34 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		} else {
 			setRenderList(true);
 		}
-		console.log(setup);
-		console.log(setup.listPenalties);
 	}
 
 	function removePenalties(index) {
 		setup.listPenalties.splice(index, 1);
+		if (renderList) {
+			setRenderList(false);
+		} else {
+			setRenderList(true);
+		}
+	}
+
+	function addPenalty() {
+		setup.listPenalties.push({
+			category: parseInt(penaltyCat),
+			limit: parseInt(penaltyLimit),
+			random: random,
+			type: penaltyType,
+			desc: penaltyDesc,
+			pts: parseInt(penaltyPts)
+		});
+		// reset form
+		setPenaltyCat(0);
+		setPenaltyLimit(0);
+		setPenaltyType('');
+		setPenaltyDesc('');
+		setPenaltyPts(0);
+		setRandom(false);
+
 		if (renderList) {
 			setRenderList(false);
 		} else {
@@ -315,16 +345,16 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 							<Button onClick={() => importPenalties()} >Import</Button>
 							<Grid container direction="row" justify="center">
 								<Grid item xs={7} sm={9} md={9} lg={2}>
-									<TextField label="Type (ex: Positional)" variant="outlined" fullWidth={true} />
+									<TextField value={penaltyType} onChange={(e) => { setPenaltyType(e.target.value) }} label="Type (ex: Positional)" variant="outlined" fullWidth={true} />
 								</Grid>
 								<Grid item xs={5} sm={3} md={3} lg={1}>
-									<TextField type="number" step="1" label="Category" variant="outlined" fullWidth={true} />
+									<TextField value={penaltyCat} onChange={(e) => { setPenaltyCat(e.target.value) }} type="number" step="1" label="Category" variant="outlined" fullWidth={true} />
 								</Grid>
 								<Grid item xs={12} sm={12} md={9} lg={4}>
-									<TextField label="Description" variant="outlined" fullWidth={true} />
+									<TextField value={penaltyDesc} onChange={(e) => { setPenaltyDesc(e.target.value) }} label="Description" variant="outlined" fullWidth={true} />
 								</Grid>
 								<Grid item xs={6} sm={3} md={3} lg={1}>
-									<TextField type="number" step="1" label="Points" variant="outlined" fullWidth={true} />
+									<TextField value={penaltyPts} onChange={(e) => { setPenaltyPts(e.target.value) }} type="number" step="1" label="Points" variant="outlined" fullWidth={true} />
 								</Grid>
 								<Grid item xs={6} sm={3} md={3} lg={2}>
 									<FormControlLabel
@@ -342,10 +372,10 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 									/>
 								</Grid>
 								<Grid item xs={6} sm={3} md={3} lg={1}>
-									<TextField type="number" step="1" label="Limit" variant="outlined" fullWidth={true} />
+									<TextField value={penaltyLimit} onChange={(e) => { setPenaltyLimit(e.target.value) }} type="number" step="1" label="Limit" variant="outlined" fullWidth={true} />
 								</Grid>
 								<Grid item xs={6} sm={3} md={3} lg={1}>
-									<Button fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
+									<Button onClick={addPenalty} fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
 								</Grid>
 							</Grid>
 							<Grid container direction="column">
