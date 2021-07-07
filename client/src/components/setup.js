@@ -4,6 +4,21 @@ import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
+export const defaultHandicaps = [
+	{
+		name: "Weight Handicap",
+		unit: 'lbs',
+		amount: 20,
+		pts: 1
+	},
+	{
+		name: "Experience Handicap",
+		unit: 'months',
+		amount: 3,
+		pts: 1
+	}
+]
+
 export const defaultPenalties = [
 	{
 		category: 1,
@@ -144,10 +159,10 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 	const classes = regStyles({ night: night });
 	// handicap pts
 	const [handicaps, setHandicaps] = useState(false);
-	const [handicapWeight, setHandicapWeight] = useState();
-	const [handicapWeightPts, setHandicapWeightPts] = useState();
-	const [handicapExp, setHandicapExp] = useState();
-	const [handicapExpPts, setHandicapExpPts] = useState();
+	const [handicapWeight, setHandicapWeight] = useState(0);
+	const [handicapWeightPts, setHandicapWeightPts] = useState(0);
+	const [handicapExp, setHandicapExp] = useState(0);
+	const [handicapExpPts, setHandicapExpPts] = useState(0);
 	// player info
 	const [playerWeight, setPlayerWeight] = useState(0);
 	const [playerName, setPlayerName] = useState('');
@@ -189,21 +204,41 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setup.handicaps.push({
 			name: "Weight Handicap",
 			amount: 0,
-			pts: 0
+			pts: 0,
+			unit: 'lbs'
 		});
 		setup.handicaps.push({
 			name: "Experience Handicap",
 			amount: 0,
-			pts: 0
+			pts: 0,
+			unit: 'months'
 		});
 		setHandicaps(true);
 		setup.setHandicaps = false;
+	}
+
+	function importDefaultHandicap() {
+		setHandicapWeight(20);
+		setHandicapWeightPts(1);
+		setHandicapExp(3);
+		setHandicapExpPts(1);
+		setup.handicaps = [];
+		setup.handicaps = defaultHandicaps;
+		if (renderList) {
+			setRenderList(false);
+		} else {
+			setRenderList(true);
+		}
 	}
 
 	function resetHandicap() {
 		setup.handicaps = [];
 		setHandicaps(false);
 		setup.setHandicaps = false;
+		setHandicapWeight(0);
+		setHandicapWeightPts(0);
+		setHandicapExp(0);
+		setHandicapExpPts(0);
 	}
 
 	function addPlayer() {
@@ -282,17 +317,22 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 						<Grid container direction="row" justify="center">
 							{handicaps === false ?
 								<>
+									<Grid item xs={12}>
+										<Box mb={2}>
+											<Button variant="outlined" color={night ? "secondary" : "primary"} onClick={() => importDefaultHandicap()}>Default</Button>
+										</Box>
+									</Grid>
 									<Grid item xs={8} sm={6} md={3} lg={2}>
-										<TextField type="number" step="10" defaultValue={handicapWeight} onChange={(e) => { setHandicapWeight(e.target.value) }} label="Weight (lbs)" variant="outlined" fullWidth={true} />
+										<TextField type="number" step="10" value={handicapWeight} onChange={(e) => { setHandicapWeight(e.target.value) }} label="Weight (lbs)" variant="outlined" fullWidth={true} />
 									</Grid>
 									<Grid item xs={4} sm={6} md={1} lg={2}>
-										<TextField type="number" step="1" defaultValue={handicapWeightPts} onChange={(e) => { setHandicapWeightPts(e.target.value) }} label="Points" variant="outlined" fullWidth={true} />
+										<TextField type="number" step="1" value={handicapWeightPts} onChange={(e) => { setHandicapWeightPts(e.target.value) }} label="Points" variant="outlined" fullWidth={true} />
 									</Grid>
 									<Grid item xs={8} sm={6} md={3} lg={2}>
-										<TextField type="number" step="1" defaultValue={handicapExp} onChange={(e) => { setHandicapExp(e.target.value) }} label="Exp (months)" variant="outlined" fullWidth={true} />
+										<TextField type="number" step="1" value={handicapExp} onChange={(e) => { setHandicapExp(e.target.value) }} label="Exp (months)" variant="outlined" fullWidth={true} />
 									</Grid>
 									<Grid item xs={4} sm={6} md={1} lg={2}>
-										<TextField type="number" step="1" defaultValue={handicapExpPts} onChange={(e) => { setHandicapExpPts(e.target.value) }} label="Points" variant="outlined" fullWidth={true} />
+										<TextField type="number" step="1" value={handicapExpPts} onChange={(e) => { setHandicapExpPts(e.target.value) }} label="Points" variant="outlined" fullWidth={true} />
 									</Grid>
 									<Grid item xs={6} sm={2} md={2} lg={2}>
 										<Button onClick={() => addHandicap()} fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
