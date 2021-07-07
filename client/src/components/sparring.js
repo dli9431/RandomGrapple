@@ -1,9 +1,48 @@
 import React, { useState } from 'react';
-import { Grid, Paper, Typography, Box } from '@material-ui/core';
+import { FormControlLabel, Checkbox, Grid, Paper, Typography, Box } from '@material-ui/core';
 import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import { Setup } from './setup';
 import { Timer } from './timer';
+
+export const HandicapCheckList = ({ points, usedPoints, checkedInfo, checked, night, penalties }) => {
+	const handleChange = (event) => {
+		// parse checkedinfo
+		let index = parseInt(event.target.name.split("-")[0]);
+		let pts = parseInt(event.target.name.split("-")[1]);
+		if (event.target.checked) {
+			usedPoints += pts;
+		} else {
+			usedPoints -= pts;
+		}
+		return checkedInfo(index, event.target.checked, usedPoints);
+	};
+
+	return (
+		<Box>
+			{
+				penalties.map((p, index) => {
+					return (
+						<Box key={index}>
+							<FormControlLabel
+								control={
+									<Checkbox
+										// checked={state.checkedB}
+										onChange={handleChange}
+										name={index + "-" + p.pts}
+										// disabled={points < usedPoints ? true : false}
+										color={night ? "secondary" : "primary"}
+									/>
+								}
+								label={"[" + p.pts + "] " + p.desc}
+							/>
+						</Box>
+					)
+				})
+			}
+		</Box>
+	);
+}
 
 export const Sparring = (props) => {
 	const classes = regStyles({ night: props.night });
@@ -14,8 +53,12 @@ export const Sparring = (props) => {
 		players: [],
 		handicaps: [],
 		listPenalties: [],
-		activePenalties: [],
+		// activePenalties: [],
 	});
+
+	const [points, setPoints] = useState(0);
+	const [usedPoints, setUsedPoints] = useState(0);
+	const [checked, setChecked] = useState([]);
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
@@ -50,23 +93,34 @@ export const Sparring = (props) => {
 				}
 				else {
 					if (weightAdv > 0 && expAdv > 0) {
-						return setup.players[0].name + ' has ' + (weightDif + expDif) + ' points to spend';
+						setPoints(weightDif + expDif);
+						return setup.players[0].name + ' has ' + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + ' points to spend';
 					}
 					if (weightAdv === 0 && expAdv === 0) {
-						return setup.players[1].name + ' has ' + (weightDif + expDif) + ' points to spend';
+						setPoints(weightDif + expDif);
+						return setup.players[1].name + ' has ' + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + ' points to spend';
 					}
 					if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
+						setPoints(0);
 						return 'No one has points to spend!';
 					}
 					if (weightDif > expDif) {
+						setPoints(weightDif - expDif);
 						return setup.players[expAdv].name + ' has ' + (weightDif - expDif) + ' points to spend';
 					}
 					if (expDif > weightDif) {
+						setPoints(expDif - weightDif);
 						return setup.players[weightAdv].name + ' has ' + (expDif - weightDif) + ' points to spend';
 					}
 				}
 			}
+			return null;
 		}
+	}
+
+	function checkedInfo(index, checked, usedPts) {
+		setUsedPoints(usedPts);
+		setChecked(setup.listPenalties[index].checked = checked);
 	}
 
 	return (
@@ -85,13 +139,10 @@ export const Sparring = (props) => {
 							{setup.players.length >= 2 &&
 								<Box>
 									<Paper className={classes.paper}>
-
 										<Box>
-											<Box flexGrow="1" mb={1}>{calcHandicap()}</Box>
 											<Box display="flex" flexDirection="row" justifyContent="center" whiteSpace="space-around">
 												<Box flexGrow="1">
 													<Typography variant="h5">{setup.players[0].name}</Typography>
-													{/* <Button onClick={() => calcHandicap()}>test</Button> */}
 												</Box>
 												<Box>
 													<Typography variant="h5">vs</Typography>
@@ -112,13 +163,8 @@ export const Sparring = (props) => {
 							<Box>
 								<Paper className={classes.paperHandicap}>
 									<Typography variant="h5">Handicaps</Typography>
-									{setup.listPenalties.map((p, index) => {
-										return (
-											<Box key={index}>
-												{p.desc}
-											</Box>
-										)
-									})}
+									<Box flexGrow="1" mb={1}>{() => calcHandicap()}</Box>
+									<HandicapCheckList points={points} usedPoints={usedPoints} checkedInfo={checkedInfo} night={props.night} checked={checked} penalties={setup.listPenalties} />
 								</Paper>
 							</Box>
 						</Grid>

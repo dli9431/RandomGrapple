@@ -324,8 +324,8 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 							{handicaps === false ?
 								<>
 									<Grid item xs={12}>
-										<Box mb={2}>
-											<Button variant="outlined" color={night ? "secondary" : "primary"} onClick={() => importDefaultHandicap()}>Default</Button>
+										<Box mb={1}>
+											<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => importDefaultHandicap()}>Default</Button>
 										</Box>
 									</Grid>
 									<Grid item xs={8} sm={6} md={3} lg={2}>
@@ -393,7 +393,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 					<Box mb={2}>
 						<Paper className={classes.paper}>
 							<Typography variant="h5">Penalties</Typography>
-							<Button onClick={() => importPenalties()} >Import</Button>
+							<Box mb={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => importPenalties()}>Default</Button></Box>
 							<Grid container direction="row" justify="center">
 								<Grid item xs={7} sm={9} md={9} lg={2}>
 									<TextField value={penaltyType} onChange={(e) => { setPenaltyType(e.target.value) }} label="Type (ex: Positional)" variant="outlined" fullWidth={true} />

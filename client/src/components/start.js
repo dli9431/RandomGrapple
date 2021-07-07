@@ -3,7 +3,7 @@ import { Button, Grid, Paper, Box } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { Menu } from './menu/menu.js';
 import { useStyles } from './styles/styles.js';
-import { sparClick, tournClick, timerClick } from './menu/navigation.js';
+import { sparClick, /*tournClick,*/ timerClick } from './menu/navigation.js';
 
 export const Start = (props) => {
 	const classes = useStyles({ night: props.night });
