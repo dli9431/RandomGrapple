@@ -6,6 +6,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import { Setup } from './setup';
+import { Timer } from './timer';
 
 export const Sparring = (props) => {
 	const classes = regStyles({ night: props.night });
@@ -39,7 +40,7 @@ export const Sparring = (props) => {
 					}
 					weightDif = Math.round((weightDif / setup.handicaps[0].amount));
 					weightDif *= setup.handicaps[0].pts;
-
+					
 					expDif = ((setup.players[0].expYr * 12) + setup.players[0].expMonth) - ((setup.players[1].expYr * 12) + setup.players[1].expMonth);
 					if (expDif < 0) {
 						expDif *= -1;
@@ -77,10 +78,11 @@ export const Sparring = (props) => {
 						<Box display="flex" flexDirection="column">
 							<Box mb={2}>
 								<Paper className={classes.paper}>
-									<Typography variant="h1" className={classes.timer}>10:00</Typography>
+									{/* <Typography variant="h1" className={classes.timer}>10:00</Typography>
 									<Box>
 										[start] [stop] [reset]
-									</Box>
+									</Box> */}
+									<Timer night={props.night} />
 								</Paper>
 							</Box>
 							<Box>
@@ -90,14 +92,14 @@ export const Sparring = (props) => {
 											<Box flexGrow="1" mb={1}>{calcHandicap()}</Box>
 											<Box display="flex" flexDirection="row" justifyContent="center" whiteSpace="space-around">
 												<Box flexGrow="1">
-													<Typography variant="h2">{setup.players[0].name}</Typography>
+													<Typography variant="h5">{setup.players[0].name}</Typography>
 													{/* <Button onClick={() => calcHandicap()}>test</Button> */}
 												</Box>
 												<Box>
-													<Typography variant="h2">vs</Typography>
+													<Typography variant="h5">vs</Typography>
 												</Box>
 												<Box flexGrow="1">
-													<Typography variant="h2">{setup.players[1].name}</Typography>
+													<Typography variant="h5">{setup.players[1].name}</Typography>
 												</Box>
 											</Box>
 										</Box>

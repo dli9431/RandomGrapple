@@ -224,6 +224,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setHandicapExpPts(1);
 		setup.handicaps = [];
 		setup.handicaps = defaultHandicaps;
+		setup.setHandicaps = true;
 		if (renderList) {
 			setRenderList(false);
 		} else {
@@ -426,7 +427,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 							<Grid container direction="column">
 								{setup.listPenalties.map((p, index) => {
 									return (
-										<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={p.id}>
+										<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={index}>
 											<Category id={p.category} index={index} type={p.type} />
 											<Box ml={1}>
 												{p.desc}&nbsp;

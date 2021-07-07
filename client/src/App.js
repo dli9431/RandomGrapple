@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Router, navigate } from '@reach/router';
+import { Router } from '@reach/router';
 import { Button, Switch, Typography, Box } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
