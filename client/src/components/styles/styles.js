@@ -21,6 +21,12 @@ export const regStyles = makeStyles((theme) => ({
 	label: {
 		marginTop: '7px'
 	},
+	paperHandicap: {
+		textAlign: 'left',
+		padding: theme.spacing(1),
+		color: ({ night }) => night ? 'white' : 'black',
+		backgroundColor: ({ night }) => night ? '#4B4845' : '#D2D2D2',
+	},
 	paper: {
 		padding: theme.spacing(2),
 		textAlign: 'center',

@@ -171,15 +171,18 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setup.handicaps = [];
 		setup.handicaps.push({
 			name: "Weight Handicap",
+			unit: 'lbs',
 			amount: parseInt(handicapWeight),
 			pts: parseInt(handicapWeightPts)
 		});
 		setup.handicaps.push({
 			name: "Experience Handicap",
+			unit: 'months',
 			amount: parseInt(handicapExp),
 			pts: parseInt(handicapExpPts)
 		});
 		setHandicaps(true);
+		setup.setHandicaps = true;
 	}
 	function add0Handicap() {
 		setup.handicaps = [];
@@ -194,11 +197,13 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 			pts: 0
 		});
 		setHandicaps(true);
+		setup.setHandicaps = false;
 	}
 
 	function resetHandicap() {
 		setup.handicaps = [];
 		setHandicaps(false);
+		setup.setHandicaps = false;
 	}
 
 	function addPlayer() {
@@ -300,7 +305,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 								<>
 									<Grid item xs={12}>
 										<Box mb={1}>
-											{Object.keys(setup.handicaps).map(function (key, index) { return <Box key={index}>{setup.handicaps[key].name + ": " + setup.handicaps[key].amount + " lbs / " + setup.handicaps[key].pts + " pts"}</Box> })}
+											{Object.keys(setup.handicaps).map(function (key, index) { return <Box key={index}>{setup.handicaps[key].name + ": " + setup.handicaps[key].amount + " " + setup.handicaps[key].unit + " / " + setup.handicaps[key].pts + " pts"}</Box> })}
 										</Box>
 									</Grid>
 									<Grid item xs={6} sm={2} md={2} lg={2}>
@@ -398,7 +403,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 					</Box>
 				}
 			</form>
-			<Button onClick={() => { setup.isSet = true; setupInfo(setup) }}>test</Button>
+			<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => { setup.isSet = true; setupInfo(setup) }}>Next</Button>
 			<Menu night={night} logged={logged} />
 		</Box >
 	);
