@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormControlLabel, Checkbox, IconButton, Grid, Paper, Button, TextField, Tooltip, Typography, Box, Link } from '@material-ui/core';
+import { FormControlLabel, Checkbox, IconButton, Grid, Paper, Button, TextField, Typography, Box, } from '@material-ui/core';
 import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -200,6 +200,11 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setup.setHandicaps = true;
 	}
 	function add0Handicap() {
+		setHandicapExp(0);
+		setHandicapExpPts(0);
+		setHandicapWeightPts(0);
+		setHandicapWeight(0);
+		
 		setup.handicaps = [];
 		setup.handicaps.push({
 			name: "Weight Handicap",
