@@ -10,7 +10,7 @@ export const Start = (props) => {
 
 	return (
 		<Box display="flex" flexDirection="column" p={1} width="90vw" height="65vh" justifyContent="flex-end">
-			<Box display="flex" flexDirection="row" textAlign="center">
+			<Box display="flex" flexDirection="row" textAlign="center" justifyContent="center">
 				<Grid container spacing={3}>
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
@@ -21,7 +21,7 @@ export const Start = (props) => {
 							</Box>
 						</Paper>
 					</Grid>
-					<Grid item xs={12} md={4}>
+					{/* <Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
 								<Button onClick={tournClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
@@ -29,7 +29,7 @@ export const Start = (props) => {
 								</Button>
 							</Box>
 						</Paper>
-					</Grid>
+					</Grid> */}
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
