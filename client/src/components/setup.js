@@ -20,110 +20,114 @@ export const defaultHandicaps = [
 ]
 
 export const defaultPenalties = [
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start in side control",
-		pts: 1
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start in knee on belly",
-		pts: 2
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start in kesa gatame",
-		pts: 3
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start in mount",
-		pts: 4
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start in high mount",
-		pts: 5
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start on back",
-		pts: 6
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start on back with arm trap",
-		pts: 7
-	},
-	{
-		category: 1,
-		limit: 0,
-		random: false,
-		type: "positional",
-		desc: "Start on back with arm trap + deep collar grip",
-		pts: 8
-	},
-	{
-		category: 2,
-		limit: 0,
-		random: true,
-		type: "points/subs",
-		desc: "Subonly for opponent",
-		pts: 10
-	},
-	{
-		category: 2,
-		limit: 1,
-		random: true,
-		type: "points/subs",
-		desc: "Start match 4-0 in points",
-		pts: 10
-	},
-	{
-		category: 2,
-		limit: 1,
-		random: true,
-		type: "points/subs",
-		desc: "Start match 4-0 in points + Subonly for opponent",
-		pts: 10
-	},
-	{
-		category: 2,
-		limit: 1,
-		random: true,
-		type: "points/subs",
-		desc: "Start match 4-0 in points + Subonly for opponent + doubled points for self",
-		pts: 10
-	},
-	{
-		category: 2,
-		limit: 1,
-		random: true,
-		type: "points/subs",
-		desc: "Opponent must sub 3x to win",
-		pts: 10
-	},
+	[
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start in side control",
+			pts: 1,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start in knee on belly",
+			pts: 2,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start in kesa gatame",
+			pts: 3,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start in mount",
+			pts: 4,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start in high mount",
+			pts: 5,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start on back",
+			pts: 6,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start on back with arm trap",
+			pts: 7,
+		},
+		{
+			category: 1,
+			limit: 0,
+			random: false,
+			type: "positional",
+			desc: "Start on back with arm trap + deep collar grip",
+			pts: 8,
+		},
+	],
+	[
+		{
+			category: 2,
+			limit: 0,
+			random: true,
+			type: "points/subs",
+			desc: "Subonly for opponent",
+			pts: 10,
+		},
+		{
+			category: 2,
+			limit: 1,
+			random: true,
+			type: "points/subs",
+			desc: "Start match 4-0 in points",
+			pts: 10,
+		},
+		{
+			category: 2,
+			limit: 1,
+			random: true,
+			type: "points/subs",
+			desc: "Start match 4-0 in points + Subonly for opponent",
+			pts: 10,
+		},
+		{
+			category: 2,
+			limit: 1,
+			random: true,
+			type: "points/subs",
+			desc: "Start match 4-0 in points + Subonly for opponent + doubled points for self",
+			pts: 10,
+		},
+		{
+			category: 2,
+			limit: 1,
+			random: true,
+			type: "points/subs",
+			desc: "Opponent must sub 3x to win",
+			pts: 10,
+		},
+	]
 ];
 
 export const Category = (props) => {
@@ -204,7 +208,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setHandicapExpPts(0);
 		setHandicapWeightPts(0);
 		setHandicapWeight(0);
-		
+
 		setup.handicaps = [];
 		setup.handicaps.push({
 			name: "Weight Handicap",
@@ -288,6 +292,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		}
 	}
 
+	///TODO: fix this so it fits with new data structure (arr of arrs)
 	function addPenalty() {
 		setup.listPenalties.push({
 			category: parseInt(penaltyCat),
@@ -430,7 +435,23 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 								</Grid>
 							</Grid>
 							<Grid container direction="column">
-								{setup.listPenalties.map((p, index) => {
+								{
+									setup.listPenalties.map(sub => sub.map((p, index) => {
+										return (
+											<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={index}>
+												<Category id={p.category} index={index} type={p.type} />
+												<Box ml={1}>
+													{p.desc}&nbsp;
+													[Points: {p.pts}]&nbsp;
+													[Random: {p.random.toString()}]&nbsp;
+													[Limit: {p.limit}]
+													<IconButton onClick={() => removePenalties(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton>
+												</Box>
+											</Box>
+										)
+									}))
+								}
+								{/* {setup.listPenalties.map((p, index) => {
 									return (
 										<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={index}>
 											<Category id={p.category} index={index} type={p.type} />
@@ -443,7 +464,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 											</Box>
 										</Box>
 									)
-								})}
+								})} */}
 							</Grid>
 						</Paper>
 					</Box>

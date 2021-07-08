@@ -1,44 +1,106 @@
-import React, { useState } from 'react';
-import { FormControlLabel, Checkbox, Grid, Paper, Typography, Box } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Grid, Paper, Typography, Box } from '@material-ui/core';
 import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import { Setup } from './setup';
 import { Timer } from './timer';
 
-export const HandicapCheckList = ({ points, usedPoints, checkedInfo, checked, night, penalties }) => {
-	const handleChange = (event) => {
-		// parse checkedinfo
-		let index = parseInt(event.target.name.split("-")[0]);
-		let pts = parseInt(event.target.name.split("-")[1]);
-		if (event.target.checked) {
-			usedPoints += pts;
+export const HandicapCheckList = ({ usedPoints, checkedInfo, night, penalties, radioChecked }) => {
+	const [handicaps, setHandicaps] = useState(radioChecked);
+	const [render, setRender] = useState(false);
+	const handleChange = (event, index) => {
+		if (event.target.value === "none") {
+			radioChecked[index] = "none";
 		} else {
-			usedPoints -= pts;
+			radioChecked[index] = parseInt(event.target.value);
 		}
-		return checkedInfo(index, event.target.checked, usedPoints);
+		setHandicaps(radioChecked);
+
+		if (render) {
+			setRender(false);
+		} else {
+			setRender(true);
+		}
+
+		let pts = parseInt(event.target.name.split("-")[1]);
+		
+		if (pts !== undefined) {
+			if (!isNaN(pts)) {
+				if (event.target.value !== "none") {
+					usedPoints += pts;
+				} else {
+					usedPoints -= pts;
+				}
+			}
+		}
+
+		// console.log(usedPoints);
+		// if (isNaN(event.target.value)) {
+		// 	usedPoints += pts;
+		// } else {
+		// 	usedPoints -= pts;
+		// }
+		// console.log(usedPoints);
+		return checkedInfo(handicaps, usedPoints);
 	};
+
+	// const handleChange = (event) => {
+	// 	// parse checkedinfo
+	// 	let index = parseInt(event.target.name.split("-")[0]);
+	// 	let pts = parseInt(event.target.name.split("-")[1]);
+	// 	if (event.target.checked) {
+	// 		usedPoints += pts;
+	// 	} else {
+	// 		usedPoints -= pts;
+	// 	}
+	// 	return checkedInfo(index, event.target.checked, usedPoints);
+	// };
 
 	return (
 		<Box>
 			{
-				penalties.map((p, index) => {
+				// setup.listPenalties.map(sub => sub.map((p, index) => {
+				penalties.map((sub, index) => {
 					return (
 						<Box key={index}>
-							<FormControlLabel
-								control={
-									<Checkbox
-										// checked={state.checkedB}
-										onChange={handleChange}
-										name={index + "-" + p.pts}
-										// disabled={points < usedPoints ? true : false}
-										color={night ? "secondary" : "primary"}
-									/>
-								}
-								label={"[" + p.pts + "] " + p.desc}
-							/>
+							<FormControl component="fieldset">
+								<FormLabel focused={true} color={night ? "secondary" : "primary"} component="legend">{sub[0].type}</FormLabel>
+								<RadioGroup aria-label="" name="" defaultValue="none" value={handicaps[index]} onChange={(e) => handleChange(e, index)}>
+									<FormControlLabel key={-1} value="none" control={<Radio />} label="None" />
+									{sub.map((p, i) => {
+										return (
+											<FormControlLabel name={i + "-" + sub[i].pts} key={i} value={i} control={<Radio />} label={"[" + sub[i].pts + "] " + sub[i].desc} />
+										)
+									})
+									}
+								</RadioGroup>
+
+								{/* <FormControlLabel value="female" control={<Radio />} label="Female" />
+									<FormControlLabel value="male" control={<Radio />} label="Male" />
+									<FormControlLabel value="other" control={<Radio />} label="Other" />
+									<FormControlLabel value="disabled" disabled control={<Radio />} label="(Disabled option)" /> */}
+
+							</FormControl>
 						</Box>
 					)
 				})
+
+				// penalties.map((p, index) => {
+				// 	return (
+				// 		<Box key={index}>
+				// 			<FormControlLabel
+				// 				control={
+				// 					<Checkbox
+				// 						onChange={handleChange}
+				// 						name={index + "-" + p.pts}
+				// 						color={night ? "secondary" : "primary"}
+				// 					/>
+				// 				}
+				// 				label={"[" + p.pts + "] " + p.desc}
+				// 			/>
+				// 		</Box>
+				// 	)
+				// })
 			}
 		</Box>
 	);
@@ -56,9 +118,18 @@ export const Sparring = (props) => {
 		// activePenalties: [],
 	});
 
+	let radioChecked = [];
+	if (setup.listPenalties.length > 0) {
+		for (var i = 0; i < setup.listPenalties.length; i++) {
+			radioChecked.push("none");
+		}
+	}
+
 	const [points, setPoints] = useState(0);
 	const [usedPoints, setUsedPoints] = useState(0);
 	const [checked, setChecked] = useState([]);
+
+	// console.log(usedPoints);
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
@@ -106,11 +177,11 @@ export const Sparring = (props) => {
 					}
 					if (weightDif > expDif) {
 						setPoints(weightDif - expDif);
-						return setup.players[expAdv].name + ' has ' + (weightDif - expDif) + ' points to spend';
+						return setup.players[expAdv].name + ' has ' + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + ' points to spend';
 					}
 					if (expDif > weightDif) {
 						setPoints(expDif - weightDif);
-						return setup.players[weightAdv].name + ' has ' + (expDif - weightDif) + ' points to spend';
+						return setup.players[weightAdv].name + ' has ' + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + ' points to spend';
 					}
 				}
 			}
@@ -118,9 +189,13 @@ export const Sparring = (props) => {
 		}
 	}
 
-	function checkedInfo(index, checked, usedPts) {
-		setUsedPoints(usedPts);
-		setChecked(setup.listPenalties[index].checked = checked);
+	function checkedInfo(radioChecked, usedPts) {
+		console.log(radioChecked);
+		console.log(usedPts);
+
+		
+		// setUsedPoints(usedPts);
+		// setChecked(setup.listPenalties[index].checked = checked);
 	}
 
 	return (
@@ -164,7 +239,7 @@ export const Sparring = (props) => {
 								<Paper className={classes.paperHandicap}>
 									<Typography variant="h5">Handicaps</Typography>
 									<Box flexGrow="1" mb={1}>{() => calcHandicap()}</Box>
-									<HandicapCheckList points={points} usedPoints={usedPoints} checkedInfo={checkedInfo} night={props.night} checked={checked} penalties={setup.listPenalties} />
+									<HandicapCheckList radioChecked={radioChecked} usedPoints={usedPoints} checkedInfo={checkedInfo} night={props.night} penalties={setup.listPenalties} />
 								</Paper>
 							</Box>
 						</Grid>
