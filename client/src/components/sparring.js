@@ -1,106 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import { FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Grid, Paper, Typography, Box } from '@material-ui/core';
-import { regStyles } from './styles/styles';
-import { Menu } from './menu/menu';
-import { Setup } from './setup';
-import { Timer } from './timer';
+import React, { useState, useEffect } from "react";
+import { FormControlLabel, Button, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Grid, Paper, Typography, Box } from "@material-ui/core";
+import { regStyles } from "./styles/styles";
+import { Menu } from "./menu/menu";
+import { Setup } from "./setup";
+import { Timer } from "./timer";
 
-export const HandicapCheckList = ({ usedPoints, checkedInfo, night, penalties, radioChecked }) => {
-	const [handicaps, setHandicaps] = useState(radioChecked);
-	const [render, setRender] = useState(false);
-	const handleChange = (event, index) => {
-		if (event.target.value === "none") {
-			radioChecked[index] = "none";
+export const HandicapCheckList = ({ checkedInfo, night, penalties, formInfo }) => {
+	const [handicaps, setHandicaps] = useState(formInfo);
+
+	const handleChange = (event, penaltyIndex) => {
+		let pts = parseInt(event.target.name.split(":")[1]);
+
+		if (event.target.value === -1) {
+			formInfo[penaltyIndex] = { "index": -1, "points": 0 };
 		} else {
-			radioChecked[index] = parseInt(event.target.value);
+			formInfo[penaltyIndex] = { "index": parseInt(event.target.value), "points": pts };
 		}
-		setHandicaps(radioChecked);
-
-		if (render) {
-			setRender(false);
-		} else {
-			setRender(true);
-		}
-
-		let pts = parseInt(event.target.name.split("-")[1]);
-		
-		if (pts !== undefined) {
-			if (!isNaN(pts)) {
-				if (event.target.value !== "none") {
-					usedPoints += pts;
-				} else {
-					usedPoints -= pts;
-				}
-			}
-		}
-
-		// console.log(usedPoints);
-		// if (isNaN(event.target.value)) {
-		// 	usedPoints += pts;
-		// } else {
-		// 	usedPoints -= pts;
-		// }
-		// console.log(usedPoints);
-		return checkedInfo(handicaps, usedPoints);
+		setHandicaps(formInfo);
+		return checkedInfo(formInfo);
 	};
 
-	// const handleChange = (event) => {
-	// 	// parse checkedinfo
-	// 	let index = parseInt(event.target.name.split("-")[0]);
-	// 	let pts = parseInt(event.target.name.split("-")[1]);
-	// 	if (event.target.checked) {
-	// 		usedPoints += pts;
-	// 	} else {
-	// 		usedPoints -= pts;
-	// 	}
-	// 	return checkedInfo(index, event.target.checked, usedPoints);
-	// };
+	const handleCheck = (event, penaltyIndex, categoryIndex) => {
+		if (event.target.checked) {
+			formInfo[penaltyIndex].push({
+				index: categoryIndex,
+				points: parseInt(event.target.name.split(":")[1])
+			});
+			return checkedInfo(formInfo);
+		} else {
+			let remain = formInfo[penaltyIndex].filter(({ index }) => index !== categoryIndex);
+			formInfo[penaltyIndex] = remain;
+			return checkedInfo(formInfo);
+		}
+	}
+
+	const handleRandomCheck = (event, penaltyIndex) => {
+		let randomIndex = Math.floor(Math.random() * penalties[penaltyIndex].length);
+		let rng = penalties[penaltyIndex][randomIndex];
+
+		if (event.target.checked) {
+			if (penalties[penaltyIndex][randomIndex].random) {
+				penalties[penaltyIndex][randomIndex].checked = true;
+			}
+			formInfo[penaltyIndex].index = randomIndex;
+			formInfo[penaltyIndex].points = rng.pts;
+			return checkedInfo(formInfo);
+		} else {
+			for (var i = 0; i < penalties[penaltyIndex].length; i++) {
+				penalties[penaltyIndex][i].checked = false;
+			}
+			formInfo[penaltyIndex].index = -1;
+			formInfo[penaltyIndex].points = 0;
+			return checkedInfo(formInfo);
+		}
+	};
 
 	return (
 		<Box>
 			{
-				// setup.listPenalties.map(sub => sub.map((p, index) => {
 				penalties.map((sub, index) => {
 					return (
 						<Box key={index}>
 							<FormControl component="fieldset">
-								<FormLabel focused={true} color={night ? "secondary" : "primary"} component="legend">{sub[0].type}</FormLabel>
-								<RadioGroup aria-label="" name="" defaultValue="none" value={handicaps[index]} onChange={(e) => handleChange(e, index)}>
-									<FormControlLabel key={-1} value="none" control={<Radio />} label="None" />
-									{sub.map((p, i) => {
-										return (
-											<FormControlLabel name={i + "-" + sub[i].pts} key={i} value={i} control={<Radio />} label={"[" + sub[i].pts + "] " + sub[i].desc} />
-										)
-									})
-									}
-								</RadioGroup>
-
-								{/* <FormControlLabel value="female" control={<Radio />} label="Female" />
-									<FormControlLabel value="male" control={<Radio />} label="Male" />
-									<FormControlLabel value="other" control={<Radio />} label="Other" />
-									<FormControlLabel value="disabled" disabled control={<Radio />} label="(Disabled option)" /> */}
-
+								<FormLabel key={index} focused={true} color={night ? "secondary" : "primary"} component="legend">{sub[0].type}</FormLabel>
+								{sub[0].random ?
+									<Box>
+										<FormControlLabel
+											control={
+												<Checkbox
+													onChange={(e) => { handleRandomCheck(e, index) }}
+													name={"points:" + sub[index].pts}
+													color={night ? "secondary" : "primary"}
+												/>
+											}
+											label={"[" + sub[index].pts + "] " + ((sub.find(({ checked }) => checked === true) === undefined) ? "" : sub.find(({ checked }) => checked === true).desc)}
+										/>
+										{sub.map((p, i) => {
+											return (
+												<Box key={"p" + i}>{p.desc}</Box>
+											)
+										})}
+									</Box>
+									:
+									(sub[0].limit > 1 || sub[0].limit < 0) ? // return checkbox if penalty not limited to 1
+										sub.map((p, i) => {
+											return (
+												<Box key={i}>
+													<FormControlLabel
+														control={
+															<Checkbox
+																onChange={(e) => handleCheck(e, index, i)}
+																name={"points:" + p.pts}
+																color={night ? "secondary" : "primary"}
+															/>
+														}
+														label={"[" + p.pts + "] " + p.desc}
+													/>
+												</Box>
+											)
+										})
+										:
+										<RadioGroup aria-label="" name="" defaultValue={-1} value={handicaps.length > 0 ? handicaps[index].index : -1} onChange={(e) => handleChange(e, index)}>
+											<FormControlLabel key={-1} value={-1} control={<Radio />} label="None" />
+											{sub.map((p, i) => {
+												return (
+													<FormControlLabel name={"p:" + sub[i].pts} key={i} value={i} control={<Radio />} label={"[" + sub[i].pts + "] " + sub[i].desc} />
+												)
+											})
+											}
+										</RadioGroup>
+								}
 							</FormControl>
 						</Box>
 					)
 				})
-
-				// penalties.map((p, index) => {
-				// 	return (
-				// 		<Box key={index}>
-				// 			<FormControlLabel
-				// 				control={
-				// 					<Checkbox
-				// 						onChange={handleChange}
-				// 						name={index + "-" + p.pts}
-				// 						color={night ? "secondary" : "primary"}
-				// 					/>
-				// 				}
-				// 				label={"[" + p.pts + "] " + p.desc}
-				// 			/>
-				// 		</Box>
-				// 	)
-				// })
 			}
 		</Box>
 	);
@@ -115,21 +128,31 @@ export const Sparring = (props) => {
 		players: [],
 		handicaps: [],
 		listPenalties: [],
-		// activePenalties: [],
 	});
 
-	let radioChecked = [];
-	if (setup.listPenalties.length > 0) {
-		for (var i = 0; i < setup.listPenalties.length; i++) {
-			radioChecked.push("none");
-		}
-	}
-
-	const [points, setPoints] = useState(0);
 	const [usedPoints, setUsedPoints] = useState(0);
-	const [checked, setChecked] = useState([]);
+	const [formInfo, setFormInfo] = useState([]);
+	const [finished, setFinished] = useState(false);
+	const [finalPenalties, setFinalPenalties] = useState([]);
 
-	// console.log(usedPoints);
+	useEffect(() => {
+		function init() {
+			let info = [];
+			if (setup.listPenalties.length > 0) {
+				for (var i = 0; i < setup.listPenalties.length; i++) {
+					if (setup.listPenalties[i][0].limit === 1) {
+						info.push({ "index": -1, "points": 0 });
+					} else {
+						info.push([]);
+					}
+				}
+			}
+			setFormInfo(info);
+		}
+		if (finished === false) {
+			init();
+		}
+	}, [setup.listPenalties, finished])
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
@@ -164,24 +187,19 @@ export const Sparring = (props) => {
 				}
 				else {
 					if (weightAdv > 0 && expAdv > 0) {
-						setPoints(weightDif + expDif);
-						return setup.players[0].name + ' has ' + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + ' points to spend';
+						return setup.players[0].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
 					}
 					if (weightAdv === 0 && expAdv === 0) {
-						setPoints(weightDif + expDif);
-						return setup.players[1].name + ' has ' + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + ' points to spend';
+						return setup.players[1].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
 					}
 					if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
-						setPoints(0);
-						return 'No one has points to spend!';
+						return "No one has points to spend!";
 					}
 					if (weightDif > expDif) {
-						setPoints(weightDif - expDif);
-						return setup.players[expAdv].name + ' has ' + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + ' points to spend';
+						return setup.players[expAdv].name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
 					}
 					if (expDif > weightDif) {
-						setPoints(expDif - weightDif);
-						return setup.players[weightAdv].name + ' has ' + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + ' points to spend';
+						return setup.players[weightAdv].name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
 					}
 				}
 			}
@@ -189,13 +207,47 @@ export const Sparring = (props) => {
 		}
 	}
 
-	function checkedInfo(radioChecked, usedPts) {
-		console.log(radioChecked);
-		console.log(usedPts);
+	function checkedInfo(info) {
+		let total = 0;
 
-		
-		// setUsedPoints(usedPts);
-		// setChecked(setup.listPenalties[index].checked = checked);
+		for (var i = 0; i < info.length; i++) {
+			if (info[i].length !== undefined) { // for multiple checkboxes
+				for (var k = 0; k < info[i].length; k++) {
+					total += info[i][k].points;
+				}
+			}
+
+			if (!isNaN(info[i].points)) {
+				total += info[i].points;
+			}
+		}
+
+		setFormInfo(info);
+		setUsedPoints(total);
+	}
+
+	function finishedPenalties() {
+		let p = [];
+		for (var i = 0; i < formInfo.length; i++) {
+			if (formInfo[i].length !== undefined) { // for multiple checkboxes
+				for (var k = 0; k < formInfo[i].length; k++) {
+					p.push(setup.listPenalties[i][k].desc);
+				}
+			} else {
+				if (formInfo[i].index >= 0) {
+					p.push(setup.listPenalties[i][formInfo[i].index].desc);
+				}
+			}
+		}
+		setFinished(true);
+		setFinalPenalties(p);
+	}
+
+	function resetPenalties() {
+		setFinalPenalties([]);
+		setFormInfo([]);
+		setUsedPoints(0);
+		setFinished(false);
 	}
 
 	return (
@@ -239,7 +291,19 @@ export const Sparring = (props) => {
 								<Paper className={classes.paperHandicap}>
 									<Typography variant="h5">Handicaps</Typography>
 									<Box flexGrow="1" mb={1}>{() => calcHandicap()}</Box>
-									<HandicapCheckList radioChecked={radioChecked} usedPoints={usedPoints} checkedInfo={checkedInfo} night={props.night} penalties={setup.listPenalties} />
+									{finished ?
+										<Box>
+											{finalPenalties.map((penalty, index) => { return (<Box key={index} mb={1}>{penalty}</Box>) })}
+											<Button variant="contained" color={props.night ? "secondary" : "primary"} onClick={() => resetPenalties()}>Reset</Button>
+										</Box>
+										:
+										<Box>
+											<HandicapCheckList formInfo={formInfo} checkedInfo={checkedInfo} night={props.night} penalties={setup.listPenalties} />
+											<Box mt={1}>
+												<Button variant="contained" color={props.night ? "secondary" : "primary"} onClick={() => finishedPenalties()}>Finalize</Button>
+											</Box>
+										</Box>
+									}
 								</Paper>
 							</Box>
 						</Grid>
