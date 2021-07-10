@@ -15,5 +15,3 @@ export const tournClick = () => {
 export const timerClick = () => {
 	navigate("/timer");
 }
-
-

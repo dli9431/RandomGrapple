@@ -14,6 +14,8 @@ import { Sparring } from './components/sparring';
 import { Tournament } from './components/tournament';
 import { Timer } from './components/timer';
 import { startClick } from './components/menu/navigation';
+// import { GLogin } from './components/auth/login';
+
 function App() {
 	const [theme, handleChange, componentMounted, night] = useDarkMode();
 	const themeMode = theme === 'light' ? light : dark;
@@ -43,12 +45,13 @@ function App() {
 				<Typography align="center" style={{ fontSize: "2em", wordBreak: "break-word" }}>RandomGrapple</Typography>
 				<Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap">
 					<Box p={1}>
-						<Button onClick={startClick} variant="contained" color={night ? 'secondary' : 'primary'} startIcon={<PlayArrowIcon />}>Start</Button>
+						<Button onClick={startClick} size="large" variant="contained" color={night ? 'secondary' : 'primary'} startIcon={<PlayArrowIcon />}>Start</Button>
 					</Box>
 					<Box p={1}>
 						{logged ?
 							<Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
 							:
+							// <GLogin night={night} />
 							<Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
 						}
 					</Box>

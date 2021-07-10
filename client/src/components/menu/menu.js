@@ -5,6 +5,7 @@ import ReplayIcon from '@material-ui/icons/Replay';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
 import { homeClick, startClick } from './navigation';
+// import { GLogin } from '../auth/login';
 
 export const Menu = (props) => {
 	return (
@@ -40,6 +41,7 @@ export const Menu = (props) => {
 								<Typography><IconButton onClick={startClick} color="inherit"><AccountCircleIcon fontSize="large" /></IconButton></Typography> :
 								<Typography><IconButton onClick={startClick}><AccountCircleIcon fontSize="large" /></IconButton></Typography>
 							}
+							{/* <GLogin night={props.night} /> */}
 						</Tooltip>
 					</Box>
 				}
