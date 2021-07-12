@@ -51,6 +51,22 @@ export const Timer = (props) => {
 		setRunning(true);
 	}
 
+	function parseTimeInputs(e, mins) {
+		if (mins) {
+			if (e.target.value.length === 0) {
+				setMins(0);
+			} else {
+				setMins(parseInt(e.target.value))
+			}
+		} else {
+			if (e.target.value.length === 0) {
+				setSecs(0);
+			} else {
+				setSecs(parseInt(e.target.value))
+			}
+		}
+	}
+
 	if (props.only === false) {
 		return (
 			<Box textAlign="center">
@@ -58,8 +74,8 @@ export const Timer = (props) => {
 					<Typography variant="h1" className={classes.timer}>{finalTime}</Typography>
 				}
 
-				<TextField value={mins} onChange={(e) => setMins(parseInt(e.target.value))} type="number" label="Minutes" variant="outlined" />
-				<TextField value={secs} onChange={(e) => setSecs(parseInt(e.target.value))} type="number" label="Seconds" variant="outlined" />
+				<TextField value={mins} onChange={(e) => parseTimeInputs(e, true)} type="number" label="Minutes" variant="outlined" />
+				<TextField value={secs} onChange={(e) => parseTimeInputs(e, false)} type="number" label="Seconds" variant="outlined" />
 				<Box display="flex" flexDirection="row" justifyContent="center" mt={1}>
 					{!running ?
 						<Box><Button onClick={() => runTimer()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<PlayArrowIcon />}>Start</Button></Box>
@@ -83,8 +99,8 @@ export const Timer = (props) => {
 											<Typography variant="h1" className={classes.timer}>{finalTime}</Typography>
 										}
 
-										<TextField value={mins} onChange={(e) => setMins(parseInt(e.target.value))} type="number" label="Minutes" variant="outlined" />
-										<TextField value={secs} onChange={(e) => setSecs(parseInt(e.target.value))} type="number" label="Seconds" variant="outlined" />
+										<TextField value={mins} onChange={(e) => parseTimeInputs(e, true)} type="number" label="Minutes" variant="outlined" />
+										<TextField value={secs} onChange={(e) => parseTimeInputs(e, false)} type="number" label="Seconds" variant="outlined" />
 										<Box display="flex" flexDirection="row" justifyContent="center" mt={1}>
 											{!running ?
 												<Box><Button onClick={() => runTimer()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<PlayArrowIcon />}>Start</Button></Box>
