@@ -14,7 +14,7 @@ import { Sparring } from './components/sparring';
 import { Tournament } from './components/tournament';
 import { Timer } from './components/timer';
 import { startClick } from './components/menu/navigation';
-// import { GLogin } from './components/auth/login';
+import { GLogin } from './components/auth/login';
 
 function App() {
 	const [theme, handleChange, componentMounted, night] = useDarkMode();
@@ -39,6 +39,28 @@ function App() {
 		return <div />
 	};
 
+	const OAuth = () => {
+		return (
+			<Box display="flex" justifyContent="flex-end" flexDirection="column" height="50vh">
+				<Typography align="center" style={{ fontSize: "2em", wordBreak: "break-word" }}>RandomGrapple</Typography>
+				logged in!
+				<Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap">
+					<Box p={1}>
+						<Button onClick={startClick} size="large" variant="contained" color={night ? 'secondary' : 'primary'} startIcon={<PlayArrowIcon />}>Start</Button>
+					</Box>
+					<Box p={1}>
+						{logged ?
+							<Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
+							:
+							<GLogin night={night} />
+							// <Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
+						}
+					</Box>
+				</Box>
+			</Box>
+		);
+	}
+
 	const Home = () => {
 		return (
 			<Box display="flex" justifyContent="flex-end" flexDirection="column" height="50vh">
@@ -51,8 +73,8 @@ function App() {
 						{logged ?
 							<Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
 							:
-							// <GLogin night={night} />
-							<Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
+							<GLogin night={night} />
+							// <Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
 						}
 					</Box>
 				</Box>
@@ -70,6 +92,7 @@ function App() {
 					<Sparring path="sparring" night={night} logged={logged} />
 					<Tournament path="tournament" night={night} logged={logged} />
 					<Timer path="timer" night={night} logged={logged} />
+					<OAuth path="/oauth2callback" />
 				</Router>
 				<Box display="flex" flexDirection="row" justifyContent="center">
 					<Switch

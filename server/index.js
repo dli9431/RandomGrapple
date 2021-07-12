@@ -1,5 +1,14 @@
 const { google } = require('googleapis');
 const express = require('express');
+const cors = require('cors');
+
+const PORT = process.env.PORT || 3001;
+const app = express();
+app.use(cors());
+
+const session = require('express-session');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
@@ -10,105 +19,172 @@ const destroyer = require('server-destroy');
 
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
 
-let keys = { redirect_uris: ['http://localhost:3000/oauth2callback'] };
+let keys = { redirect_uris: ['http://localhost:3000/api/auth/oauth2callback'] };
 if (fs.existsSync(keyPath)) {
 	keys = require(keyPath).web;
 }
 
-const oauth2Client = (environment == 'dev') ?
+const oauth2Client = (environment === 'dev') ?
 	new google.auth.OAuth2(keys.client_id, keys.client_secret, keys.redirect_uris[0]) :
-	new google.auth.OAuth2(process.env.google_client_id, process.env.google_client_secret);
+	new google.auth.OAuth2(process.env.google_client_id, process.env.google_client_secret, process.env.google_redirect_uris);
 
 google.options({ auth: oauth2Client });
 
-// const scopes = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'openid', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/spreadsheets'];
-// this.authorizeUrl = client.generateAuthUrl({
-// 	access_type: 'offline',
-// 	scope: scopes,
-// });
-
 const scopes = [
-	'https://www.googleapis.com/auth/contacts.readonly',
-	'https://www.googleapis.com/auth/user.emails.read',
-	'profile',
+	'https://www.googleapis.com/auth/userinfo.email',
+	'https://www.googleapis.com/auth/userinfo.profile',
+	'openid',
+	'https://www.googleapis.com/auth/drive.file',
 ];
-
-const PORT = process.env.PORT || 3001;
-const app = express();
 
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
-app.get('/api', (req, res) => {
-	res.json({ message: 'Hello from server!' });
+app.use(function (req, res, next) {
+	res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
 });
 
-// app.get('/oauth2callback', (req, res) => {
-// 	const code = req.query.code;
-// 	client.getToken(code, (err, tokens) => {
-// 		if (err) {
-// 			console.error('Error getting oAuth tokens: ');
-// 			throw err;
-// 		}
-// 		client.credentials = tokens;
-// 		res.send('Authentication successful! Please return to the console.');
-// 		server.close();
-// 	})
-// });
+var sess = {
+	secret: "keyboard cat",
+	resave: false,
+	saveUninitialized: true,
+	cookie: {},
+}
+
+if (environment === "production") {
+	sess.cookie.secure = true;
+}
+
+app.use(session(sess));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function (user, cb) {
+	cb(null, user);
+});
+
+passport.deserializeUser(function (obj, cb) {
+	cb(null, obj);
+});
+
+passport.use(new GoogleStrategy({
+	clientID: environment === "dev" ? keys.client_id : process.env.google_client_id,
+	clientSecret: environment === "dev" ? keys.client_secret : process.env.google_client_secret,
+	callbackURL: environment === "dev" ? keys.redirect_uris[0] : process.env.google_redirect_uris,
+},
+	function (accessToken, refreshToken, profile, cb) {
+		profile.accessToken = accessToken;
+		profile.refreshToken = refreshToken;
+		return cb(null, profile);
+	}
+));
+
+app.get('/api/auth/google',
+	passport.authenticate('google', { scope: scopes.join(" ") }),
+	function (req, res) { }
+);
+
+app.get('/api/auth/oauth2callback',
+	passport.authenticate('google', { failureRedirect: '/error' }),
+	function (req, res) {
+		// Successful authentication, redirect success.
+		res.redirect('/oauth2callback');
+	}
+);
+
+app.get("/api/getSheet", async (req, res) => {
+	try {
+		console.log(req.user.spreadsheetId);
+	} catch (err) {
+		console.error(err);
+	}
+})
+
+app.post("/api/create", async (req, res) => {
+	try {
+		oauth2Client.credentials = { access_token: req.user.accessToken };
+		const cr = await createSheet(oauth2Client);
+		
+		if (cr.length > 0) {
+			res.status = cr;
+			res.json("error");
+		} else {
+			if (cr.spreadsheetId.length > 0) {
+				req.user.spreadsheetId = cr.spreadsheetId;
+				res.status = 201;
+				res.json("ok");
+			} else {
+				console.log("error");
+			}
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+app.delete("/api/v1/auth/google/logout", async (req, res) => {
+	try {
+		await req.session.destroy();
+		res.status(200);
+		res.json({
+			message: "Logged out successfully"
+		});
+	} catch (error) {
+		// res.status(error.status);
+		res.json(error);
+	}
+})
 
 app.get('*', (req, res) => {
-	res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+	if (environment === "production") {
+		res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+	} else {
+		res.sendFile(path.join(__dirname, '../client/public', 'index.html'));
+	}
 });
-
-// const server = app.listen(PORT, () => {
-// 	opn(this.authorizeUrl, {wait: false});
-// });
 
 app.listen(PORT, () => {
 	console.log(`server listening on ${PORT}`);
 });
 
-async function authenticate(scopes) {
-	return new Promise((resolve, reject) => {
-		// grab the url that will be used for authorization
-		const authorizeUrl = oauth2Client.generateAuthUrl({
-			access_type: 'offline',
-			scope: scopes.join(' '),
+// async function readSheet(auth) {
+// 	const sheets = google.sheets({ version: 'v4', auth });
+// 	sheets.spreadsheets.values.get({
+// 		spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+// 		range: 'Class Data!A2:E',
+// 	}, (err, res) => {
+// 		if (err) return console.log('The API returned an error: ' + err);
+// 		const rows = res.data.values;
+// 		if (rows.length) {
+// 			console.log('Name, Major:');
+// 			// Print columns A and E, which correspond to indices 0 and 4.
+// 			rows.map((row) => {
+// 				console.log(`${row[0]}, ${row[4]}`);
+// 			});
+// 		} else {
+// 			console.log('No data found.');
+// 		}
+// 	});
+// }
+
+async function createSheet(auth) {
+	try {
+		const resource = {
+			properties: {
+				title: "RandomGrapple[default]",
+			},
+		};
+		const sheets = google.sheets({ version: 'v4', auth });
+		const result = await sheets.spreadsheets.create({
+			resource
 		});
-		const server = http
-			.createServer(async (req, res) => {
-				try {
-					if (req.url.indexOf('/oauth2callback') > -1) {
-						const qs = new url.URL(req.url, 'http://localhost:3000')
-							.searchParams;
-						res.end('Authentication successful! Please return to the console.');
-						server.destroy();
-						const { tokens } = await oauth2Client.getToken(qs.get('code'));
-						oauth2Client.credentials = tokens; // eslint-disable-line require-atomic-updates
-						resolve(oauth2Client);
-					}
-				} catch (e) {
-					reject(e);
-				}
-			})
-			.listen(3000, () => {
-				// open the browser to the authorize url to start the workflow
-				opn(authorizeUrl, { wait: false }).then(cp => cp.unref());
-			});
-		destroyer(server);
-	});
+		if (result.status === 200) {
+			return result.data;
+		} else {
+			return result.status;
+		}
+	} catch (err) {
+		console.error(err);
+	}
 }
-
-async function runSample() {
-	// retrieve user profile
-	const res = await people.people.get({
-		resourceName: 'people/me',
-		personFields: 'emailAddresses',
-	});
-	console.log(res.data);
-}
-
-
-
-// authenticate(scopes)
-// 	.then(client => runSample(client))
-// 	.catch(console.error);
