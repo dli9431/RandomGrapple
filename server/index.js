@@ -93,6 +93,17 @@ app.get('/api/auth/oauth2callback',
 	}
 );
 
+app.get("/api/getUserInfo", async (req, res) => {
+	try {
+		if (req.user !== undefined) {
+			res.status(200);
+			res.json(req.user.name);
+		}
+	} catch (err) {
+		console.error(err);
+	}
+})
+
 app.get("/api/getSheet", async (req, res) => {
 	try {
 		console.log(req.user.spreadsheetId);
@@ -112,7 +123,7 @@ app.post("/api/create", async (req, res) => {
 		} else {
 			if (cr.spreadsheetId.length > 0) {
 				req.user.spreadsheetId = cr.spreadsheetId;
-				res.status = 201;
+				res.status(200);
 				res.json("ok");
 			} else {
 				console.log("error");
@@ -123,7 +134,7 @@ app.post("/api/create", async (req, res) => {
 	}
 });
 
-app.delete("/api/v1/auth/google/logout", async (req, res) => {
+app.delete("/api/auth/google/logout", async (req, res) => {
 	try {
 		await req.session.destroy();
 		res.status(200);
