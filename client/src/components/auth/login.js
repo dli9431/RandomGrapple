@@ -46,10 +46,10 @@ export const GLogin = (props) => {
 			<Button href="/api/auth/google" size="large" variant="contained" color={props.night ? 'secondary' : 'primary'} startIcon={<AccountCircleIcon />}>
 				Login
 			</Button>
-			{/* <Button onClick={createSpreadSheet}>
+			<Button onClick={createSpreadSheet}>
 				CREATE
 			</Button>
-			<Button onClick={readSpreadSheet}>
+			{/* <Button onClick={readSpreadSheet}>
 				READ
 			</Button> */}
 		</Box>

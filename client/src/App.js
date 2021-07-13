@@ -60,7 +60,10 @@ function App() {
 					</Box>
 					<Box p={1}>
 						{logged ?
-							<Button size="large" variant="contained" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
+							<Box>
+								<GLogin night={night} />
+								<Button size="large" variant="contained" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
+							</Box>
 							:
 							<GLogin night={night} />
 							// <Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>

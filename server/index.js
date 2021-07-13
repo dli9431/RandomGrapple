@@ -116,19 +116,19 @@ app.post("/api/create", async (req, res) => {
 	try {
 		oauth2Client.credentials = { access_token: req.user.accessToken };
 		const cr = await createSheet(oauth2Client);
-		
-		if (cr.length > 0) {
-			res.status = cr;
-			res.json("error");
-		} else {
-			if (cr.spreadsheetId.length > 0) {
-				req.user.spreadsheetId = cr.spreadsheetId;
-				res.status(200);
-				res.json("ok");
-			} else {
-				console.log("error");
-			}
-		}
+
+		// if (cr.length > 0) {
+		// 	res.status = cr;
+		// 	res.json("error");
+		// } else {
+		// 	if (cr.spreadsheetId.length > 0) {
+		// 		req.user.spreadsheetId = cr.spreadsheetId;
+		// 		res.status(200);
+		// 		res.json("ok");
+		// 	} else {
+		// 		console.log("error");
+		// 	}
+		// }
 	} catch (error) {
 		console.error(error);
 	}
@@ -181,20 +181,172 @@ app.listen(PORT, () => {
 
 async function createSheet(auth) {
 	try {
-		const resource = {
-			properties: {
-				title: "RandomGrapple[default]",
-			},
-		};
-		const sheets = google.sheets({ version: 'v4', auth });
-		const result = await sheets.spreadsheets.create({
-			resource
+		const drive = google.drive({ version: 'v3', auth });
+		const response = await drive.files.list({
+			q: "name='RandomGrapple[default]'"
 		});
-		if (result.status === 200) {
-			return result.data;
+
+		// if already created, return spreadsheet file info
+		if (response.data.files.length > 0) {
+			if (response.status === 200) {
+				return response.data.files[0];
+			}
+			else {
+				return response.status;
+			}
 		} else {
-			return result.status;
+			// create new default spreadsheet
+			const request = {
+				resource: {
+					properties: {
+						title: "RandomGrapple[default]",
+						locale: "en_US",
+						timeZone: "America/Los_Angeles",
+					},				
+					sheets: [
+						{ 
+							properties: {
+								title: "Players",
+							},
+							data: [
+								{
+									rowData: [
+										{
+											values: [
+												{
+													userEnteredValue: {
+														stringValue: "Name"
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "Nickname"
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "Handicap"
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "Record"
+													}
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{ 
+							properties: {
+								title: "Gym Average",
+							},
+							data: [
+								{
+									rowData: [
+										{
+											values: [
+												{
+													userEnteredValue: {
+														stringValue: "Gym Averages"
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "Amount"
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "Unit"
+													}
+												}
+											]
+										},
+										{
+											values: [
+												{
+													userEnteredValue: {
+														stringValue: "Weight"
+													}
+												},
+												{
+													userEnteredValue: {
+														numberValue: 150
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "lbs"
+													}
+												}
+											]
+										},
+										{
+											values: [
+												{
+													userEnteredValue: {
+														stringValue: "Exp"
+													}
+												},
+												{
+													userEnteredValue: {
+														numberValue: 6
+													}
+												},
+												{
+													userEnteredValue: {
+														stringValue: "months"
+													}
+												}
+											]
+										}
+									],
+								}
+							]
+						},
+						{ 
+							properties: {
+								title: "Handicaps",
+							}
+						},
+						{ 
+							properties: {
+								title: "Penalties",
+							}
+						},
+						{ 
+							properties: {
+								title: "Matches",
+							}
+						}
+					]
+				}
+			};
+			const sheets = google.sheets({ version: 'v4', auth });
+			const res = await (sheets.spreadsheets.create(request)).data;
+			console.log(JSON.stringify(response, null, 2));
 		}
+
+
+		// const request = {
+		// 	spreadsheetId: '1ByLrg5CljFKvmFCHe_ci4GBihP2C5t8iy7ugGecJIkw',
+		// 	sheetId: 0,
+		// 	resource: {
+		// 		destinationSpreadsheetId: ''
+		// 	},
+		// }
+		// const sheets = google.sheets({ version: 'v4', auth });
+		// const response = (await sheets.spreadsheets.sheets.copyTo(request)).data;
+		// console.log(JSON.stringify(response, null, 2));
+
+		// if (result.status === 200) {
+		// 	return result.data;
+		// } else {
+		// 	return result.status;
+		// }
 	} catch (err) {
 		console.error(err);
 	}
