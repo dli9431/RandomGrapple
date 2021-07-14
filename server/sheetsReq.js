@@ -267,6 +267,11 @@ module.exports = {
 												userEnteredValue: {
 													stringValue: "Info"
 												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Note: Penalties must be grouped together by category!",
+												}
 											}
 										]
 									},

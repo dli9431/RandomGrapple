@@ -99,25 +99,26 @@ app.get("/api/getUserInfo", async (req, res) => {
 			const checkSheet = await getSheet(oauth2Client);
 			if (checkSheet.id !== undefined && checkSheet.id.length > 0) {
 				info.spreadsheetId = checkSheet.id;
+				req.user.spreadsheetId = checkSheet.id;
 			}
 			info.givenName = req.user.name.givenName;
 			res.status(200);
 			res.json(info);
 		}
 	} catch (err) {
-		console.error(err);
+		res.json(error);
 	}
 })
 
-app.get("/api/getSheet", async (req, res) => {
+app.get("/api/getSheetInfo", async (req, res) => {
 	try {
+		let info = {};
 		oauth2Client.credentials = { access_token: req.user.accessToken };
-		// const checkSheet = await readSheet(oauth2Client);
-
+		const sheetInfo = await readSheet(oauth2Client, req.user.spreadsheetId);
 		res.status(200);
-		res.json(req.user.spreadsheetId);
+		res.json(sheetInfo);
 	} catch (err) {
-		console.error(err);
+		res.json(error);
 	}
 })
 
@@ -152,7 +153,6 @@ app.delete("/api/auth/google/logout", async (req, res) => {
 			message: "Logged out successfully"
 		});
 	} catch (error) {
-		// res.status(error.status);
 		res.json(error);
 	}
 })
@@ -169,33 +169,49 @@ app.listen(PORT, () => {
 	console.log(`server listening on ${PORT}`);
 });
 
-async function readSheet(auth, spreadsheetId) {
-	// const sheets = google.sheets({ version: 'v4', auth });
-	// sheets.spreadsheets.values.get({
-	// 	spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-	// 	range: 'Class Data!A2:E',
-	// }, (err, res) => {
-	// 	if (err) return console.log('The API returned an error: ' + err);
-	// 	const rows = res.data.values;
-	// 	if (rows.length) {
-	// 		console.log('Name, Major:');
-	// 		// Print columns A and E, which correspond to indices 0 and 4.
-	// 		rows.map((row) => {
-	// 			console.log(`${row[0]}, ${row[4]}`);
-	// 		});
-	// 	} else {
-	// 		console.log('No data found.');
-	// 	}
-	// });
+async function readSheet(auth, id) {
+	try {
+		const sheets = google.sheets({ version: 'v4', auth });
+		const ranges = [
+			'Handicaps!A1:A3',
+			'Handicaps!B1:B3',
+			'Handicaps!C1:C3',
+			'Handicaps!D1:D3',
+			'Handicaps!E1:E3',
+			'Handicaps!F1:F3',
+			'Penalties!A1:A100',
+			'Penalties!B1:B100',
+			'Penalties!C1:C100',
+			'Penalties!D1:D100',
+			'Penalties!E1:E100',
+			'Penalties!F1:F100',
+			'Penalties!G1:G100',
+		];
+
+		const response = await sheets.spreadsheets.values.batchGet({
+			spreadsheetId: id,
+			ranges: ranges,
+			majorDimension: 'COLUMNS'
+		});
+		
+		if (response.status !== 200) {
+			console.error(response);
+		} else {
+			return response;
+		}
+	} catch (err) {
+		console.error(err);
+	}
 }
 
 async function getSheet(auth) {
-	const drive = google.drive({ version: 'v3', auth });
-	const response = await drive.files.list({
-		q: "name='RandomGrapple[default]'"
-	});
-
 	try {
+		const drive = google.drive({ version: 'v3', auth });
+		const response = await drive.files.list({
+			q: "name='RandomGrapple[default]'"
+		});
+
+
 		// if already created, return spreadsheet file info
 		if (response.status === 200 && response.data.files.length > 0) {
 			return response.data.files[0];
@@ -235,7 +251,7 @@ async function createSheet(auth) {
 					return res.status;
 				}
 			} catch (err) {
-				console.error(err);
+				res.json(error);
 			}
 		}
 	} catch (err) {

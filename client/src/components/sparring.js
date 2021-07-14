@@ -119,7 +119,7 @@ export const HandicapCheckList = ({ checkedInfo, night, penalties, formInfo }) =
 	);
 }
 
-export const Sparring = ({night, user, logged, logout}) => {
+export const Sparring = ({night, user, logged, logout, updateUser}) => {
 	const classes = regStyles({ night: night });
 	const [setup, setSetup] = useState({
 		isSet: false,
@@ -253,7 +253,7 @@ export const Sparring = ({night, user, logged, logout}) => {
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
-				<Setup setupInfo={setupInfo} setup={setup} night={night} logged={logged} />
+				<Setup updateUser={updateUser} setupInfo={setupInfo} setup={setup} night={night} logged={logged} user={user} logout={logout}/>
 				:
 				<Grid container spacing={3} direction="row" justify="space-between" alignItems="flex-start">
 					<Grid item xs={12} md={setup.setHandicaps === true ? 9 : 12}>

@@ -3,276 +3,10 @@ import { FormControlLabel, Checkbox, IconButton, Grid, Paper, Button, TextField,
 import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import { defaultHandicaps, defaultPenalties } from './setup/setupVars';
+import { Category } from './setup/category';
 
-export const defaultHandicaps = [
-	{
-		name: "Weight Handicap",
-		unit: 'lbs',
-		amount: 20,
-		pts: 1
-	},
-	{
-		name: "Experience Handicap",
-		unit: 'months',
-		amount: 3,
-		pts: 1
-	}
-]
-
-export const defaultPenalties = [
-	[
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start in side control",
-			pts: 1,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start in knee on belly",
-			pts: 2,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start in kesa gatame",
-			pts: 3,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start in mount",
-			pts: 4,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start in high mount",
-			pts: 5,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start on back",
-			pts: 6,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start on back with arm trap",
-			pts: 7,
-		},
-		{
-			category: 1,
-			limit: 1,
-			random: false,
-			type: "Positional",
-			desc: "Start on back with arm trap + deep collar grip",
-			pts: 8,
-		},
-	],
-	[
-		{
-			category: 2,
-			limit: 1,
-			random: true,
-			type: "Points/Subs",
-			desc: "Subonly for opponent",
-			pts: 10,
-		},
-		{
-			category: 2,
-			limit: 1,
-			random: true,
-			type: "Points/Subs",
-			desc: "Start match 4-0 in points",
-			pts: 10,
-		},
-		{
-			category: 2,
-			limit: 1,
-			random: true,
-			type: "Points/Subs",
-			desc: "Start match 4-0 in points + Subonly for opponent",
-			pts: 10,
-		},
-		{
-			category: 2,
-			limit: 1,
-			random: true,
-			type: "Points/Subs",
-			desc: "Start match 4-0 in points + Subonly for opponent + doubled points for self",
-			pts: 10,
-		},
-		{
-			category: 2,
-			limit: 1,
-			random: true,
-			type: "Points/Subs",
-			desc: "Opponent must sub 3x to win",
-			pts: 10,
-		},
-	],
-	[
-		{
-			category: 3,
-			limit: 1,
-			random: false,
-			type: "Time",
-			desc: "-1 minute round time",
-			pts: 3
-		},
-		{
-			category: 3,
-			limit: 1,
-			random: false,
-			type: "Time",
-			desc: "-2 minute round time",
-			pts: 6
-		},
-		{
-			category: 3,
-			limit: 1,
-			random: false,
-			type: "Time",
-			desc: "-3 minute round time",
-			pts: 9
-		}
-	],
-	[
-		{
-			category: 4,
-			limit: 2,
-			random: false,
-			type: "Cardio",
-			desc: "Opponent does 5 burpees before match",
-			pts: 1
-		},
-		{
-			category: 4,
-			limit: 2,
-			random: false,
-			type: "Cardio",
-			desc: "Opponent does 3x front + 3x back rolls before match",
-			pts: 1
-		},
-	],
-	[
-		{
-			category: 5,
-			limit: -1,
-			random: false,
-			type: "Misc",
-			desc: "Free Reset",
-			pts: 4,
-			info: "Get out of jail card. Can be used at any time to call for a reset to original starting position."
-		},
-	],
-	[
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with armbar",
-			pts: 4,
-		},
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with triangle",
-			pts: 4,
-		},
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with kimura",
-			pts: 4,
-		},
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with americana",
-			pts: 4,
-		},
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with ankle lock",
-			pts: 4,
-		},
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with guillotine",
-			pts: 4,
-		},
-		{
-			category: 6,
-			limit: 1,
-			random: true,
-			type: "Finisher",
-			desc: "Opponent must sub with ezekiel",
-			pts: 4,
-		},
-	]
-];
-
-export const Category = (props) => {
-	let color = '';
-	switch (props.id) {
-		case 1:
-			color = 'grey';
-			break;
-		case 2:
-			color = 'blue';
-			break;
-		case 3:
-			color = 'green';
-			break;
-		case 4:
-			color = 'purple';
-			break;
-		case 5:
-			color = 'orange';
-			break;
-		case 6:
-			color = 'red'
-			break;
-		default:
-			break;
-	}
-	return (
-		<Box p={1} display="flex" flexDirection="column" justifyContent="center" key={props.index} border={1} borderColor={color}>{props.type}</Box>
-	);
-}
-
-export const Setup = ({ setupInfo, setup, night, logged }) => {
+export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logout }) => {
 	const classes = regStyles({ night: night });
 	// handicap pts
 	const [handicaps, setHandicaps] = useState(false);
@@ -347,11 +81,6 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setup.handicaps = [];
 		setup.handicaps = defaultHandicaps;
 		setup.setHandicaps = true;
-		if (renderList) {
-			setRenderList(false);
-		} else {
-			setRenderList(true);
-		}
 	}
 
 	function resetHandicap() {
@@ -389,6 +118,7 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 
 	function importPenalties() {
 		setup.listPenalties = defaultPenalties;
+		
 		if (renderList) {
 			setRenderList(false);
 		} else {
@@ -422,18 +152,139 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 		setPenaltyDesc('');
 		setPenaltyPts(0);
 		setRandom(false);
+	}
 
-		if (renderList) {
-			setRenderList(false);
+	const createSheet = async () => {
+		try {
+			const res = await fetch("/api/create", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				}
+			});
+
+			const data = await res.json();
+			if (res.status === 200) {
+				updateUser(data);
+			}
+		}
+		catch (error) {
+			console.log(error);
+		}
+	}
+
+	const readSheet = async () => {
+		if (user.spreadsheetId.length > 0) {
+			try {
+				const res = await fetch("/api/getSheetInfo", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json"
+					}
+				});
+
+				const data = await res.json();
+				if (data.data.valueRanges.length > 0) {
+					const hW = parseInt(data.data.valueRanges[1].values[0][1]);
+					setHandicapWeight(hW);
+					const xp = parseInt(data.data.valueRanges[1].values[0][2]);
+					setHandicapExp(xp);
+					// set handicap vars
+					setup.handicaps = [];
+					setup.handicaps.push({
+						name: "Weight Handicap",
+						unit: 'lbs',
+						amount: hW,
+						pts: parseInt(data.data.valueRanges[3].values[0][1])
+					});
+					setup.handicaps.push({
+						name: "Experience Handicap",
+						unit: 'months',
+						amount: xp,
+						pts: parseInt(data.data.valueRanges[3].values[0][2])
+					});
+					setup.setHandicaps = true;
+					setHandicaps(true);
+
+					let importedPenalties = [];
+					let importedPenaltiesArr = [];
+					const baseArr = data.data.valueRanges;
+					const res = [...new Set([].concat(...baseArr.map((o, index) => { return (index > 5 ? o.values : []) })))];
+
+					for (var i = 1; i < res[0].length; i++) {
+						let temp = {};
+						temp.desc = res[0][i];
+						temp.pts = parseInt(res[1][i]);
+						temp.type = res[2][i];
+						temp.random = res[3][i] === 'TRUE' ? true : false;
+						temp.limit = parseInt(res[4][i]);
+						temp.category = parseInt(res[5][i]);
+						temp.info = res[6][i];
+						importedPenalties.push(temp);
+					}
+
+					// group penalties by category
+					let curr = 1;
+					let t = [];
+					for (var k = 0; k < importedPenalties.length; k++) {
+						if ((importedPenalties[k].category) === (curr + 1)) {
+							importedPenaltiesArr.push(t);
+							t = [];
+							curr++;
+						}
+
+						if (importedPenalties[k].category === curr) {
+							t.push(importedPenalties[k]);
+							if (k === importedPenalties.length - 1) {
+								importedPenaltiesArr.push(t);
+							}
+						}
+					}
+					
+					setup.listPenalties = importedPenaltiesArr;
+					
+					if (renderList) {
+						setRenderList(false);
+					} else {
+						setRenderList(true);
+					}
+				}
+			}
+			catch (error) {
+				console.log(error);
+			}
 		} else {
-			setRenderList(true);
+
 		}
 	}
 
 	return (
 		<Box display="flex" flexDirection="column" p={1} textAlign="center">
 			<Typography variant="h3">Setup</Typography>
-			<Typography variant="subtitle1">{setup.mode === 0 ? '[Sparring]' : '[Tournament]'}</Typography>
+			<Box mb={2}>
+				<Paper className={classes.paper}>
+					<Typography variant="subtitle1">{setup.mode === 0 ? '[Sparring]' : '[Tournament]'}</Typography>
+					{logged ?
+						<Box>
+							{user.spreadsheetId !== undefined && user.spreadsheetId.length > 0 ?
+								<Box>
+									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => readSheet()}>Import</Button>
+								</Box>
+								:
+								<Box>
+									You don't currently have a spreadsheet to import from.
+									<Box mt={1}>
+										<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => createSheet()}>Create</Button>
+									</Box>
+								</Box>
+							}
+
+						</Box>
+						:
+						<Box>Login to import custom settings and save match history</Box>
+					}
+				</Paper>
+			</Box>
 			<form noValidate autoComplete="off">
 				<Box mb={2}>
 					<Paper className={classes.paper}>
@@ -506,71 +357,71 @@ export const Setup = ({ setupInfo, setup, night, logged }) => {
 						</Grid>
 					</Paper>
 				</Box>
-				{ // TODO: up to work properly with penalty selection form
-					((handicapWeight > 0 && handicapWeightPts > 0) || (handicapExp > 0 && handicapExpPts > 0)) &&
-					<Box mb={2}>
-						<Paper className={classes.paper}>
-							<Typography variant="h5">Penalties</Typography>
-							<Box mb={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => importPenalties()}>Default</Button></Box>
-							<Grid container direction="row" justify="center">
-								<Grid item xs={7} sm={9} md={9} lg={2}>
-									<TextField value={penaltyType} onChange={(e) => { setPenaltyType(e.target.value) }} label="Type (ex: Positional)" variant="outlined" fullWidth={true} />
-								</Grid>
-								<Grid item xs={5} sm={3} md={3} lg={1}>
-									<TextField value={penaltyCat} onChange={(e) => { setPenaltyCat(e.target.value) }} type="number" step="1" label="Category" variant="outlined" fullWidth={true} />
-								</Grid>
-								<Grid item xs={12} sm={12} md={9} lg={4}>
-									<TextField value={penaltyDesc} onChange={(e) => { setPenaltyDesc(e.target.value) }} label="Description" variant="outlined" fullWidth={true} />
-								</Grid>
-								<Grid item xs={6} sm={3} md={3} lg={1}>
-									<TextField value={penaltyPts} onChange={(e) => { setPenaltyPts(e.target.value) }} type="number" step="1" label="Points" variant="outlined" fullWidth={true} />
-								</Grid>
-								<Grid item xs={6} sm={3} md={3} lg={2}>
-									<FormControlLabel
-										className={classes.label}
-										labelPlacement="start"
-										control={
-											<Checkbox
-												checked={random}
-												onChange={handleCheck}
-												name="random"
-												color={night ? "secondary" : "primary"}
-											/>
-										}
-										label="Random"
-									/>
-								</Grid>
-								<Grid item xs={6} sm={3} md={3} lg={1}>
-									<TextField value={penaltyLimit} onChange={(e) => { setPenaltyLimit(e.target.value) }} type="number" step="1" label="Limit" variant="outlined" fullWidth={true} />
-								</Grid>
-								<Grid item xs={6} sm={3} md={3} lg={1}>
-									<Button onClick={addPenalty} fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
-								</Grid>
+				<Box mb={2}>
+					<Paper className={classes.paper}>
+						<Typography variant="h5">Penalties</Typography>
+						<Box mb={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => importPenalties()}>Default</Button></Box>
+						<Grid container direction="row" justify="center">
+							{/* <Grid item xs={7} sm={9} md={9} lg={2}>
+								<TextField value={penaltyType} onChange={(e) => { setPenaltyType(e.target.value) }} label="Type (ex: Positional)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid container direction="column">
-								{
-									setup.listPenalties.map(sub => sub.map((p, index) => {
-										return (
-											<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={index}>
-												<Category id={p.category} index={index} type={p.type} />
-												<Box ml={1}>
-													{p.desc}&nbsp;
-													[Points: {p.pts}]&nbsp;
-													[Random: {p.random.toString()}]&nbsp;
-													[Limit: {p.limit}]
-													<IconButton onClick={() => removePenalties(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton>
+							<Grid item xs={5} sm={3} md={3} lg={1}>
+								<TextField value={penaltyCat} onChange={(e) => { setPenaltyCat(e.target.value) }} type="number" step="1" label="Category" variant="outlined" fullWidth={true} />
+							</Grid>
+							<Grid item xs={12} sm={12} md={9} lg={4}>
+								<TextField value={penaltyDesc} onChange={(e) => { setPenaltyDesc(e.target.value) }} label="Description" variant="outlined" fullWidth={true} />
+							</Grid>
+							<Grid item xs={6} sm={3} md={3} lg={1}>
+								<TextField value={penaltyPts} onChange={(e) => { setPenaltyPts(e.target.value) }} type="number" step="1" label="Points" variant="outlined" fullWidth={true} />
+							</Grid>
+							<Grid item xs={6} sm={3} md={3} lg={2}>
+								<FormControlLabel
+									className={classes.label}
+									labelPlacement="start"
+									control={
+										<Checkbox
+											checked={random}
+											onChange={handleCheck}
+											name="random"
+											color={night ? "secondary" : "primary"}
+										/>
+									}
+									label="Random"
+								/>
+							</Grid>
+							<Grid item xs={6} sm={3} md={3} lg={1}>
+								<TextField value={penaltyLimit} onChange={(e) => { setPenaltyLimit(e.target.value) }} type="number" step="1" label="Limit" variant="outlined" fullWidth={true} />
+							</Grid>
+							<Grid item xs={6} sm={3} md={3} lg={1}>
+								<Button onClick={addPenalty} fullWidth={true} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
+							</Grid> */}
+							{
+								setup.listPenalties.length > 0 &&
+								<Grid container direction="column">
+									{
+										setup.listPenalties.map(sub => sub.map((p, index) => {
+											return (
+												<Box mt={1} justifyContent="center" display="flex" flexDirection="row" key={index}>
+													<Category id={p.category} index={index} type={p.type} />
+													<Box ml={1}>
+														{p.desc}&nbsp;
+														[Points: {p.pts}]&nbsp;
+														[Random: {p.random.toString()}]&nbsp;
+														[Limit: {p.limit}]
+														{/* <IconButton onClick={() => removePenalties(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton> */}
+													</Box>
 												</Box>
-											</Box>
-										)
-									}))
-								}
-							</Grid>
-						</Paper>
-					</Box>
-				}
+											)
+										}))
+									}
+								</Grid>
+							}
+						</Grid>
+					</Paper>
+				</Box>
 			</form>
 			<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => { setup.isSet = true; setupInfo(setup) }}>Next</Button>
-			<Menu night={night} logged={logged} />
+			<Menu night={night} logged={logged} logout={logout} />
 		</Box >
 	);
 }

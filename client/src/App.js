@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Router } from '@reach/router';
 import { Button, Switch, Typography, Box } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import { ThemeProvider } from 'styled-components';
@@ -25,11 +26,15 @@ function App() {
 		spreadsheetId: ''
 	});
 
+	const updateUser = (sheetId) => {
+		setUser({ ...user, spreadsheetId: sheetId })
+	}
+
 	const loginFn = async () => {
 		if (!logged) {
 			const name = await fetch('/api/getUserInfo', { method: 'get' });
 			const data = await name.json();
-			
+
 			let u = {
 				name: data.givenName,
 				spreadsheetId: data.spreadsheetId
@@ -60,7 +65,7 @@ function App() {
 			if (location.pathname.indexOf('oauth2callback') > 0) {
 				loginFn();
 			}
-		}		
+		}
 
 		return (
 			<Box display="flex" justifyContent="flex-end" flexDirection="column" height="50vh">
@@ -75,11 +80,14 @@ function App() {
 					<Box p={1}>
 						{logged ?
 							<Box>
-								<GLogin night={night} />
+								{/* <GLogin night={night} /> */}
 								<Button size="large" variant="contained" color={night ? 'secondary' : 'primary'} onClick={logoutFn} startIcon={<ExitToAppIcon />}>Logout</Button>
 							</Box>
 							:
-							<GLogin night={night} />
+							<Box>
+								{/* <GLogin night={night} /> */}
+								<Button size="large" variant="contained" color={night ? 'secondary' : 'primary'} href="/api/auth/google" startIcon={<AccountCircleIcon />}>Login</Button>
+							</Box>
 							// <Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
 						}
 					</Box>
@@ -95,9 +103,9 @@ function App() {
 				<Router>
 					<Home path='/' />
 					<Start path='start' night={night} user={user} logged={logged} logout={logoutFn} />
-					<Sparring path='sparring' night={night} user={user} logged={logged} logout={logoutFn} />
-					<Tournament path='tournament' night={night} user={user} logged={logged} logout={logoutFn} />
-					<Timer path='timer' night={night} user={user} logged={logged} logout={logoutFn} />
+					<Sparring path='sparring' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
+					<Tournament path='tournament' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
+					<Timer path='timer' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
 					<Home path='/oauth2callback' />
 				</Router>
 				<Box display='flex' flexDirection='row' justifyContent='center'>
