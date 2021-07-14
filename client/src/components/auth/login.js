@@ -49,9 +49,9 @@ export const GLogin = (props) => {
 			<Button onClick={createSpreadSheet}>
 				CREATE
 			</Button>
-			{/* <Button onClick={readSpreadSheet}>
+			<Button onClick={readSpreadSheet}>
 				READ
-			</Button> */}
+			</Button>
 		</Box>
 	);
 }

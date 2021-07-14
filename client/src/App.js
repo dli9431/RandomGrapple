@@ -20,19 +20,22 @@ function App() {
 	const [theme, handleChange, componentMounted, night] = useDarkMode();
 	const themeMode = theme === 'light' ? light : dark;
 	const [logged, setLogged] = useState(false);
-	const [user, setUser] = useState("");
+	const [user, setUser] = useState({
+		name: '',
+		spreadsheetId: ''
+	});
 
 	const loginFn = async () => {
-		const name = await fetch('/api/getUserInfo', { method: "get" });
+		const name = await fetch('/api/getUserInfo', { method: 'get' });
 		const data = await name.json();
 		if (name.status === 200) {
-			setUser(data.givenName);
+			setUser({...user, name: data.givenName});
 			setLogged(true);
 		}
 	}
 
 	const logoutFn = async () => {
-		const logout = await fetch('/api/auth/google/logout', { method: "delete", headers: {"Content-Type":"application/json"} });
+		const logout = await fetch('/api/auth/google/logout', { method: 'delete', headers: {'Content-Type':'application/json'} });
 		if (logout.status === 200) {
 			setLogged(false);
 		}
@@ -44,7 +47,7 @@ function App() {
 	
 	const Home = () => {
 		const location = useLocation();
-		if (location.pathname.indexOf("oauth2callback") > 0) {
+		if (location.pathname.indexOf('oauth2callback') > 0) {
 			loginFn();
 		}
 
@@ -52,7 +55,7 @@ function App() {
 			<Box display="flex" justifyContent="flex-end" flexDirection="column" height="50vh">
 				<Typography align="center" style={{ fontSize: "2em", wordBreak: "break-word" }}>RandomGrapple</Typography>
 				{logged &&
-					<Typography align="center" variant="h5">Welcome {user}</Typography>
+					<Typography align="center" variant="h5">Welcome {user.name}</Typography>
 				}
 				<Box display="flex" flexDirection="row" justifyContent="center" flexWrap="wrap">
 					<Box p={1}>
@@ -76,23 +79,23 @@ function App() {
 
 	return (
 		<ThemeProvider theme={themeMode}>
-			<Box display="flex" flexDirection="column" height="90vh" alignItems="center">
+			<Box display='flex' flexDirection='column' height='90vh' alignItems='center'>
 				<GlobalStyles />
 				<Router>
-					<Home path="/" />
-					<Start path="start" night={night} logged={logged} />
-					<Sparring path="sparring" night={night} logged={logged} />
-					<Tournament path="tournament" night={night} logged={logged} />
-					<Timer path="timer" night={night} logged={logged} />
-					<Home path="/oauth2callback" />
+					<Home path='/' />
+					<Start path='start' night={night} logged={logged} user={user}/>
+					<Sparring path='sparring' night={night} logged={logged} user={user}/>
+					<Tournament path='tournament' night={night} logged={logged} user={user}/>
+					<Timer path='timer' night={night} logged={logged} user={user}/>
+					<Home path='/oauth2callback' />
 				</Router>
-				<Box display="flex" flexDirection="row" justifyContent="center">
+				<Box display='flex' flexDirection='row' justifyContent='center'>
 					<Switch
 						checked={night}
 						onChange={handleChange}
-						name="night"
+						name='night'
 					/>
-					<Brightness4Icon fontSize="large" />
+					<Brightness4Icon fontSize='large' />
 				</Box>
 			</Box>
 

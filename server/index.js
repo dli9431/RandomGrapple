@@ -104,7 +104,8 @@ app.get("/api/getUserInfo", async (req, res) => {
 
 app.get("/api/getSheet", async (req, res) => {
 	try {
-		console.log(req.user.spreadsheetId);
+		res.status(200);
+		res.json(req.user.spreadsheetId);
 	} catch (err) {
 		console.error(err);
 	}
@@ -115,18 +116,19 @@ app.post("/api/create", async (req, res) => {
 		oauth2Client.credentials = { access_token: req.user.accessToken };
 		const cr = await createSheet(oauth2Client);
 
-		// if (cr.length > 0) {
-		// 	res.status = cr;
-		// 	res.json("error");
-		// } else {
-		// 	if (cr.spreadsheetId.length > 0) {
-		// 		req.user.spreadsheetId = cr.spreadsheetId;
-		// 		res.status(200);
-		// 		res.json("ok");
-		// 	} else {
-		// 		console.log("error");
-		// 	}
-		// }
+		if (cr.spreadsheetId !== undefined && cr.spreadsheetId.length > 0) {
+			req.user.spreadsheetId = cr.spreadsheetId;
+			res.status(200);
+			res.json(cr.spreadsheetId);
+		} else if (cr.id !== undefined && cr.id.length > 0) {
+			req.user.spreadsheetId = cr.id;
+			res.status(200);
+			res.json(cr.id);
+		}
+		else {
+			res.status = cr;
+			res.json("error");
+		}
 	} catch (error) {
 		console.error(error);
 	}
@@ -193,30 +195,21 @@ async function createSheet(auth) {
 				return response.status;
 			}
 		} else {
-			// create new default spreadsheet
-			const request = initialSheetReq.create();
-			const sheets = google.sheets({ version: 'v4', auth });
-			const res = await (sheets.spreadsheets.create(request)).data;
-			console.log(JSON.stringify(response, null, 2));
+			try {
+				// create new default spreadsheet
+				const request = initialSheetReq.create();
+				const sheets = google.sheets({ version: 'v4', auth });
+				const res = await (sheets.spreadsheets.create(request));
+
+				if (res.status === 200) {
+					return res.data;
+				} else {
+					return res.status;
+				}
+			} catch (err) {
+				console.error(err);
+			}
 		}
-
-
-		// const request = {
-		// 	spreadsheetId: '1ByLrg5CljFKvmFCHe_ci4GBihP2C5t8iy7ugGecJIkw',
-		// 	sheetId: 0,
-		// 	resource: {
-		// 		destinationSpreadsheetId: ''
-		// 	},
-		// }
-		// const sheets = google.sheets({ version: 'v4', auth });
-		// const response = (await sheets.spreadsheets.sheets.copyTo(request)).data;
-		// console.log(JSON.stringify(response, null, 2));
-
-		// if (result.status === 200) {
-		// 	return result.data;
-		// } else {
-		// 	return result.status;
-		// }
 	} catch (err) {
 		console.error(err);
 	}
