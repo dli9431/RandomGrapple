@@ -1,11 +1,9 @@
 const { google } = require('googleapis');
 const express = require('express');
 const cors = require('cors');
-
+const initialSheetReq = require('./sheetsReq');
 const PORT = process.env.PORT || 3001;
 const app = express();
-app.use(cors());
-
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -196,135 +194,7 @@ async function createSheet(auth) {
 			}
 		} else {
 			// create new default spreadsheet
-			const request = {
-				resource: {
-					properties: {
-						title: "RandomGrapple[default]",
-						locale: "en_US",
-						timeZone: "America/Los_Angeles",
-					},				
-					sheets: [
-						{ 
-							properties: {
-								title: "Players",
-							},
-							data: [
-								{
-									rowData: [
-										{
-											values: [
-												{
-													userEnteredValue: {
-														stringValue: "Name"
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "Nickname"
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "Handicap"
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "Record"
-													}
-												}
-											]
-										}
-									]
-								}
-							]
-						},
-						{ 
-							properties: {
-								title: "Gym Average",
-							},
-							data: [
-								{
-									rowData: [
-										{
-											values: [
-												{
-													userEnteredValue: {
-														stringValue: "Gym Averages"
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "Amount"
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "Unit"
-													}
-												}
-											]
-										},
-										{
-											values: [
-												{
-													userEnteredValue: {
-														stringValue: "Weight"
-													}
-												},
-												{
-													userEnteredValue: {
-														numberValue: 150
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "lbs"
-													}
-												}
-											]
-										},
-										{
-											values: [
-												{
-													userEnteredValue: {
-														stringValue: "Exp"
-													}
-												},
-												{
-													userEnteredValue: {
-														numberValue: 6
-													}
-												},
-												{
-													userEnteredValue: {
-														stringValue: "months"
-													}
-												}
-											]
-										}
-									],
-								}
-							]
-						},
-						{ 
-							properties: {
-								title: "Handicaps",
-							}
-						},
-						{ 
-							properties: {
-								title: "Penalties",
-							}
-						},
-						{ 
-							properties: {
-								title: "Matches",
-							}
-						}
-					]
-				}
-			};
+			const request = initialSheetReq.create();
 			const sheets = google.sheets({ version: 'v4', auth });
 			const res = await (sheets.spreadsheets.create(request)).data;
 			console.log(JSON.stringify(response, null, 2));
