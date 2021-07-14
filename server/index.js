@@ -94,8 +94,15 @@ app.get('/api/auth/oauth2callback',
 app.get("/api/getUserInfo", async (req, res) => {
 	try {
 		if (req.user !== undefined) {
+			let info = {}
+			oauth2Client.credentials = { access_token: req.user.accessToken };
+			const checkSheet = await getSheet(oauth2Client);
+			if (checkSheet.id !== undefined && checkSheet.id.length > 0) {
+				info.spreadsheetId = checkSheet.id;
+			}
+			info.givenName = req.user.name.givenName;
 			res.status(200);
-			res.json(req.user.name);
+			res.json(info);
 		}
 	} catch (err) {
 		console.error(err);
@@ -104,6 +111,9 @@ app.get("/api/getUserInfo", async (req, res) => {
 
 app.get("/api/getSheet", async (req, res) => {
 	try {
+		oauth2Client.credentials = { access_token: req.user.accessToken };
+		// const checkSheet = await readSheet(oauth2Client);
+
 		res.status(200);
 		res.json(req.user.spreadsheetId);
 	} catch (err) {
@@ -159,25 +169,43 @@ app.listen(PORT, () => {
 	console.log(`server listening on ${PORT}`);
 });
 
-// async function readSheet(auth) {
-// 	const sheets = google.sheets({ version: 'v4', auth });
-// 	sheets.spreadsheets.values.get({
-// 		spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
-// 		range: 'Class Data!A2:E',
-// 	}, (err, res) => {
-// 		if (err) return console.log('The API returned an error: ' + err);
-// 		const rows = res.data.values;
-// 		if (rows.length) {
-// 			console.log('Name, Major:');
-// 			// Print columns A and E, which correspond to indices 0 and 4.
-// 			rows.map((row) => {
-// 				console.log(`${row[0]}, ${row[4]}`);
-// 			});
-// 		} else {
-// 			console.log('No data found.');
-// 		}
-// 	});
-// }
+async function readSheet(auth, spreadsheetId) {
+	// const sheets = google.sheets({ version: 'v4', auth });
+	// sheets.spreadsheets.values.get({
+	// 	spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+	// 	range: 'Class Data!A2:E',
+	// }, (err, res) => {
+	// 	if (err) return console.log('The API returned an error: ' + err);
+	// 	const rows = res.data.values;
+	// 	if (rows.length) {
+	// 		console.log('Name, Major:');
+	// 		// Print columns A and E, which correspond to indices 0 and 4.
+	// 		rows.map((row) => {
+	// 			console.log(`${row[0]}, ${row[4]}`);
+	// 		});
+	// 	} else {
+	// 		console.log('No data found.');
+	// 	}
+	// });
+}
+
+async function getSheet(auth) {
+	const drive = google.drive({ version: 'v3', auth });
+	const response = await drive.files.list({
+		q: "name='RandomGrapple[default]'"
+	});
+
+	try {
+		// if already created, return spreadsheet file info
+		if (response.status === 200 && response.data.files.length > 0) {
+			return response.data.files[0];
+		} else {
+			return response.status;
+		}
+	} catch (err) {
+		console.error(err);
+	}
+}
 
 async function createSheet(auth) {
 	try {

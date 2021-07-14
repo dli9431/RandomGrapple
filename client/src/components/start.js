@@ -5,9 +5,9 @@ import { Menu } from './menu/menu.js';
 import { useStyles } from './styles/styles.js';
 import { sparClick, /*tournClick,*/ timerClick } from './menu/navigation.js';
 
-export const Start = (props) => {
-	const classes = useStyles({ night: props.night });
-
+export const Start = ({night, user, logged, logout}) => {
+	const classes = useStyles({ night: night });
+		
 	return (
 		<Box display="flex" flexDirection="column" p={1} width="90vw" height="65vh" justifyContent="flex-end">
 			<Box display="flex" flexDirection="row" textAlign="center" justifyContent="center">
@@ -15,7 +15,7 @@ export const Start = (props) => {
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-								<Button onClick={sparClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
+								<Button onClick={sparClick} variant="contained" fontSize="large" color={night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
 									Sparring Mode
 								</Button>
 							</Box>
@@ -33,7 +33,7 @@ export const Start = (props) => {
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-								<Button onClick={timerClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
+								<Button onClick={timerClick} variant="contained" fontSize="large" color={night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
 									Timer
 								</Button>
 							</Box>
@@ -41,7 +41,7 @@ export const Start = (props) => {
 					</Grid>
 				</Grid>
 			</Box>
-			<Menu logged={props.logged} night={props.night} />
+			<Menu logged={logged} night={night} logout={logout}/>
 		</Box>
 	);
 }

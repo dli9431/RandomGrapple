@@ -119,8 +119,8 @@ export const HandicapCheckList = ({ checkedInfo, night, penalties, formInfo }) =
 	);
 }
 
-export const Sparring = (props) => {
-	const classes = regStyles({ night: props.night });
+export const Sparring = ({night, user, logged, logout}) => {
+	const classes = regStyles({ night: night });
 	const [setup, setSetup] = useState({
 		isSet: false,
 		mode: 0,
@@ -253,14 +253,14 @@ export const Sparring = (props) => {
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
-				<Setup setupInfo={setupInfo} setup={setup} night={props.night} logged={props.logged} />
+				<Setup setupInfo={setupInfo} setup={setup} night={night} logged={logged} />
 				:
 				<Grid container spacing={3} direction="row" justify="space-between" alignItems="flex-start">
 					<Grid item xs={12} md={setup.setHandicaps === true ? 9 : 12}>
 						<Box display="flex" flexDirection="column">
 							<Box mb={2}>
 								<Paper className={classes.paper}>
-									<Timer night={props.night} only={false} />
+									<Timer night={night} only={false} />
 								</Paper>
 							</Box>
 							{setup.players.length >= 2 &&
@@ -294,13 +294,13 @@ export const Sparring = (props) => {
 									{finished ?
 										<Box>
 											{finalPenalties.map((penalty, index) => { return (<Box key={index} mb={1}>{penalty}</Box>) })}
-											<Button variant="contained" color={props.night ? "secondary" : "primary"} onClick={() => resetPenalties()}>Reset</Button>
+											<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => resetPenalties()}>Reset</Button>
 										</Box>
 										:
 										<Box>
-											<HandicapCheckList formInfo={formInfo} checkedInfo={checkedInfo} night={props.night} penalties={setup.listPenalties} />
+											<HandicapCheckList formInfo={formInfo} checkedInfo={checkedInfo} night={night} penalties={setup.listPenalties} />
 											<Box mt={1}>
-												<Button variant="contained" color={props.night ? "secondary" : "primary"} onClick={() => finishedPenalties()}>Finalize</Button>
+												<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => finishedPenalties()}>Finalize</Button>
 											</Box>
 										</Box>
 									}
@@ -309,7 +309,8 @@ export const Sparring = (props) => {
 						</Grid>
 					}
 					<Grid item xs={12}>
-						<Menu night={props.night} logged={props.logged} />
+						{/* <Menu night={props.night} logged={props.logged} /> */}
+						<Menu logged={logged} night={night} logout={logout}/>
 					</Grid>
 				</Grid>
 			}

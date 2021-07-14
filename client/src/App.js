@@ -26,30 +26,41 @@ function App() {
 	});
 
 	const loginFn = async () => {
-		const name = await fetch('/api/getUserInfo', { method: 'get' });
-		const data = await name.json();
-		if (name.status === 200) {
-			setUser({...user, name: data.givenName});
-			setLogged(true);
+		if (!logged) {
+			const name = await fetch('/api/getUserInfo', { method: 'get' });
+			const data = await name.json();
+			
+			let u = {
+				name: data.givenName,
+				spreadsheetId: data.spreadsheetId
+			};
+
+			if (name.status === 200) {
+				setUser(u);
+				setLogged(true);
+			}
 		}
 	}
 
 	const logoutFn = async () => {
-		const logout = await fetch('/api/auth/google/logout', { method: 'delete', headers: {'Content-Type':'application/json'} });
+		const logout = await fetch('/api/auth/google/logout', { method: 'delete', headers: { 'Content-Type': 'application/json' } });
 		if (logout.status === 200) {
 			setLogged(false);
+			setUser({});
 		}
 	}
 
 	if (!componentMounted) {
 		return <div />
 	};
-	
+
 	const Home = () => {
 		const location = useLocation();
-		if (location.pathname.indexOf('oauth2callback') > 0) {
-			loginFn();
-		}
+		if (!logged) {
+			if (location.pathname.indexOf('oauth2callback') > 0) {
+				loginFn();
+			}
+		}		
 
 		return (
 			<Box display="flex" justifyContent="flex-end" flexDirection="column" height="50vh">
@@ -83,10 +94,10 @@ function App() {
 				<GlobalStyles />
 				<Router>
 					<Home path='/' />
-					<Start path='start' night={night} logged={logged} user={user}/>
-					<Sparring path='sparring' night={night} logged={logged} user={user}/>
-					<Tournament path='tournament' night={night} logged={logged} user={user}/>
-					<Timer path='timer' night={night} logged={logged} user={user}/>
+					<Start path='start' night={night} user={user} logged={logged} logout={logoutFn} />
+					<Sparring path='sparring' night={night} user={user} logged={logged} logout={logoutFn} />
+					<Tournament path='tournament' night={night} user={user} logged={logged} logout={logoutFn} />
+					<Timer path='timer' night={night} user={user} logged={logged} logout={logoutFn} />
 					<Home path='/oauth2callback' />
 				</Router>
 				<Box display='flex' flexDirection='row' justifyContent='center'>

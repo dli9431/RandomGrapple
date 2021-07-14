@@ -6,8 +6,8 @@ import StopIcon from '@material-ui/icons/Stop';
 import { useStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 
-export const Timer = (props) => {
-	const classes = useStyles({ night: props.night });
+export const Timer = ({ night, user, logged, logout, only }) => {
+	const classes = useStyles({ night: night });
 	const [running, setRunning] = useState(false);
 	const [mins, setMins] = useState(0);
 	const [secs, setSecs] = useState(0);
@@ -67,7 +67,7 @@ export const Timer = (props) => {
 		}
 	}
 
-	if (props.only === false) {
+	if (only === false) {
 		return (
 			<Box textAlign="center">
 				{(running || timeLeft >= 0) &&
@@ -78,11 +78,11 @@ export const Timer = (props) => {
 				<TextField value={secs} onChange={(e) => parseTimeInputs(e, false)} type="number" label="Seconds" variant="outlined" />
 				<Box display="flex" flexDirection="row" justifyContent="center" mt={1}>
 					{!running ?
-						<Box><Button onClick={() => runTimer()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<PlayArrowIcon />}>Start</Button></Box>
+						<Box><Button onClick={() => runTimer()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<PlayArrowIcon />}>Start</Button></Box>
 						:
-						<Box><Button onClick={() => reset()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<ReplayIcon />}>Reset</Button></Box>
+						<Box><Button onClick={() => reset()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<ReplayIcon />}>Reset</Button></Box>
 					}
-					<Box ml={1}><Button onClick={() => stopTimer()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<StopIcon />}>Stop</Button></Box>
+					<Box ml={1}><Button onClick={() => stopTimer()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<StopIcon />}>Stop</Button></Box>
 				</Box>
 			</Box>
 		)
@@ -103,11 +103,11 @@ export const Timer = (props) => {
 										<TextField value={secs} onChange={(e) => parseTimeInputs(e, false)} type="number" label="Seconds" variant="outlined" />
 										<Box display="flex" flexDirection="row" justifyContent="center" mt={1}>
 											{!running ?
-												<Box><Button onClick={() => runTimer()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<PlayArrowIcon />}>Start</Button></Box>
+												<Box><Button onClick={() => runTimer()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<PlayArrowIcon />}>Start</Button></Box>
 												:
-												<Box><Button onClick={() => reset()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<ReplayIcon />}>Reset</Button></Box>
+												<Box><Button onClick={() => reset()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<ReplayIcon />}>Reset</Button></Box>
 											}
-											<Box ml={1}><Button onClick={() => stopTimer()} variant="contained" color={props.night ? "secondary" : "primary"} startIcon={<StopIcon />}>Stop</Button></Box>
+											<Box ml={1}><Button onClick={() => stopTimer()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<StopIcon />}>Stop</Button></Box>
 										</Box>
 									</Box>
 								</Paper>
@@ -115,7 +115,7 @@ export const Timer = (props) => {
 						</Box>
 					</Grid>
 					<Grid item xs={12}>
-						<Menu night={props.night} logged={props.logged} />
+						<Menu logged={logged} night={night} logout={logout} />
 					</Grid>
 				</Grid>
 			</Box>
