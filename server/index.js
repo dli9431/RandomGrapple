@@ -12,7 +12,8 @@ const http = require('http');
 const url = require('url');
 const path = require('path');
 const opn = require('open');
-const environment = 'dev';
+const environment = process.env.environment === undefined ? 'dev' : process.env.environment;
+
 const destroyer = require('server-destroy');
 
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
@@ -38,22 +39,22 @@ const scopes = [
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 app.use(function (req, res, next) {
-	res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 	next();
 });
 
 var sess = {
-	secret: "keyboard cat",
+	secret: 'keyboard cat',
 	resave: false,
 	saveUninitialized: true,
 	cookie: {},
 }
 
-if (environment === "production") {
+if (environment === 'production') {
 	sess.cookie.secure = true;
 }
-
+/// need different memstore
 app.use(session(sess));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -67,9 +68,9 @@ passport.deserializeUser(function (obj, cb) {
 });
 
 passport.use(new GoogleStrategy({
-	clientID: environment === "dev" ? keys.client_id : process.env.google_client_id,
-	clientSecret: environment === "dev" ? keys.client_secret : process.env.google_client_secret,
-	callbackURL: environment === "dev" ? keys.redirect_uris[0] : process.env.google_redirect_uris,
+	clientID: environment === 'dev' ? keys.client_id : process.env.google_client_id,
+	clientSecret: environment === 'dev' ? keys.client_secret : process.env.google_client_secret,
+	callbackURL: environment === 'dev' ? keys.redirect_uris[0] : process.env.google_redirect_uris,
 },
 	function (accessToken, refreshToken, profile, cb) {
 		profile.accessToken = accessToken;
@@ -91,7 +92,7 @@ app.get('/api/auth/oauth2callback',
 	}
 );
 
-app.get("/api/getUserInfo", async (req, res) => {
+app.get('/api/getUserInfo', async (req, res) => {
 	try {
 		if (req.user !== undefined) {
 			let info = {}
@@ -110,7 +111,7 @@ app.get("/api/getUserInfo", async (req, res) => {
 	}
 })
 
-app.get("/api/getSheetInfo", async (req, res) => {
+app.get('/api/getSheetInfo', async (req, res) => {
 	try {
 		let info = {};
 		oauth2Client.credentials = { access_token: req.user.accessToken };
@@ -122,7 +123,7 @@ app.get("/api/getSheetInfo", async (req, res) => {
 	}
 })
 
-app.post("/api/create", async (req, res) => {
+app.post('/api/create', async (req, res) => {
 	try {
 		oauth2Client.credentials = { access_token: req.user.accessToken };
 		const cr = await createSheet(oauth2Client);
@@ -145,12 +146,12 @@ app.post("/api/create", async (req, res) => {
 	}
 });
 
-app.delete("/api/auth/google/logout", async (req, res) => {
+app.delete('/api/auth/google/logout', async (req, res) => {
 	try {
 		await req.session.destroy();
 		res.status(200);
 		res.json({
-			message: "Logged out successfully"
+			message: 'Logged out successfully'
 		});
 	} catch (error) {
 		res.json(error);
@@ -158,7 +159,7 @@ app.delete("/api/auth/google/logout", async (req, res) => {
 })
 
 app.get('*', (req, res) => {
-	if (environment === "production") {
+	if (environment === 'production') {
 		res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 	} else {
 		res.sendFile(path.join(__dirname, '../client/public', 'index.html'));
