@@ -79,6 +79,10 @@ passport.use(new GoogleStrategy({
 	}
 ));
 
+app.get('/api/test', async (req, res) => {
+	console.log('this is a test');
+});
+
 app.get('/api/auth/google',
 	passport.authenticate('google', { scope: scopes.join(" ") }),
 	function (req, res) { }
