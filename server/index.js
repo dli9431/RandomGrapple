@@ -12,10 +12,12 @@ const http = require('http');
 const url = require('url');
 const path = require('path');
 const opn = require('open');
+const redis = require('redis');
+let RedisStore = require('connect-redis')(session);
+let redisClient = redis.createClient();
+// const destroyer = require('server-destroy');
+
 const environment = process.env.NODE_ENV === undefined ? 'dev' : process.env.NODE_ENV;
-
-const destroyer = require('server-destroy');
-
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
 
 let keys = { redirect_uris: ['http://localhost:3000/api/auth/oauth2callback'] };
@@ -44,17 +46,19 @@ app.use(function (req, res, next) {
 	next();
 });
 
-var sess = {
-	secret: 'keyboard cat',
-	resave: false,
-	saveUninitialized: true,
-	cookie: {},
+var sess = {};
+if (environment === 'production') {
+	sess.store = new RedisStore({client: redisClient});
+	sess.secret = 'keyboard cat';
+	sess.resave = false;
+	sess.saveUninitialized = false;
+} else {
+	sess.secret = 'keyboard cat';
+	sess.resave = false;
+	sess.saveUninitialized = true;
+	sess.cookie = {};
 }
 
-if (environment === 'production') {
-	sess.cookie.secure = true;
-}
-/// need different memstore
 app.use(session(sess));
 app.use(passport.initialize());
 app.use(passport.session());
