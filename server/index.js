@@ -14,10 +14,12 @@ const path = require('path');
 const opn = require('open');
 const redis = require('redis');
 let RedisStore = require('connect-redis')(session);
-let redisClient = redis.createClient();
 // const destroyer = require('server-destroy');
-
 const environment = process.env.NODE_ENV === undefined ? 'dev' : process.env.NODE_ENV;
+
+let redisClient;
+environment === 'dev' ? redisClient = redis.createClient() : redisClient = redis.createClient(process.env.REDIS_TLS_URL);
+
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
 
 let keys = { redirect_uris: ['http://localhost:3000/api/auth/oauth2callback'] };
