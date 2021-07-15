@@ -18,7 +18,7 @@ let RedisStore = require('connect-redis')(session);
 const environment = process.env.NODE_ENV === undefined ? 'dev' : process.env.NODE_ENV;
 
 let redisClient;
-environment === 'dev' ? redisClient = redis.createClient() : redisClient = redis.createClient(process.env.REDIS_URL, { tls: { rejectUnauthorize: false }});
+environment === 'dev' ? redisClient = redis.createClient() : redisClient = redis.createClient(process.env.REDIS_TLS_URL, { tls: { rejectUnauthorize: false }});
 
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
 
