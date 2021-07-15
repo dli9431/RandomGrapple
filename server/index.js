@@ -12,7 +12,7 @@ const http = require('http');
 const url = require('url');
 const path = require('path');
 const opn = require('open');
-const environment = process.env.environment === undefined ? 'dev' : process.env.environment;
+const environment = process.env.NODE_ENV === undefined ? 'dev' : process.env.NODE_ENV;
 
 const destroyer = require('server-destroy');
 
@@ -78,10 +78,6 @@ passport.use(new GoogleStrategy({
 		return cb(null, profile);
 	}
 ));
-
-app.get('/api/test', async (req, res) => {
-	console.log('this is a test');
-});
 
 app.get('/api/auth/google',
 	passport.authenticate('google', { scope: scopes.join(" ") }),
