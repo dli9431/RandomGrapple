@@ -246,7 +246,6 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 					setup.listPenalties = importedPenaltiesArr;
 					
 					// form player obj
-					let players = [];
 					const playerRes = [...new Set([].concat(...baseArr.map((o, index) => { return (index > 12 ? o.values : []) })))];
 
 					for (var j = 1; j < playerRes[0].length; j++) {
@@ -260,6 +259,14 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 						temp.record = playerRes[3][j];
 						// players.push(temp);
 						setup.players.push(temp);
+					}
+
+					// add gym avg to setup obj
+					setup.gymAvg = {
+						weight: parseInt(res[11][0]),
+						weightUnit: res[12][0],
+						exp: parseInt(res[11][1]),
+						expUnit: res[12][1]
 					}
 
 					if (renderList) {

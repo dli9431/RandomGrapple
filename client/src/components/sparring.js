@@ -128,6 +128,7 @@ export const Sparring = ({night, user, logged, logout, updateUser}) => {
 		players: [],
 		handicaps: [],
 		listPenalties: [],
+		gymAvg: {}
 	});
 
 	const [usedPoints, setUsedPoints] = useState(0);

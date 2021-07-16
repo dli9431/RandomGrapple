@@ -187,23 +187,25 @@ async function readSheet(auth, id) {
 	try {
 		const sheets = google.sheets({ version: 'v4', auth });
 		const ranges = [
-			'Handicaps!A1:A3',
-			'Handicaps!B1:B3',
-			'Handicaps!C1:C3',
-			'Handicaps!D1:D3',
-			'Handicaps!E1:E3',
-			'Handicaps!F1:F3',
-			'Penalties!A1:A100',
-			'Penalties!B1:B100',
-			'Penalties!C1:C100',
-			'Penalties!D1:D100',
-			'Penalties!E1:E100',
-			'Penalties!F1:F100',
-			'Penalties!G1:G100',
-			'Players!A1:A1000',
-			'Players!B1:B1000',
-			'Players!C1:C1000',
-			'Players!D1:D1000',
+			'Handicaps!A1:A3', // handicap desc
+			'Handicaps!B1:B3', // handicap amount
+			'Handicaps!C1:C3', // handicap units
+			'Handicaps!D1:D3', // handicap pts
+			'Handicaps!E1:E3', // condition
+			'Handicaps!F1:F3', // optional bool
+			'Penalties!A1:A100', // penalty desc
+			'Penalties!B1:B100', // penalty points
+			'Penalties!C1:C100', // penalty type
+			'Penalties!D1:D100', // random bool
+			'Penalties!E1:E100', // limit
+			'Penalties!F1:F100', // categroy
+			'Penalties!G1:G100', // info
+			'Players!A1:A1000', // name
+			'Players!B1:B1000', // nickname
+			'Players!C1:C1000', // handicap
+			'Players!D1:D1000', // record
+			'Gym Average!B2:B3', // gym avg amounts (weight/exp)
+			'Gym Average!C2:C3' // gym avg units (default lb/months)
 		];
 
 		const response = await sheets.spreadsheets.values.batchGet({
