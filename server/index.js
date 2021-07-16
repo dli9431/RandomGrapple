@@ -76,15 +76,11 @@ passport.use(new GoogleStrategy({
 	function (accessToken, refreshToken, profile, cb) {
 		profile.accessToken = accessToken;
 		profile.refreshToken = refreshToken;
-		console.log('passport init')
-		console.log(profile);
 		return cb(null, profile);
 	}
 ));
 
 passport.serializeUser(function (user, cb) {
-	console.log('serialize');
-	console.log(user);
 	cb(null, user);
 });
 
@@ -96,20 +92,14 @@ app.use(session(sess));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 app.get('/api/auth/google',
 	passport.authenticate('google', { scope: scopes.join(" ") }),
-	function (req, res) { 
-		console.log('initial auth');
-		console.log(req);
-	}
+	function (req, res) { }
 );
 
-app.get('/oauth2callback',
+app.get('/api/auth/oauth2callback',
 	passport.authenticate('google', { failureRedirect: '/error' }),
 	function (req, res) {
-		console.log('callback auth');
-		console.log(req);
 		// Successful authentication, redirect success.
 		res.redirect('/oauth2callback');
 	}
@@ -117,8 +107,6 @@ app.get('/oauth2callback',
 
 app.get('/api/getUserInfo', async (req, res) => {
 	try {
-		console.log('api');
-		console.log(req.user);
 		if (req.user !== undefined) {
 			let info = {}
 			oauth2Client.credentials = { access_token: req.user.accessToken };
