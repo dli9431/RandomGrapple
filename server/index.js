@@ -68,19 +68,6 @@ if (environment === 'production') {
 	sess.cookie = {};
 }
 
-app.use(session(sess));
-app.use(passport.initialize());
-app.use(passport.session());
-
-passport.serializeUser(function (user, cb) {
-	console.log(user);
-	cb(null, user);
-});
-
-passport.deserializeUser(function (obj, cb) {
-	cb(null, obj);
-});
-
 passport.use(new GoogleStrategy({
 	clientID: environment === 'dev' ? keys.client_id : process.env.google_client_id,
 	clientSecret: environment === 'dev' ? keys.client_secret : process.env.google_client_secret,
@@ -89,10 +76,26 @@ passport.use(new GoogleStrategy({
 	function (accessToken, refreshToken, profile, cb) {
 		profile.accessToken = accessToken;
 		profile.refreshToken = refreshToken;
+		console.log('passport init')
 		console.log(profile);
 		return cb(null, profile);
 	}
 ));
+
+passport.serializeUser(function (user, cb) {
+	console.log('serialize');
+	console.log(user);
+	cb(null, user);
+});
+
+passport.deserializeUser(function (obj, cb) {
+	cb(null, obj);
+});
+
+app.use(session(sess));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.get('/api/auth/google',
 	passport.authenticate('google', { scope: scopes.join(" ") }),
@@ -109,6 +112,7 @@ app.get('/api/auth/oauth2callback',
 
 app.get('/api/getUserInfo', async (req, res) => {
 	try {
+		console.log('api');
 		console.log(req.user);
 		if (req.user !== undefined) {
 			let info = {}
