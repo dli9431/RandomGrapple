@@ -48,11 +48,11 @@ const scopes = [
 
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
-app.use(function (req, res, next) {
-	res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
-	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-	next();
-});
+// app.use(function (req, res, next) {
+// 	res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
+// 	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+// 	next();
+// });
 
 var sess = {};
 if (environment === 'production') {
@@ -105,6 +105,8 @@ app.get('/api/auth/google',
 app.get('/api/auth/oauth2callback',
 	passport.authenticate('google', { failureRedirect: '/error' }),
 	function (req, res) {
+		console.log('callback auth');
+		console.log(req);
 		// Successful authentication, redirect success.
 		res.redirect('/oauth2callback');
 	}
