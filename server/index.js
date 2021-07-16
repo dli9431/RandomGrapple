@@ -99,10 +99,13 @@ app.use(passport.session());
 
 app.get('/api/auth/google',
 	passport.authenticate('google', { scope: scopes.join(" ") }),
-	function (req, res) { }
+	function (req, res) { 
+		console.log('initial auth');
+		console.log(req);
+	}
 );
 
-app.get('/api/auth/oauth2callback',
+app.get('/oauth2callback',
 	passport.authenticate('google', { failureRedirect: '/error' }),
 	function (req, res) {
 		console.log('callback auth');
