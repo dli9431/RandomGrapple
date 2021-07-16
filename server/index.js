@@ -200,6 +200,10 @@ async function readSheet(auth, id) {
 			'Penalties!E1:E100',
 			'Penalties!F1:F100',
 			'Penalties!G1:G100',
+			'Players!A1:A1000',
+			'Players!B1:B1000',
+			'Players!C1:C1000',
+			'Players!D1:D1000',
 		];
 
 		const response = await sheets.spreadsheets.values.batchGet({

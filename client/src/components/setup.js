@@ -118,7 +118,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 
 	function importPenalties() {
 		setup.listPenalties = defaultPenalties;
-		
+
 		if (renderList) {
 			setRenderList(false);
 		} else {
@@ -184,6 +184,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 				});
 
 				const data = await res.json();
+				
 				if (data.data.valueRanges.length > 0) {
 					const hW = parseInt(data.data.valueRanges[1].values[0][1]);
 					setHandicapWeight(hW);
@@ -206,6 +207,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 					setup.setHandicaps = true;
 					setHandicaps(true);
 
+					// form penalty objs
 					let importedPenalties = [];
 					let importedPenaltiesArr = [];
 					const baseArr = data.data.valueRanges;
@@ -243,6 +245,23 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 					
 					setup.listPenalties = importedPenaltiesArr;
 					
+					// form player obj
+					let players = [];
+					const playerRes = [...new Set([].concat(...baseArr.map((o, index) => { return (index > 12 ? o.values : []) })))];
+
+					for (var j = 1; j < playerRes[0].length; j++) {
+						let temp = {};
+						temp.name = playerRes[0][j];
+						temp.weight = -1;
+						temp.expYr = -1;
+						temp.expMonth = -1;
+						temp.nickname = playerRes[1][j];
+						temp.handicap = parseInt(playerRes[2][j]);
+						temp.record = playerRes[3][j];
+						// players.push(temp);
+						setup.players.push(temp);
+					}
+
 					if (renderList) {
 						setRenderList(false);
 					} else {
