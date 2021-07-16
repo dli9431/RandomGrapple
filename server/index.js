@@ -68,13 +68,12 @@ if (environment === 'production') {
 	sess.cookie = {};
 }
 
-console.log(sess);
-
 app.use(session(sess));
 app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function (user, cb) {
+	console.log(user);
 	cb(null, user);
 });
 
@@ -90,6 +89,7 @@ passport.use(new GoogleStrategy({
 	function (accessToken, refreshToken, profile, cb) {
 		profile.accessToken = accessToken;
 		profile.refreshToken = refreshToken;
+		console.log(profile);
 		return cb(null, profile);
 	}
 ));
