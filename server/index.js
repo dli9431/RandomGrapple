@@ -18,7 +18,15 @@ let RedisStore = require('connect-redis')(session);
 const environment = process.env.NODE_ENV === undefined ? 'dev' : process.env.NODE_ENV;
 
 let redisClient;
-environment === 'dev' ? redisClient = redis.createClient() : redisClient = redis.createClient(process.env.REDIS_TLS_URL, { tls: { rejectUnauthorize: false }});
+if (environment === 'production') {
+	redisClient = redis.createClient(process.env.REDIS_TLS_URL, {
+		tls: {
+			rejectUnauthorized: false,
+		}
+	});
+}
+
+console.log(redisClient);
 
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
 
@@ -50,7 +58,7 @@ app.use(function (req, res, next) {
 
 var sess = {};
 if (environment === 'production') {
-	sess.store = new RedisStore({client: redisClient});
+	sess.store = new RedisStore({ client: redisClient });
 	sess.secret = 'keyboard cat';
 	sess.resave = false;
 	sess.saveUninitialized = false;
@@ -200,7 +208,7 @@ async function readSheet(auth, id) {
 			ranges: ranges,
 			majorDimension: 'COLUMNS'
 		});
-		
+
 		if (response.status !== 200) {
 			console.error(response);
 		} else {
