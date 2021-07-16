@@ -26,8 +26,6 @@ if (environment === 'production') {
 	});
 }
 
-console.log(redisClient);
-
 const keyPath = path.join(__dirname, '../oauth2.keys.json');
 
 let keys = { redirect_uris: ['http://localhost:3000/api/auth/oauth2callback'] };
@@ -62,12 +60,15 @@ if (environment === 'production') {
 	sess.secret = 'keyboard cat';
 	sess.resave = false;
 	sess.saveUninitialized = false;
+	sess.cookie = {};
 } else {
 	sess.secret = 'keyboard cat';
 	sess.resave = false;
 	sess.saveUninitialized = true;
 	sess.cookie = {};
 }
+
+console.log(sess);
 
 app.use(session(sess));
 app.use(passport.initialize());
@@ -108,6 +109,7 @@ app.get('/api/auth/oauth2callback',
 
 app.get('/api/getUserInfo', async (req, res) => {
 	try {
+		console.log(req.user);
 		if (req.user !== undefined) {
 			let info = {}
 			oauth2Client.credentials = { access_token: req.user.accessToken };
