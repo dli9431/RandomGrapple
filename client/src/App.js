@@ -65,6 +65,7 @@ function App() {
 			if (location.pathname.indexOf('oauth2callback') > 0) {
 				loginFn();
 			}
+			loginFn(); // for testing purposes remove later
 		}
 
 		return (

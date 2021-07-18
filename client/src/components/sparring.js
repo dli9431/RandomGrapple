@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FormControlLabel, Button, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Grid, Paper, Typography, Box } from "@material-ui/core";
+import { TextField, FormControlLabel, Button, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Grid, Paper, Typography, Box } from "@material-ui/core";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { regStyles } from "./styles/styles";
 import { Menu } from "./menu/menu";
 import { Setup } from "./setup";
@@ -119,7 +120,7 @@ export const HandicapCheckList = ({ checkedInfo, night, penalties, formInfo }) =
 	);
 }
 
-export const Sparring = ({night, user, logged, logout, updateUser}) => {
+export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const classes = regStyles({ night: night });
 	const [setup, setSetup] = useState({
 		isSet: false,
@@ -135,6 +136,8 @@ export const Sparring = ({night, user, logged, logout, updateUser}) => {
 	const [formInfo, setFormInfo] = useState([]);
 	const [finished, setFinished] = useState(false);
 	const [finalPenalties, setFinalPenalties] = useState([]);
+	const [player1, setPlayer1] = useState(setup.players[0]);
+	const [player2, setPlayer2] = useState(setup.players[1]);
 
 	useEffect(() => {
 		function init() {
@@ -159,49 +162,61 @@ export const Sparring = ({night, user, logged, logout, updateUser}) => {
 		setSetup({ ...setup, info });
 	}
 
+	function calcHandicapText(weightDif, weightAdv, expDif, expAdv, gymAvgWeight, gymAvgExp) {
+		// console.log(weightDif + " " + weightAdv + " " + expDif + " " + expAdv + " " + gymAvgWeight + " " + gymAvgExp);
+		if (setup.setHandicaps === true) {
+			weightDif = setup.players[0].weight - setup.players[1].weight;
+			if (weightDif < 0) {
+				weightDif *= -1;
+				weightAdv = 1;
+			}
+			weightDif = Math.round((weightDif / setup.handicaps[0].amount));
+			weightDif *= setup.handicaps[0].pts;
+
+			expDif = ((setup.players[0].expYr * 12) + setup.players[0].expMonth) - ((setup.players[1].expYr * 12) + setup.players[1].expMonth);
+			if (expDif < 0) {
+				expDif *= -1;
+				expAdv = 1;
+			}
+			expDif = Math.round((expDif / setup.handicaps[1].amount));
+			expDif *= setup.handicaps[1].pts;
+		}
+		if (setup.setHandicaps === false) {
+			return;
+		}
+		else {
+			if (weightAdv > 0 && expAdv > 0) {
+				return setup.players[0].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+			}
+			if (weightAdv === 0 && expAdv === 0) {
+				return setup.players[1].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+			}
+			if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
+				return "No one has points to spend!";
+			}
+			if (weightDif > expDif) {
+				return setup.players[expAdv].name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
+			}
+			if (expDif > weightDif) {
+				return setup.players[weightAdv].name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
+			}
+		}
+	}
+
 	function calcHandicap() {
-		let weightDif = 0;
-		let expDif = 0;
-		let weightAdv = 0;
-		let expAdv = 0;
+		// let weightDif = 0;
+		// let expDif = 0;
+		// let weightAdv = 0;
+		// let expAdv = 0;
+
 		if (setup.mode === 0) { // sparring mode
 			if (setup.players.length >= 2) {
-				if (setup.setHandicaps === true) {
-					weightDif = setup.players[0].weight - setup.players[1].weight;
-					if (weightDif < 0) {
-						weightDif *= -1;
-						weightAdv = 1;
-					}
-					weightDif = Math.round((weightDif / setup.handicaps[0].amount));
-					weightDif *= setup.handicaps[0].pts;
-
-					expDif = ((setup.players[0].expYr * 12) + setup.players[0].expMonth) - ((setup.players[1].expYr * 12) + setup.players[1].expMonth);
-					if (expDif < 0) {
-						expDif *= -1;
-						expAdv = 1;
-					}
-					expDif = Math.round((expDif / setup.handicaps[1].amount));
-					expDif *= setup.handicaps[1].pts;
-				}
-				if (setup.setHandicaps === false) {
-					return;
-				}
-				else {
-					if (weightAdv > 0 && expAdv > 0) {
-						return setup.players[0].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-					}
-					if (weightAdv === 0 && expAdv === 0) {
-						return setup.players[1].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-					}
-					if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
-						return "No one has points to spend!";
-					}
-					if (weightDif > expDif) {
-						return setup.players[expAdv].name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
-					}
-					if (expDif > weightDif) {
-						return setup.players[weightAdv].name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
-					}
+				if (Object.keys(setup.gymAvg).length > 0) {
+					const txt = calcHandicapText(0, 0, 0, 0, setup.gymAvg.weight, setup.gymAvg.exp);
+					return txt;
+				} else {
+					const txt = calcHandicapText(0, 0, 0, 0, -1, -1);
+					return txt;
 				}
 			}
 			return null;
@@ -251,10 +266,25 @@ export const Sparring = ({night, user, logged, logout, updateUser}) => {
 		setFinished(false);
 	}
 
+	function PlayerSearchBox(props) {
+		return (
+			<Autocomplete
+				id={("playersearch" + props.id)}
+				options={setup.players}
+				// getOptionLabel={(option) => option.name}
+				getOptionLabel={(option) => option.name}
+				// style={{ width: 300 }}
+				value={props.id === 1 ? player1 : player2}
+				onChange={(ev, newVal) => { props.id === 1 ? setPlayer1(newVal) : setPlayer2(newVal); }}
+				renderInput={(params) => <TextField {...params} label={props.id === 1 ? "Player 1" : "Player 2"} variant="outlined" />}
+			/>
+		);
+	}
+
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
-				<Setup updateUser={updateUser} setupInfo={setupInfo} setup={setup} night={night} logged={logged} user={user} logout={logout}/>
+				<Setup updateUser={updateUser} setupInfo={setupInfo} setup={setup} night={night} logged={logged} user={user} logout={logout} />
 				:
 				<Grid container spacing={3} direction="row" justify="space-between" alignItems="flex-start">
 					<Grid item xs={12} md={setup.setHandicaps === true ? 9 : 12}>
@@ -264,25 +294,68 @@ export const Sparring = ({night, user, logged, logout, updateUser}) => {
 									<Timer night={night} only={false} />
 								</Paper>
 							</Box>
-							{setup.players.length >= 2 &&
+							<Box>
+								<Paper className={classes.paper}>
+									<Grid container direction="row" alignItems="flex-start">
+										<Grid item xs={12} sm={6} md={4}>
+											<Box p={1}><PlayerSearchBox id={1} /></Box>
+										</Grid>
+										{(player1 !== undefined && player1 !== null) &&
+											<Grid item xs={12} sm={6} md={8}>
+												<Box p={1} textAlign="left">
+												<Typography variant="h5">
+														{(player1 !== undefined && player1 !== null) && <span>{player1.name} </span>}
+														{((player1 !== undefined && player1 !== null) && player1.nickname.length > 0) && <span> "{player1.nickname}" </span>}
+														{((player1 !== undefined && player1 !== null) && player1.lName !== undefined && player1.lName.length > 0) && <span> {player1.lName} </span>}
+													</Typography>
+													<Typography variant="body1">
+														{(player1 !== undefined && player1 !== null) && <span>Handicap: {player1.handicap} | </span>}
+														{(player1 !== undefined && player1 !== null) && <span>Record: {player1.record} </span>}
+													</Typography>
+												</Box>
+												<Box textAlign="right">
+													<Typography variant="h3">VS</Typography>
+												</Box>
+											</Grid>
+										}
+										<Grid item xs={12} sm={6} md={4}>
+											<Box p={1}><PlayerSearchBox id={2} /></Box>
+										</Grid>
+										{(player2 !== undefined && player2 !== null) &&
+											<Grid item xs={12} sm={6} md={8}>
+												<Box p={1} textAlign="left">
+													<Typography variant="h5">
+														{(player2 !== undefined && player2 !== null) && <span>{player2.name} </span>}
+														{((player2 !== undefined && player2 !== null) && player2.nickname.length > 0) && <span> "{player2.nickname}" </span>}
+														{((player2 !== undefined && player2 !== null) && player2.lName !== undefined && player2.lName.length > 0) && <span> {player2.lName} </span>}
+													</Typography>
+													<Typography variant="body1">
+														{(player2 !== undefined && player2 !== null) && <span>Handicap: {player2.handicap} | </span>}
+														{(player2 !== undefined && player2 !== null) && <span>Record: {player2.record} </span>}
+													</Typography>
+												</Box>
+											</Grid>
+										}
+									</Grid>
+								</Paper>
+							</Box>
+							{/* {setup.players.length >= 2 &&
 								<Box>
 									<Paper className={classes.paper}>
-										<Box>
-											<Box display="flex" flexDirection="row" justifyContent="center" whiteSpace="space-around">
-												<Box flexGrow="1">
-													<Typography variant="h5">{setup.players[0].name}</Typography>
-												</Box>
-												<Box>
-													<Typography variant="h5">vs</Typography>
-												</Box>
-												<Box flexGrow="1">
-													<Typography variant="h5">{setup.players[1].name}</Typography>
-												</Box>
+										<Box display="flex" flexDirection="row" justifyContent="center" whiteSpace="space-around">
+											<Box flexGrow="1">
+												<Typography variant="h5">{setup.players[0].name}</Typography>
+											</Box>
+											<Box>
+												<Typography variant="h5">vs</Typography>
+											</Box>
+											<Box flexGrow="1">
+												<Typography variant="h5">{setup.players[1].name}</Typography>
 											</Box>
 										</Box>
 									</Paper>
 								</Box>
-							}
+							} */}
 						</Box>
 					</Grid>
 					{
@@ -311,7 +384,7 @@ export const Sparring = ({night, user, logged, logout, updateUser}) => {
 					}
 					<Grid item xs={12}>
 						{/* <Menu night={props.night} logged={props.logged} /> */}
-						<Menu logged={logged} night={night} logout={logout}/>
+						<Menu logged={logged} night={night} logout={logout} />
 					</Grid>
 				</Grid>
 			}
