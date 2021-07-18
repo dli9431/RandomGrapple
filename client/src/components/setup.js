@@ -247,7 +247,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 					
 					// form player obj
 					const playerRes = [...new Set([].concat(...baseArr.map((o, index) => { return (index > 12 ? o.values : []) })))];
-					console.log(baseArr);
+					
 					for (var j = 1; j < playerRes[0].length; j++) {
 						let temp = {};
 						temp.name = playerRes[0][j].split(" ")[0];

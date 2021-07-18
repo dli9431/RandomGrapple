@@ -94,7 +94,7 @@ app.use(passport.session());
 
 app.get('/api/auth/google',
 	passport.authenticate('google', { scope: scopes.join(" ") }),
-	function (req, res) { }
+	function (req, res) {	}
 );
 
 app.get('/api/auth/oauth2callback',

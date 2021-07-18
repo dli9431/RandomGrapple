@@ -3,7 +3,7 @@ import { Button, Grid, Paper, Box } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { Menu } from './menu/menu.js';
 import { useStyles } from './styles/styles.js';
-import { sparClick, /*tournClick,*/ timerClick } from './menu/navigation.js';
+import { sparClick, tournClick, timerClick } from './menu/navigation.js';
 
 export const Start = ({night, user, logged, logout}) => {
 	const classes = useStyles({ night: night });
@@ -21,15 +21,15 @@ export const Start = ({night, user, logged, logout}) => {
 							</Box>
 						</Paper>
 					</Grid>
-					{/* <Grid item xs={12} md={4}>
+					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-								<Button onClick={tournClick} variant="contained" fontSize="large" color={props.night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
+								<Button onClick={tournClick} variant="contained" fontSize="large" color={night ? 'secondary' : 'primary'} endIcon={<PlayArrowIcon />}>
 									Tournament Mode
 								</Button>
 							</Box>
 						</Paper>
-					</Grid> */}
+					</Grid>
 					<Grid item xs={12} md={4}>
 						<Paper className={classes.paper}>
 							<Box display="flex" justifyContent="center" flexDirection="column" height="100%">

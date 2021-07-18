@@ -14,7 +14,7 @@ import { Sparring } from './components/sparring';
 import { Tournament } from './components/tournament';
 import { Timer } from './components/timer';
 import { startClick } from './components/menu/navigation';
-import { GLogin } from './components/auth/login';
+// import { GLogin } from './components/auth/login';
 import { useLocation } from '@reach/router';
 
 function App() {
@@ -65,7 +65,9 @@ function App() {
 			if (location.pathname.indexOf('oauth2callback') > 0) {
 				loginFn();
 			}
-			loginFn(); // for testing purposes remove later
+			if (document.cookie.indexOf('connect.sid=')) {
+				loginFn();
+			}
 		}
 
 		return (
@@ -87,7 +89,7 @@ function App() {
 							:
 							<Box>
 								{/* <GLogin night={night} /> */}
-								<Button size="large" variant="contained" color={night ? 'secondary' : 'primary'} href="/api/auth/google" startIcon={<AccountCircleIcon />}>Login</Button>
+								<Button size="large" variant="contained" color={night ? 'secondary' : 'primary'} href={"/api/auth/google?view=" + location.pathname} startIcon={<AccountCircleIcon />}>Login</Button>
 							</Box>
 							// <Button variant="contained" color={night ? 'secondary' : 'primary'} onClick={loginFn} startIcon={<AccountCircleIcon />}>Login</Button>
 						}
