@@ -2,53 +2,68 @@ import React, { useState } from "react";
 import { TextField, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-///TODO: update this function so it works with player select
-export const calcHandicapText = (setup, usedPoints, player1, player2, gymAvgWeight, gymAvgExp) => {
-	// console.log(weightDif + " " + weightAdv + " " + expDif + " " + expAdv + " " + gymAvgWeight + " " + gymAvgExp);
-	// console.log(setup);
-	if (setup.mode === 0) {
+export const CalcHandicap = ({setup, usedPoints, player1, player2}) => {
+	console.log(player1);
+	console.log(player2);
+	console.log(setup.gymAvg);
+	// user imported sheet, can mix/match handicaps
+	if (Object.keys(setup.gymAvg).length > 0) {
 
 	} else {
-
+		// only calculate based on entered weight/xp
+		if (player1 !== null && player2 !== null) {
+			let text = calcHandicapText(setup, usedPoints, player1, player2);
+			return text;
+		}
 	}
-	return null;
-	// if (setup.setHandicaps === true) {
-	// 	weightDif = setup.players[0].weight - setup.players[1].weight;
-	// 	if (weightDif < 0) {
-	// 		weightDif *= -1;
-	// 		weightAdv = 1;
-	// 	}
-	// 	weightDif = Math.round((weightDif / setup.handicaps[0].amount));
-	// 	weightDif *= setup.handicaps[0].pts;
 
-	// 	expDif = ((setup.players[0].expYr * 12) + setup.players[0].expMonth) - ((setup.players[1].expYr * 12) + setup.players[1].expMonth);
-	// 	if (expDif < 0) {
-	// 		expDif *= -1;
-	// 		expAdv = 1;
-	// 	}
-	// 	expDif = Math.round((expDif / setup.handicaps[1].amount));
-	// 	expDif *= setup.handicaps[1].pts;
-	// }
-	// if (setup.setHandicaps === false) {
-	// 	return;
-	// }
-	// else {
-	// 	if (weightAdv > 0 && expAdv > 0) {
-	// 		return setup.players[0].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-	// 	}
-	// 	if (weightAdv === 0 && expAdv === 0) {
-	// 		return setup.players[1].name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-	// 	}
-	// 	if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
-	// 		return "No one has points to spend!";
-	// 	}
-	// 	if (weightDif > expDif) {
-	// 		return setup.players[expAdv].name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
-	// 	}
-	// 	if (expDif > weightDif) {
-	// 		return setup.players[weightAdv].name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
-	// 	}
-	// }
+	return null;
+}
+
+export const calcHandicapText = (setup, usedPoints, player1, player2) => {
+	let weightDif = 0;
+	let weightAdv = 0;
+	let expDif = 0;
+	let expAdv = 0;
+	if (setup.setHandicaps === true) {
+		weightDif = player1.weight - player2.weight;
+		if (weightDif < 0) {
+			weightDif *= -1;
+			weightAdv = 1;
+		}
+		weightDif = Math.round((weightDif / setup.handicaps[0].amount));
+		weightDif *= setup.handicaps[0].pts;
+
+		expDif = ((player1.expYr * 12) + player1.expMonth) - ((player2.expYr * 12) + player2.expMonth);
+		if (expDif < 0) {
+			expDif *= -1;
+			expAdv = 1;
+		}
+		expDif = Math.round((expDif / setup.handicaps[1].amount));
+		expDif *= setup.handicaps[1].pts;
+	}
+	if (setup.setHandicaps === false) {
+		return;
+	}
+	else {
+		if (weightAdv > 0 && expAdv > 0) {
+			return player1.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+		}
+		if (weightAdv === 0 && expAdv === 0) {
+			return player2.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+		}
+		if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
+			return "No one has points to spend!";
+		}
+		if (weightDif > expDif) {
+			return expAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend"
+				: player1.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
+		}
+		if (expDif > weightDif) {
+			return weightAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend"
+				: player1.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
+		}
+	}
 }
 
 export const PlayerSearchBox = ({ players, player, setPlayer, id }) => {

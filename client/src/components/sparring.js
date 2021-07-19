@@ -4,7 +4,7 @@ import { regStyles } from "./styles/styles";
 import { Menu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
-import { HandicapCheckList, calcHandicapText, PlayerSearchBox } from "./setup/setupPage";
+import { CalcHandicap, HandicapCheckList, calcHandicapText, PlayerSearchBox } from "./setup/setupPage";
 
 export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const classes = regStyles({ night: night });
@@ -46,26 +46,6 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
-	}
-
-	function calcHandicap() {
-		// let weightDif = 0;
-		// let expDif = 0;
-		// let weightAdv = 0;
-		// let expAdv = 0;
-
-		if (setup.mode === 0) { // sparring mode
-			if (setup.players.length >= 2) {
-				if (Object.keys(setup.gymAvg).length > 0) {
-					const txt = calcHandicapText(setup, usedPoints, 0, 0, 0, 0, setup.gymAvg.weight, setup.gymAvg.exp);
-					return txt;
-				} else {
-					const txt = calcHandicapText(setup, usedPoints, 0, 0, 0, 0, -1, -1);
-					return txt;
-				}
-			}
-			return null;
-		}
 	}
 
 	function checkedInfo(info) {
@@ -110,7 +90,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		setUsedPoints(0);
 		setFinished(false);
 	}
-
+	
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
@@ -137,12 +117,12 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 												<Box p={1} textAlign="left">
 													<Typography variant="h5">
 														{(player1 !== undefined && player1 !== null) && <span>{player1.name} </span>}
-														{((player1 !== undefined && player1 !== null) && player1.nickname.length > 0) && <span> "{player1.nickname}" </span>}
-														{((player1 !== undefined && player1 !== null) && player1.lName !== undefined && player1.lName.length > 0) && <span> {player1.lName} </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.nickname !== undefined && player1.nickname.length > 0)) && <span> "{player1.nickname}" </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.lName !== undefined && player1.lName !== undefined && player1.lName.length > 0)) && <span> {player1.lName} </span>}
 													</Typography>
 													<Typography variant="body1">
-														{(player1 !== undefined && player1 !== null) && <span>Handicap: {player1.handicap} | </span>}
-														{(player1 !== undefined && player1 !== null) && <span>Record: {player1.record} </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.handicap !== null && player1.handicap !== undefined)) && <span>Handicap: {player1.handicap} | </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.record !== null && player1.record !== undefined)) && <span>Record: {player1.record} </span>}
 													</Typography>
 												</Box>
 												<Box textAlign="right">
@@ -158,14 +138,14 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 										{(player2 !== undefined && player2 !== null) &&
 											<Grid item xs={12} sm={6} md={8}>
 												<Box p={1} textAlign="left">
-													<Typography variant="h5">
+												<Typography variant="h5">
 														{(player2 !== undefined && player2 !== null) && <span>{player2.name} </span>}
-														{((player2 !== undefined && player2 !== null) && player2.nickname.length > 0) && <span> "{player2.nickname}" </span>}
-														{((player2 !== undefined && player2 !== null) && player2.lName !== undefined && player2.lName.length > 0) && <span> {player2.lName} </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.nickname !== undefined && player2.nickname.length > 0)) && <span> "{player2.nickname}" </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.lName !== undefined && player2.lName !== undefined && player2.lName.length > 0)) && <span> {player2.lName} </span>}
 													</Typography>
 													<Typography variant="body1">
-														{(player2 !== undefined && player2 !== null) && <span>Handicap: {player2.handicap} | </span>}
-														{(player2 !== undefined && player2 !== null) && <span>Record: {player2.record} </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.handicap !== null && player2.handicap !== undefined)) && <span>Handicap: {player2.handicap} | </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.record !== null && player2.record !== undefined)) && <span>Record: {player2.record} </span>}
 													</Typography>
 												</Box>
 											</Grid>
@@ -198,7 +178,9 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 							<Box>
 								<Paper className={classes.paperHandicap}>
 									<Typography variant="h5">Handicaps</Typography>
-									<Box flexGrow="1" mb={1}>{() => calcHandicap()}</Box>
+									<Box flexGrow="1" mb={1}>
+										<CalcHandicap setup={setup} usedPoints={usedPoints} player1={player1} player2={player2} />
+									</Box>
 									{finished ?
 										<Box>
 											{finalPenalties.map((penalty, index) => { return (<Box key={index} mb={1}>{penalty}</Box>) })}
