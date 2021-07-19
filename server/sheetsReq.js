@@ -1,4 +1,35 @@
 module.exports = {
+	updatePlayers: function () {
+		// const init = {
+		// 	"data": [
+		// 		{
+		// 			"range": "Players!A14",
+		// 			"majorDimension": "ROWS",
+		// 			"values": [
+		// 				[
+		// 					"zz1",
+		// 					"yy1",
+		// 					-4,
+		// 					"0-0"
+		// 				],
+		// 				[
+		// 					"zz2",
+		// 					"yy2",
+		// 					-4,
+		// 					"0-0"
+		// 				],
+		// 				[
+		// 					"zz3",
+		// 					"yy3",
+		// 					-4,
+		// 					"0-0"
+		// 				]
+		// 			]
+		// 		}
+		// 	],
+		// 	"valueInputOption": "RAW"
+		// }
+	},
 	create: function () {
 		const init = {
 			resource: {
@@ -6,9 +37,9 @@ module.exports = {
 					title: "RandomGrapple[default]",
 					locale: "en_US",
 					timeZone: "America/Los_Angeles",
-				},				
+				},
 				sheets: [
-					{ 
+					{
 						properties: {
 							title: "Players",
 						},
@@ -43,7 +74,7 @@ module.exports = {
 							}
 						]
 					},
-					{ 
+					{
 						properties: {
 							title: "Gym Average",
 						},
@@ -111,7 +142,7 @@ module.exports = {
 							}
 						]
 					},
-					{ 
+					{
 						properties: {
 							title: "Handicaps",
 						},
@@ -224,7 +255,7 @@ module.exports = {
 							}
 						]
 					},
-					{ 
+					{
 						properties: {
 							title: "Penalties",
 						},
@@ -1293,7 +1324,7 @@ module.exports = {
 							}
 						]
 					},
-					{ 
+					{
 						properties: {
 							title: "Matches",
 						},
@@ -1337,5 +1368,5 @@ module.exports = {
 			}
 		}
 		return init;
-	}	
+	}
 }

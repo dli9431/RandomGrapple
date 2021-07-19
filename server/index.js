@@ -47,6 +47,7 @@ const scopes = [
 ];
 
 app.use(express.static(path.resolve(__dirname, '../client/build')));
+app.use(express.json());
 
 // app.use(function (req, res, next) {
 // 	res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
@@ -135,6 +136,23 @@ app.get('/api/getSheetInfo', async (req, res) => {
 		res.json(error);
 	}
 })
+
+app.post('/api/savePlayers', async (req, res) => {
+	try {
+		oauth2Client.credentials = { access_token: req.user.accessToken };
+		const update = await updatePlayers(oauth2Client, req.body);
+		if (update.status === 200) {
+			res.status(200);
+			res.json(update);
+		} else {
+			res.status(update.status);
+			res.json(update);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 
 app.post('/api/create', async (req, res) => {
 	try {
@@ -231,7 +249,6 @@ async function getSheet(auth) {
 			q: "name='RandomGrapple[default]'"
 		});
 
-
 		// if already created, return spreadsheet file info
 		if (response.status === 200 && response.data.files.length > 0) {
 			return response.data.files[0];
@@ -274,6 +291,22 @@ async function createSheet(auth) {
 				res.json(error);
 			}
 		}
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+async function updatePlayers(auth, info) {
+	try {
+		const sheets = google.sheets({ version: 'v4', auth });
+
+		const response = await sheets.spreadsheets.values.batchUpdate({
+			spreadsheetId: info.spreadsheetId,
+			requestBody: JSON.stringify(info.body),
+		});
+
+		const stat = {status: response.status, msg: response.statusText};
+		return stat;
 	} catch (err) {
 		console.error(err);
 	}

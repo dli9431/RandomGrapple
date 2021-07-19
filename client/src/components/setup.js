@@ -17,6 +17,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 	// player info
 	const [playerWeight, setPlayerWeight] = useState(0);
 	const [playerName, setPlayerName] = useState('');
+	const [playerNickname, setPlayerNickname] = useState('');
 	const [playerExpYr, setPlayerExpYr] = useState(0);
 	const [playerExpMonth, setPlayerExpMonth] = useState(0);
 
@@ -96,12 +97,14 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 	function addPlayer() {
 		setup.players.push({
 			name: playerName,
+			nickname: playerNickname,
 			weight: parseInt(playerWeight),
 			expYr: parseInt(playerExpYr),
 			expMonth: parseInt(playerExpMonth)
 		});
 		// reset form
 		setPlayerName('');
+		setPlayerNickname('');
 		setPlayerWeight(0);
 		setPlayerExpYr(0);
 		setPlayerExpMonth(0);
@@ -184,7 +187,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 				});
 
 				const data = await res.json();
-				
+
 				if (data.data.valueRanges.length > 0) {
 					const hW = parseInt(data.data.valueRanges[1].values[0][1]);
 					setHandicapWeight(hW);
@@ -242,12 +245,12 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 							}
 						}
 					}
-					
+
 					setup.listPenalties = importedPenaltiesArr;
-					
+
 					// form player obj
 					const playerRes = [...new Set([].concat(...baseArr.map((o, index) => { return (index > 12 ? o.values : []) })))];
-					
+
 					for (var j = 1; j < playerRes[0].length; j++) {
 						let temp = {};
 						temp.name = playerRes[0][j].split(" ")[0];
@@ -275,6 +278,85 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 					} else {
 						setRenderList(true);
 					}
+				}
+			}
+			catch (error) {
+				console.log(error);
+			}
+		} else {
+
+		}
+	}
+
+	function calcHandicapAvg(weight, expYr, expMonth) {
+		// compare to imported handicaps
+		let totalHandicap = 0;
+		let weightHandicap = ((weight - setup.gymAvg.weight) / setup.handicaps[0].amount) * setup.handicaps[0].pts;
+		let xpHandicap = ((((expYr * 12) + expMonth) - setup.gymAvg.exp) / setup.handicaps[1].amount) * setup.handicaps[1].pts;
+		weightHandicap *= -1;
+		xpHandicap *= -1;
+		totalHandicap += weightHandicap;
+		totalHandicap += xpHandicap;
+		return Math.round(totalHandicap);
+	}
+
+	function formatPlayers() {
+		for (var i = 0; i < setup.players.length; i++) {
+			if (setup.players[i].weight > 0) {
+				let name = setup.players[i].name;
+				if (setup.players[i].name.split(' ').length > 1) // split first/last name
+				{
+					setup.players[i].name = name.split(' ')[0];
+					setup.players[i].lName = name.split(' ')[1];
+				}
+			}
+		}
+	}
+
+	const savePlayers = async () => {
+		let data = [];
+		// find all added players
+		for (var i = 0; i < setup.players.length; i++) {
+			let tempArr = [];
+			if (setup.players[i].weight > 0) {
+				const handicap = calcHandicapAvg(setup.players[i].weight, setup.players[i].expYr, setup.players[i].expMonth);
+				tempArr.push(
+					setup.players[i].name,
+					setup.players[i].nickname,
+					handicap,
+					'0-0'
+				)
+				data.push(tempArr);
+			}
+		}
+		const range = "Players!A" + (setup.players.length - data.length + 2).toString();
+		const info = {
+			spreadsheetId: user.spreadsheetId,
+			body: {
+				valueInputOption: 'RAW',
+				data: {
+					range: range,
+					majorDimension: "ROWS",
+					values: data
+				}
+			}
+		}
+
+		if (user.spreadsheetId.length > 0) {
+			try {
+				const res = await fetch("/api/savePlayers", {
+					method: "POST",
+					body: JSON.stringify(info),
+					headers: {
+						"Content-Type": "application/json",
+						"Accept": "application/json"
+					}
+				});
+
+				const data = await res.json();
+				if (data.status === 200) {
+					// reformat player list
+					formatPlayers();
 				}
 			}
 			catch (error) {
@@ -365,16 +447,19 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 							<Grid item xs={12} sm={12} md={6} lg={4}>
 								<TextField value={playerName} onChange={(e) => { setPlayerName(e.target.value) }} label="Name" variant="outlined" fullWidth={true} />
 							</Grid>
+							<Grid item xs={12} sm={12} md={6} lg={4}>
+								<TextField value={playerNickname} onChange={(e) => { setPlayerNickname(e.target.value) }} label="Nickname (optional)" variant="outlined" fullWidth={true} />
+							</Grid>
 							<Grid item xs={4} sm={4} md={2} lg={1}>
 								<TextField type="number" step="10" value={playerWeight} onChange={(e) => { setPlayerWeight(e.target.value) }} label="Weight (lbs)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={4} sm={3} md={1} lg={1} align="left">
+							<Grid item xs={4} sm={3} md={2} lg={1} align="left">
 								<TextField type="number" step="1" value={playerExpYr} onChange={(e) => { setPlayerExpYr(e.target.value) }} label="Exp (years)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={4} sm={3} md={1} lg={1} align="left">
+							<Grid item xs={4} sm={3} md={2} lg={1} align="left">
 								<TextField type="number" step="1" value={playerExpMonth} onChange={(e) => { setPlayerExpMonth(e.target.value) }} label="Exp (months)" variant="outlined" fullWidth={true} />
 							</Grid>
-							<Grid item xs={12} sm={2} md={1} lg={1}>
+							<Grid item xs={12} sm={2} md={2} lg={1}>
 								<Button fullWidth={true} onClick={() => addPlayer()} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Add</Button>
 							</Grid>
 						</Grid>
@@ -382,6 +467,9 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 						<Grid container direction="row" justify="center">
 							{setup.players.map((p, index) => { return <Box key={index}>{p.name} <IconButton onClick={() => removePlayer(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton></Box> })}
 						</Grid>
+						{(setup.gymAvg !== null && setup.gymAvg !== undefined && Object.keys(setup.gymAvg).length > 0) &&
+							<Button onClick={() => savePlayers()} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Save</Button>
+						}
 					</Paper>
 				</Box>
 				<Box mb={2}>
