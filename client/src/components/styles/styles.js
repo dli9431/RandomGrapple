@@ -37,6 +37,16 @@ export const regStyles = makeStyles((theme) => ({
 		spacing: 8,
 		flexGrow: 1,
 	},
+	score: {
+		[theme.breakpoints.down('xs')]: {
+			flexDirection: 'column'
+		}
+	},
+	scoreNum: {
+		[theme.breakpoints.down('xs')]: {
+			order: -1
+		}
+	},
 	timer: {
 		fontSize: '6em',
 		[theme.breakpoints.up('sm')]: {

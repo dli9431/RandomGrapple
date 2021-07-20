@@ -468,7 +468,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 							{setup.players.map((p, index) => { return <Box key={index}>{p.name} <IconButton onClick={() => removePlayer(index)}><DeleteForeverIcon color={night ? "secondary" : "primary"} /></IconButton></Box> })}
 						</Grid>
 						{(setup.gymAvg !== null && setup.gymAvg !== undefined && Object.keys(setup.gymAvg).length > 0) &&
-							<Button onClick={() => savePlayers()} variant="outlined" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Save</Button>
+							<Button onClick={() => savePlayers()} variant="contained" className={classes.inputAdd} color={night ? "secondary" : "primary"} width="100%">Save</Button>
 						}
 					</Paper>
 				</Box>

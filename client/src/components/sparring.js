@@ -4,7 +4,7 @@ import { regStyles } from "./styles/styles";
 import { Menu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
-import { CalcHandicap, HandicapCheckList, calcHandicapText, PlayerSearchBox } from "./setup/setupPage";
+import { CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
 
 export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const classes = regStyles({ night: night });
@@ -16,6 +16,20 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		handicaps: [],
 		listPenalties: [],
 		gymAvg: {}
+	});
+	const [match, setMatch] = useState({
+		players: {
+			p1: {},
+			p2: {}
+		},
+		winner: '',
+		winMethod: '',
+		initTime: 0, // time in seconds
+		endTime: 0, // match end time
+		p1Points: 0,
+		p2Points: 0,
+		penalties: [],
+		handicapDiff: 0
 	});
 
 	const [usedPoints, setUsedPoints] = useState(0);
@@ -46,6 +60,10 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
+	}
+
+	const matchInfo = (info) => {
+		setMatch({ ...match, info});
 	}
 
 	function checkedInfo(info) {
@@ -101,7 +119,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 						<Box display="flex" flexDirection="column">
 							<Box mb={2}>
 								<Paper className={classes.paper}>
-									<Timer night={night} only={false} />
+									<Timer night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
 								</Paper>
 							</Box>
 							<Box>

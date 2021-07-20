@@ -1,17 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Grid, Button, Typography, Box, TextField } from '@material-ui/core';
+import { Paper, Grid, Button, IconButton, Typography, Box, TextField } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
-import { useStyles } from './styles/styles';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+import { regStyles } from './styles/styles';
 import { Menu } from './menu/menu';
 
-export const Timer = ({ night, user, logged, logout, only }) => {
-	const classes = useStyles({ night: night });
+export const MatchPoints = ({ night, points, setPoints }) => {
+	function add() {
+
+	}
+	function remove() {
+
+	}
+
+	return (
+		<Box m={0} p={0}>
+			<Box m={0} p={0}>
+				<IconButton onClick={(e) => add()} size="small" color={night ? "secondary" : "primary"}>
+					<AddIcon fontSize="small" />
+				</IconButton>
+				Points
+				<IconButton onClick={(e) => remove()} size="small" color={night ? "secondary" : "primary"}>
+					<RemoveIcon fontSize="small" />
+				</IconButton>
+			</Box>
+			<Box m={0} p={0}>
+				<IconButton onClick={(e) => add()} size="small" color={night ? "secondary" : "primary"}>
+					<AddIcon fontSize="small" />
+				</IconButton>
+				Adv
+				<IconButton onClick={(e) => remove()} size="small" color={night ? "secondary" : "primary"}>
+					<RemoveIcon fontSize="small" />
+				</IconButton>
+			</Box>
+			<Box m={0} p={0}>
+				<IconButton onClick={(e) => add()} size="small" color={night ? "secondary" : "primary"}>
+					<AddIcon fontSize="small" />
+				</IconButton>
+				Penalty
+				<IconButton onClick={(e) => remove()} size="small" color={night ? "secondary" : "primary"}>
+					<RemoveIcon fontSize="small" />
+				</IconButton>
+			</Box>
+		</Box>
+	);
+}
+
+export const Timer = ({ night, user, logged, logout, only, player1, player2, match, matchInfo }) => {
+	const classes = regStyles({ night: night });
 	const [running, setRunning] = useState(false);
 	const [mins, setMins] = useState(0);
 	const [secs, setSecs] = useState(0);
 	const [timeLeft, setTimeLeft] = useState(0);
+	const [p1, setP1] = useState({
+		points: [],
+		adv: [],
+		penalty: []
+	});
+	const [p2, setP2] = useState({
+		points: [],
+		adv: [],
+		penalty: []
+	});
+
+	if (player1 !== null && player1 !== undefined) {
+		match.players.p1 = player1;
+	}
+	if (player2 !== null && player2 !== undefined) {
+		match.players.p2 = player2;
+	}
 
 	function str_pad_left(string, pad, length) {
 		return (new Array(length + 1).join(pad) + string).slice(-length);
@@ -83,6 +143,50 @@ export const Timer = ({ night, user, logged, logout, only }) => {
 						<Box><Button onClick={() => reset()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<ReplayIcon />}>Reset</Button></Box>
 					}
 					<Box ml={1}><Button onClick={() => stopTimer()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<StopIcon />}>Stop</Button></Box>
+				</Box>
+				<Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
+					{(player1 !== null && player1 !== undefined) &&
+						<Box display="flex" flexDirection="row" className={classes.score}>
+							<Box>
+								{player1.name}
+								<MatchPoints night={night} />
+							</Box>
+							<Box className={classes.scoreNum} display="flex" flexDirection="row" justifyContent="center" mr={2}>
+							<Box alignSelf="center" p={1}>
+									<Typography variant="h1">0</Typography>
+								</Box>
+								<Box display="flex" flexDirection="column" justifyContent="center">
+									<Box bgcolor="green" p={1}>
+										<Typography variant="h5">0</Typography>
+									</Box>
+									<Box bgcolor="red" p={1}>
+										<Typography variant="h5">0</Typography>
+									</Box>
+								</Box>
+							</Box>
+						</Box>
+					}
+					{(player2 !== null && player2 !== undefined) &&
+						<Box display="flex" flexDirection="row" className={classes.score}>
+							<Box className={classes.scoreNum} display="flex" flexDirection="row" justifyContent="center" mr={2}>
+								<Box alignSelf="center" p={1}>
+									<Typography variant="h1">0</Typography>
+								</Box>
+								<Box display="flex" flexDirection="column" justifyContent="center">
+									<Box bgcolor="green" p={1}>
+										<Typography variant="h5">0</Typography>
+									</Box>
+									<Box bgcolor="red" p={1}>
+										<Typography variant="h5">0</Typography>
+									</Box>
+								</Box>
+							</Box>
+							<Box>
+								{player2.name}
+								<MatchPoints night={night} />
+							</Box>
+						</Box>
+					}
 				</Box>
 			</Box>
 		)
