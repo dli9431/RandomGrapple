@@ -7,7 +7,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import { homeClick, startClick } from './navigation';
 // import { GLogin } from '../auth/login';
 
-export const Menu = ({night, user, logged, logout}) => {
+export const ButtonMenu = ({night, user, logged, logout}) => {
 	return (
 			<Box display="flex" flexDirection="row" flexWrap="wrap" justifyContent="center">
 				<Box p={1}>

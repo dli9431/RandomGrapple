@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Grid, Paper, Typography, Box } from "@material-ui/core";
 import { regStyles } from "./styles/styles";
-import { Menu } from "./menu/menu";
+import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
 import { CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
@@ -218,7 +218,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 					}
 					<Grid item xs={12}>
 						{/* <Menu night={props.night} logged={props.logged} /> */}
-						<Menu logged={logged} night={night} logout={logout} />
+						<ButtonMenu logged={logged} night={night} logout={logout} />
 					</Grid>
 				</Grid>
 			}

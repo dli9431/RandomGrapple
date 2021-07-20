@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { TextField, Button, Grid, Paper, Typography, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { regStyles } from "./styles/styles";
-import { Menu } from "./menu/menu";
+import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
 import { HandicapCheckList, calcHandicapText } from "./setup/setupPage";
@@ -56,7 +56,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 			<Box display="flex" flexDirection="row" justifyContent="center" height="90vh" textAlign="center">
 				Tournament Mode
 			</Box>
-			<Menu logged={logged} night={night} logout={logout} />
+			<ButtonMenu logged={logged} night={night} logout={logout} />
 		</Box>
 	);
 }

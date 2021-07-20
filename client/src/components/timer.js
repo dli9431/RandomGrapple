@@ -1,47 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Grid, Button, IconButton, Typography, Box, TextField } from '@material-ui/core';
+import { Menu, MenuItem, Paper, Grid, Button, IconButton, Typography, Box, TextField } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import { regStyles } from './styles/styles';
-import { Menu } from './menu/menu';
+import { ButtonMenu } from './menu/menu';
 
-export const MatchPoints = ({ night, points, setPoints }) => {
-	function add() {
+export const MatchPoints = ({ night, matchScore, player, time }) => {
+	const [anchorEl, setAnchorEl] = useState(null);
+	const [removeAnchorEl, setRemoveAnchorEl] = useState(null);
 
+	function add(points, adv, penalty) {
+		if (points > 0) {
+			const temp = { time: time, points: points };
+			player.points.push(temp);
+		}
+		if (adv > 0) {
+			const temp = { time: time, adv: adv };
+			player.adv.push(temp);
+		}
+		if (penalty > 0) {
+			const temp = { time: time, penalty: penalty };
+			player.penalty.push(temp);
+		}
+		matchScore(player);
 	}
-	function remove() {
+	function remove(points, adv, penalty) {
+		if (points > 0) {
+			for (var i = player.points.length - 1; i >= 0; i--) {
+				if (player.points[i].points === points) {
+					player.points.splice(i, 1);
+				}
+			}
+		}
+		if (adv > 0) {
+			for (var j = player.adv.length - 1; j >= 0; j--) {
+				if (player.adv[j].adv === adv) {
+					player.adv.splice(j, 1);
+				}
+			}
+		}
+		if (penalty > 0) {
+			for (var k = player.penalty.length - 1; k >= 0; k--) {
+				if (player.penalty[k].penalty === penalty) {
+					player.penalty.splice(k, 1);
+				}
+			}
+		}
+		matchScore(player);
+	}
 
+	const pointsClick = (e) => {
+		setAnchorEl(e.currentTarget);
+	}
+
+	const pointsClose = (pts) => {
+		setAnchorEl(null);
+		if (pts > 0) {
+			add(pts, 0, 0);
+		}
+	}
+
+	const removeClick = (e) => {
+		setRemoveAnchorEl(e.currentTarget);
+	}
+
+	const removeClose = (pts) => {
+		setRemoveAnchorEl(null);
+		if (pts > 0) {
+			remove(pts, 0, 0);
+		}
 	}
 
 	return (
 		<Box m={0} p={0}>
 			<Box m={0} p={0}>
-				<IconButton onClick={(e) => add()} size="small" color={night ? "secondary" : "primary"}>
+				<IconButton onClick={(e) => pointsClick(e)} size="small" color={night ? "secondary" : "primary"}>
 					<AddIcon fontSize="small" />
 				</IconButton>
+				<Menu
+					id="add-points-menu"
+					anchorEl={anchorEl}
+					keepMounted
+					open={Boolean(anchorEl)}
+					onClose={pointsClose}
+				>
+					<MenuItem onClick={() => pointsClose(2)}>+2</MenuItem>
+					<MenuItem onClick={() => pointsClose(3)}>+3</MenuItem>
+					<MenuItem onClick={() => pointsClose(4)}>+4</MenuItem>
+				</Menu>
 				Points
-				<IconButton onClick={(e) => remove()} size="small" color={night ? "secondary" : "primary"}>
+				<IconButton onClick={(e) => removeClick(e)} size="small" color={night ? "secondary" : "primary"}>
 					<RemoveIcon fontSize="small" />
 				</IconButton>
+				<Menu
+					id="remove-points-menu"
+					anchorEl={removeAnchorEl}
+					keepMounted
+					open={Boolean(removeAnchorEl)}
+					onClose={removeClose}
+				>
+					<MenuItem onClick={() => removeClose(2)}>-2</MenuItem>
+					<MenuItem onClick={() => removeClose(3)}>-3</MenuItem>
+					<MenuItem onClick={() => removeClose(4)}>-4</MenuItem>
+				</Menu>
 			</Box>
 			<Box m={0} p={0}>
-				<IconButton onClick={(e) => add()} size="small" color={night ? "secondary" : "primary"}>
+				<IconButton onClick={(e) => add(0, 1, 0)} size="small" color={night ? "secondary" : "primary"}>
 					<AddIcon fontSize="small" />
 				</IconButton>
 				Adv
-				<IconButton onClick={(e) => remove()} size="small" color={night ? "secondary" : "primary"}>
+				<IconButton onClick={(e) => remove(0, 1, 0)} size="small" color={night ? "secondary" : "primary"}>
 					<RemoveIcon fontSize="small" />
 				</IconButton>
 			</Box>
 			<Box m={0} p={0}>
-				<IconButton onClick={(e) => add()} size="small" color={night ? "secondary" : "primary"}>
+				<IconButton onClick={(e) => add(0, 0, 1)} size="small" color={night ? "secondary" : "primary"}>
 					<AddIcon fontSize="small" />
 				</IconButton>
 				Penalty
-				<IconButton onClick={(e) => remove()} size="small" color={night ? "secondary" : "primary"}>
+				<IconButton onClick={(e) => remove(0, 0, 1)} size="small" color={night ? "secondary" : "primary"}>
 					<RemoveIcon fontSize="small" />
 				</IconButton>
 			</Box>
@@ -56,11 +136,13 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 	const [secs, setSecs] = useState(0);
 	const [timeLeft, setTimeLeft] = useState(0);
 	const [p1, setP1] = useState({
+		player: 1,
 		points: [],
 		adv: [],
 		penalty: []
 	});
 	const [p2, setP2] = useState({
+		player: 2,
 		points: [],
 		adv: [],
 		penalty: []
@@ -71,6 +153,16 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 	}
 	if (player2 !== null && player2 !== undefined) {
 		match.players.p2 = player2;
+	}
+
+	function matchScore(score) {
+		if (score.player === 1) {
+			setP1({ ...p1, score });
+			console.log(p1);
+		} else {
+			setP2({ ...p2, score });
+			console.log(p2);
+		}
 	}
 
 	function str_pad_left(string, pad, length) {
@@ -149,10 +241,10 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 						<Box display="flex" flexDirection="row" className={classes.score}>
 							<Box>
 								{player1.name}
-								<MatchPoints night={night} />
+								<MatchPoints night={night} matchScore={matchScore} player={p1} time={timeLeft} />
 							</Box>
 							<Box className={classes.scoreNum} display="flex" flexDirection="row" justifyContent="center" mr={2}>
-							<Box alignSelf="center" p={1}>
+								<Box alignSelf="center" p={1}>
 									<Typography variant="h1">0</Typography>
 								</Box>
 								<Box display="flex" flexDirection="column" justifyContent="center">
@@ -183,7 +275,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 							</Box>
 							<Box>
 								{player2.name}
-								<MatchPoints night={night} />
+								<MatchPoints night={night} matchScore={matchScore} player={p2} time={timeLeft} />
 							</Box>
 						</Box>
 					}
@@ -219,7 +311,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 						</Box>
 					</Grid>
 					<Grid item xs={12}>
-						<Menu logged={logged} night={night} logout={logout} />
+						<ButtonMenu logged={logged} night={night} logout={logout} />
 					</Grid>
 				</Grid>
 			</Box>

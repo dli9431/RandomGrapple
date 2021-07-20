@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormControlLabel, Checkbox, IconButton, Grid, Paper, Button, TextField, Typography, Box, } from '@material-ui/core';
 import { regStyles } from './styles/styles';
-import { Menu } from './menu/menu';
+import { ButtonMenu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { defaultHandicaps, defaultPenalties } from './setup/setupVars';
 import { Category } from './setup/category';
@@ -536,7 +536,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 				</Box>
 			</form>
 			<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => { setup.isSet = true; setupInfo(setup) }}>Next</Button>
-			<Menu night={night} logged={logged} logout={logout} />
+			<ButtonMenu night={night} logged={logged} logout={logout} />
 		</Box >
 	);
 }

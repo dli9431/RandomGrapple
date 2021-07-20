@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Grid, Paper, Box } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import { Menu } from './menu/menu.js';
+import { ButtonMenu } from './menu/menu.js';
 import { useStyles } from './styles/styles.js';
 import { sparClick, tournClick, timerClick } from './menu/navigation.js';
 
@@ -41,7 +41,7 @@ export const Start = ({night, user, logged, logout}) => {
 					</Grid>
 				</Grid>
 			</Box>
-			<Menu logged={logged} night={night} logout={logout}/>
+			<ButtonMenu logged={logged} night={night} logout={logout}/>
 		</Box>
 	);
 }
