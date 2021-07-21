@@ -153,7 +153,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 		penalty: 0
 	})
 	const [finishMethod, setFinishMethod] = useState('');
-	const [winner, setWinner] = useState('');
+	const [winner, setWinner] = useState(null);
 
 	if (player1 !== null && player1 !== undefined) {
 		match.players.p1 = player1;
