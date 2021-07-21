@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { TextField, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-export const CalcHandicap = ({setup, usedPoints, player1, player2}) => {
-	console.log(player1);
-	console.log(player2);
-	console.log(setup.gymAvg);
+export const CalcHandicap = ({ setup, usedPoints, player1, player2 }) => {
+	// console.log(player1);
+	// console.log(player2);
+	// console.log(setup.gymAvg);
 	// user imported sheet, can mix/match handicaps
 	if (Object.keys(setup.gymAvg).length > 0) {
 
@@ -67,17 +67,41 @@ export const calcHandicapText = (setup, usedPoints, player1, player2) => {
 }
 
 export const PlayerSearchBox = ({ players, player, setPlayer, id }) => {
-	return (
-		<Autocomplete
-			id={("playersearch" + id)}
-			options={players}
-			getOptionLabel={(option) => option.name}
-			// style={{ width: 300 }}
-			value={player}
-			onChange={(ev, newVal) => { setPlayer(newVal); }}
-			renderInput={(params) => <TextField {...params} label={id === 1 ? "Player 1" : "Player 2"} variant="outlined" />}
-		/>
-	);
+	if (id > 0) {
+		return (
+			<Autocomplete
+				id={("playersearch" + id)}
+				options={players}
+				getOptionLabel={(option) => option.name}
+				// style={{ width: 300 }}
+				value={player}
+				onChange={(ev, newVal) => { setPlayer(newVal); }}
+				renderInput={(params) => <TextField {...params} label={id === 1 ? "Player 1" : "Player 2"} variant="outlined" />}
+			/>
+		);
+	} else {
+		let playerArr = [];
+		if (players.p1.name.length > 0) {
+			let temp = '';
+			temp = players.p1.lName.length > 0 ? players.p1.name + ' ' + players.p1.lName : players.p1.name;
+			playerArr.push(temp);
+			temp = players.p2.lName.length > 0 ? players.p2.name + ' ' + players.p2.lName : players.p2.name;
+			playerArr.push(temp);
+		}
+		
+		return (
+			<Autocomplete
+				size="small"
+				id={("playerselect")}
+				options={playerArr}
+				getOptionLabel={(option) => option}
+				// style={{ width: 300 }}
+				value={player}
+				onChange={(ev, newVal) => { setPlayer(newVal); }}
+				renderInput={(params) => <TextField {...params} label={"Winner"} variant="outlined" />}
+			/>
+		);
+	}
 }
 
 export const HandicapCheckList = ({ checkedInfo, night, penalties, formInfo }) => {

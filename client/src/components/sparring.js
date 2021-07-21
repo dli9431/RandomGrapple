@@ -26,8 +26,8 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		winMethod: '',
 		initTime: 0, // time in seconds
 		endTime: 0, // match end time
-		p1Points: 0,
-		p2Points: 0,
+		p1Score: {},
+		p2Score: {},
 		penalties: [],
 		handicapDiff: 0
 	});
@@ -64,6 +64,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const matchInfo = (info) => {
 		setMatch({ ...match, info});
+		console.log(match);
 	}
 
 	function checkedInfo(info) {
@@ -100,6 +101,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		}
 		setFinished(true);
 		setFinalPenalties(p);
+		match.penalties = p;
 	}
 
 	function resetPenalties() {

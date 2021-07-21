@@ -5,8 +5,10 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import StopIcon from '@material-ui/icons/Stop';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import DoneIcon from '@material-ui/icons/Done';
 import { regStyles } from './styles/styles';
 import { ButtonMenu } from './menu/menu';
+import { PlayerSearchBox } from './setup/setupPage';
 
 export const MatchPoints = ({ night, matchScore, player, time }) => {
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -147,6 +149,18 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 		adv: [],
 		penalty: []
 	});
+	const [displayP1, setDisplayP1] = useState({
+		points: 0,
+		adv: 0,
+		penalty: 0
+	});
+	const [displayP2, setDisplayP2] = useState({
+		points: 0,
+		adv: 0,
+		penalty: 0
+	})
+	const [finishMethod, setFinishMethod] = useState('');
+	const [winner, setWinner] = useState('');
 
 	if (player1 !== null && player1 !== undefined) {
 		match.players.p1 = player1;
@@ -155,13 +169,51 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 		match.players.p2 = player2;
 	}
 
+	function tally(player, pointsType) {
+		let temp = 0;
+		switch (pointsType) {
+			case 'points':
+				if (player.points.length > 0) {
+					for (var i = 0; i < player.points.length; i++) {
+						temp += player.points[i].points;
+					}
+				}
+				break;
+			case 'adv':
+				if (player.adv.length > 0) {
+					for (var j = 0; j < player.adv.length; j++) {
+						temp += player.adv[j].adv;
+					}
+				}
+				break;
+			case 'penalty':
+				if (player.penalty.length > 0) {
+					for (var k = 0; k < player.penalty.length; k++) {
+						temp += player.penalty[k].penalty;
+					}
+				}
+				break;
+			default:
+				break;
+		}
+		return temp;
+	}
+
 	function matchScore(score) {
 		if (score.player === 1) {
 			setP1({ ...p1, score });
-			console.log(p1);
+			const ppts = tally(p1, 'points');
+			const padv = tally(p1, 'adv');
+			const ppen = tally(p1, 'penalty');
+			const showPts = { points: ppts, adv: padv, penalty: ppen };
+			setDisplayP1(showPts);
 		} else {
 			setP2({ ...p2, score });
-			console.log(p2);
+			const ppts = tally(p2, 'points');
+			const padv = tally(p2, 'adv');
+			const ppen = tally(p2, 'penalty');
+			const showPts = { points: ppts, adv: padv, penalty: ppen };
+			setDisplayP2(showPts);
 		}
 	}
 
@@ -183,6 +235,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 	}, [timeLeft, running]);
 
 	function runTimer() {
+		match.initTime = (mins * 60) + secs;
 		if (timeLeft > 0) { // restart
 			setRunning(true);
 		} else {
@@ -203,8 +256,8 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 		setRunning(true);
 	}
 
-	function parseTimeInputs(e, mins) {
-		if (mins) {
+	function parseTimeInputs(e, minsBool) {
+		if (minsBool) {
 			if (e.target.value.length === 0) {
 				setMins(0);
 			} else {
@@ -217,6 +270,15 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 				setSecs(parseInt(e.target.value))
 			}
 		}
+	}
+
+	function finishMatch() {
+		match.endTime = timeLeft;
+		match.winner = winner;
+		match.winMethod = finishMethod;
+		match.p1Score = p1;
+		match.p2Score = p2;
+		matchInfo(match);
 	}
 
 	if (only === false) {
@@ -245,14 +307,14 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 							</Box>
 							<Box className={classes.scoreNum} display="flex" flexDirection="row" justifyContent="center" mr={2}>
 								<Box alignSelf="center" p={1}>
-									<Typography variant="h1">0</Typography>
+									<Typography variant="h1">{displayP1.points}</Typography>
 								</Box>
 								<Box display="flex" flexDirection="column" justifyContent="center">
 									<Box bgcolor="green" p={1}>
-										<Typography variant="h5">0</Typography>
+										<Typography variant="h5">{displayP1.adv}</Typography>
 									</Box>
 									<Box bgcolor="red" p={1}>
-										<Typography variant="h5">0</Typography>
+										<Typography variant="h5">{displayP1.penalty}</Typography>
 									</Box>
 								</Box>
 							</Box>
@@ -262,14 +324,14 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 						<Box display="flex" flexDirection="row" className={classes.score}>
 							<Box className={classes.scoreNum} display="flex" flexDirection="row" justifyContent="center" mr={2}>
 								<Box alignSelf="center" p={1}>
-									<Typography variant="h1">0</Typography>
+									<Typography variant="h1">{displayP2.points}</Typography>
 								</Box>
 								<Box display="flex" flexDirection="column" justifyContent="center">
 									<Box bgcolor="green" p={1}>
-										<Typography variant="h5">0</Typography>
+										<Typography variant="h5">{displayP2.adv}</Typography>
 									</Box>
 									<Box bgcolor="red" p={1}>
-										<Typography variant="h5">0</Typography>
+										<Typography variant="h5">{displayP2.penalty}</Typography>
 									</Box>
 								</Box>
 							</Box>
@@ -280,6 +342,22 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 						</Box>
 					}
 				</Box>
+				{
+					(player1 !== null && player1 !== undefined && player2 !== null && player2 !== undefined) &&
+					<Box mt={3}>
+						<Grid container spacing={1} direction="row" justify="center" alignItems="flex-start">
+							<Grid item xs={12} sm={6} md={5}>
+								<PlayerSearchBox players={match.players} player={winner} setPlayer={setWinner} />
+							</Grid>
+							<Grid item xs={12} sm={6} md={5}>
+								<TextField fullWidth={true} size="small" value={finishMethod} onChange={(e) => setFinishMethod(e.target.value)} label="Win method" variant="outlined" />
+							</Grid>
+							<Grid item xs={12} sm={6} md={2}>
+								<Button onClick={() => finishMatch()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<DoneIcon />}>Finish</Button>
+							</Grid>
+						</Grid>
+					</Box>
+				}
 			</Box>
 		)
 	} else {
