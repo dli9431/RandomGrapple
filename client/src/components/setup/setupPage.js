@@ -2,6 +2,21 @@ import React, { useState } from "react";
 import { TextField, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
+export const defaultMatch = {
+	players: {
+		p1: {},
+		p2: {}
+	},
+	winner: '',
+	winMethod: '',
+	initTime: 0, // time in seconds
+	endTime: 0, // match end time
+	p1Score: {},
+	p2Score: {},
+	penalties: [],
+	handicapDiff: 0
+}
+
 export const calcHandicap = (player, setup) => {
 	let weightHandicap = ((player.weight - setup.gymAvg.weight) / setup.handicaps[0].amount) * setup.handicaps[0].pts;
 	let expHandicap = (((player.expYr * 12 + player.expMonth) - setup.gymAvg.exp) / setup.handicaps[1].amount) * setup.handicaps[1].pts;
@@ -106,7 +121,7 @@ export const calcHandicapText = (setup, usedPoints, player1, player2) => {
 	}
 }
 
-export const PlayerSearchBox = ({ players, player, setPlayer, id, setup }) => {
+export const PlayerSearchBox = ({ fullReset, players, player, setPlayer, id, setup }) => {
 	if (id !== undefined) {
 		if (id > 0) {
 			if (player !== null) {
@@ -122,7 +137,7 @@ export const PlayerSearchBox = ({ players, player, setPlayer, id, setup }) => {
 					getOptionLabel={(option) => option.name}
 					// style={{ width: 300 }}
 					value={player}
-					onChange={(ev, newVal) => { setPlayer(newVal); }}
+					onChange={(ev, newVal) => { setPlayer(newVal); fullReset(true); }}
 					renderInput={(params) => <TextField {...params} label={id === 1 ? "Player 1" : "Player 2"} variant="outlined" />}
 				/>
 			);

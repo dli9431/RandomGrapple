@@ -22,7 +22,7 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 		if (adv > 0) {
 			const temp = { time: time, adv: adv };
 			player.adv.push(temp);
-			
+
 		}
 		if (penalty > 0) {
 			const temp = { time: time, penalty: penalty };

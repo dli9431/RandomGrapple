@@ -4,7 +4,7 @@ import { regStyles } from "./styles/styles";
 import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
-import { CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
+import { defaultMatch, CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
 
 export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const classes = regStyles({ night: night });
@@ -17,27 +17,14 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		listPenalties: [],
 		gymAvg: {}
 	});
-	const [match, setMatch] = useState({
-		players: {
-			p1: {},
-			p2: {}
-		},
-		winner: '',
-		winMethod: '',
-		initTime: 0, // time in seconds
-		endTime: 0, // match end time
-		p1Score: {},
-		p2Score: {},
-		penalties: [],
-		handicapDiff: 0
-	});
-
+	const [match, setMatch] = useState(defaultMatch);
 	const [usedPoints, setUsedPoints] = useState(0);
 	const [formInfo, setFormInfo] = useState([]);
 	const [finished, setFinished] = useState(false);
 	const [finalPenalties, setFinalPenalties] = useState([]);
 	const [player1, setPlayer1] = useState(null);
 	const [player2, setPlayer2] = useState(null);
+	const [save, setSave] = useState(false);
 
 	useEffect(() => {
 		function init() {
@@ -62,9 +49,12 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		setSetup({ ...setup, info });
 	}
 
-	const matchInfo = (info) => {
-		setMatch({ ...match, info});
+	const matchInfo = (info, save) => {
+		setMatch(info);
+		// setMatch({ ...match, info });
 		console.log(match);
+		// save to sheets
+		setSave(true);
 	}
 
 	function checkedInfo(info) {
@@ -110,7 +100,13 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		setUsedPoints(0);
 		setFinished(false);
 	}
-	
+
+	function fullReset() {
+		setMatch(defaultMatch);
+		resetPenalties();
+		setSave(false);
+	}
+
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
@@ -122,6 +118,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 							<Box mb={2}>
 								<Paper className={classes.paper}>
 									<Timer night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
+									{save && <Box>Match saved!</Box>}
 								</Paper>
 							</Box>
 							<Box>
@@ -129,7 +126,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 									<Grid container direction="row" alignItems="flex-start">
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox players={setup.players} player={player1} setPlayer={setPlayer1} id={1} setup={setup} />
+												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player1} setPlayer={setPlayer1} id={1} setup={setup} />
 											</Box>
 										</Grid>
 										{(player1 !== undefined && player1 !== null) &&
@@ -152,13 +149,13 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 										}
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox players={setup.players} player={player2} setPlayer={setPlayer2} id={2} setup={setup} />
+												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player2} setPlayer={setPlayer2} id={2} setup={setup} />
 											</Box>
 										</Grid>
 										{(player2 !== undefined && player2 !== null) &&
 											<Grid item xs={12} sm={6} md={8}>
 												<Box p={1} textAlign="left">
-												<Typography variant="h5">
+													<Typography variant="h5">
 														{(player2 !== undefined && player2 !== null) && <span>{player2.name} </span>}
 														{((player2 !== undefined && player2 !== null) && (player2.nickname !== undefined && player2.nickname.length > 0)) && <span> "{player2.nickname}" </span>}
 														{((player2 !== undefined && player2 !== null) && (player2.lName !== undefined && player2.lName !== undefined && player2.lName.length > 0)) && <span> {player2.lName} </span>}
