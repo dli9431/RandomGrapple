@@ -126,6 +126,7 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 
 export const Timer = ({ night, user, logged, logout, only, player1, player2, match, matchInfo }) => {
 	const classes = regStyles({ night: night });
+	const [alarm, setAlarm] = useState(false);
 	const [running, setRunning] = useState(false);
 	const [mins, setMins] = useState(0);
 	const [secs, setSecs] = useState(0);
@@ -216,19 +217,30 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 	var finalTime = str_pad_left(Math.floor(timeLeft / 60), '0', 2) + ':' + str_pad_left(timeLeft - Math.floor(timeLeft / 60) * 60, '0', 2);
 
 	useEffect(() => {
+		function play() {
+			let buzz1 = new Audio('/buzz1.mp3');
+			buzz1.loop = true;
+			buzz1.play();
+			setTimeout(() => {
+				buzz1.pause();
+			}, 1500)
+		}
 		if (running) {
 			const timer = setInterval(() => {
 				setTimeLeft(timeLeft - 1);
 			}, 1000);
 			if (timeLeft === 0) {
 				setRunning(false);
+				play();
 			}
 			return () => clearInterval(timer);
 		}
 	}, [timeLeft, running]);
 
 	function runTimer() {
-		match.initTime = (mins * 60) + secs;
+		if (match !== null && match !== undefined) {
+			match.initTime = (mins * 60) + secs;
+		}
 		if (timeLeft > 0) { // restart
 			setRunning(true);
 		} else {
