@@ -64,6 +64,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const matchInfo = (info) => {
 		setMatch({ ...match, info});
+		console.log(match);
 	}
 
 	function checkedInfo(info) {
@@ -128,7 +129,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 									<Grid container direction="row" alignItems="flex-start">
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox players={setup.players} player={player1} setPlayer={setPlayer1} id={1} />
+												<PlayerSearchBox players={setup.players} player={player1} setPlayer={setPlayer1} id={1} setup={setup} />
 											</Box>
 										</Grid>
 										{(player1 !== undefined && player1 !== null) &&
@@ -151,7 +152,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 										}
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox players={setup.players} player={player2} setPlayer={setPlayer2} id={2} />
+												<PlayerSearchBox players={setup.players} player={player2} setPlayer={setPlayer2} id={2} setup={setup} />
 											</Box>
 										</Grid>
 										{(player2 !== undefined && player2 !== null) &&

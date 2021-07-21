@@ -2,13 +2,33 @@ import React, { useState } from "react";
 import { TextField, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
+export const calcHandicap = (player, setup) => {
+	let weightHandicap = ((player.weight - setup.gymAvg.weight) / setup.handicaps[0].amount) * setup.handicaps[0].pts;
+	let expHandicap = (((player.expYr * 12 + player.expMonth) - setup.gymAvg.exp) / setup.handicaps[1].amount) * setup.handicaps[1].pts;
+	weightHandicap *= -1;
+	expHandicap *= -1;
+	let handicap = Math.round(weightHandicap + expHandicap);
+	player.handicap = handicap;
+	return player;
+}
+
 export const CalcHandicap = ({ setup, usedPoints, player1, player2 }) => {
-	// console.log(player1);
-	// console.log(player2);
-	// console.log(setup.gymAvg);
 	// user imported sheet, can mix/match handicaps
 	if (Object.keys(setup.gymAvg).length > 0) {
-
+		if (player1 !== null && player2 !== null) {
+			if (player1.weight > 0 || player2.weight > 0) {
+				// compare to gym avg
+				if (player1.weight > 0) {
+					// calc points vs avg
+					player1 = calcHandicap(player1, setup);
+				}
+				if (player2.weight > 0) {
+					player2 = calcHandicap(player2, setup);
+				}
+			}
+			let text = calcHandicapText(setup, usedPoints, player1, player2);
+			return text;
+		}
 	} else {
 		// only calculate based on entered weight/xp
 		if (player1 !== null && player2 !== null) {
@@ -25,50 +45,76 @@ export const calcHandicapText = (setup, usedPoints, player1, player2) => {
 	let weightAdv = 0;
 	let expDif = 0;
 	let expAdv = 0;
-	if (setup.setHandicaps === true) {
-		weightDif = player1.weight - player2.weight;
-		if (weightDif < 0) {
-			weightDif *= -1;
-			weightAdv = 1;
-		}
-		weightDif = Math.round((weightDif / setup.handicaps[0].amount));
-		weightDif *= setup.handicaps[0].pts;
 
-		expDif = ((player1.expYr * 12) + player1.expMonth) - ((player2.expYr * 12) + player2.expMonth);
-		if (expDif < 0) {
-			expDif *= -1;
-			expAdv = 1;
+	if (setup.setHandicaps === true) {
+		// if both players added/not imported
+		if (player1.weight > 0 && player2.weight > 0) {
+			weightDif = player1.weight - player2.weight;
+			if (weightDif < 0) {
+				weightDif *= -1;
+				weightAdv = 1;
+			}
+			weightDif = Math.round((weightDif / setup.handicaps[0].amount));
+			weightDif *= setup.handicaps[0].pts;
+
+			expDif = ((player1.expYr * 12) + player1.expMonth) - ((player2.expYr * 12) + player2.expMonth);
+			if (expDif < 0) {
+				expDif *= -1;
+				expAdv = 1;
+			}
+			expDif = Math.round((expDif / setup.handicaps[1].amount));
+			expDif *= setup.handicaps[1].pts;
+		} else {
+			let handicapDiff = 0;
+			if (player1.handicap < player2.handicap) {
+				// p2 advantage
+				handicapDiff = player2.handicap - player1.handicap;
+				return player2.name + " has " + (usedPoints > 0 ? handicapDiff - usedPoints : handicapDiff) + " points to spend";
+			} else {
+				// p1 advantage
+				handicapDiff = player1.handicap - player2.handicap;
+				return player1.name + " has " + (usedPoints > 0 ? handicapDiff - usedPoints : handicapDiff) + " points to spend";
+			}
 		}
-		expDif = Math.round((expDif / setup.handicaps[1].amount));
-		expDif *= setup.handicaps[1].pts;
 	}
 	if (setup.setHandicaps === false) {
 		return;
 	}
 	else {
-		if (weightAdv > 0 && expAdv > 0) {
-			return player1.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-		}
-		if (weightAdv === 0 && expAdv === 0) {
-			return player2.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-		}
-		if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
-			return "No one has points to spend!";
-		}
-		if (weightDif > expDif) {
-			return expAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend"
-				: player1.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
-		}
-		if (expDif > weightDif) {
-			return weightAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend"
-				: player1.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
+		// if both players added/not imported
+		if (player1.weight > 0 && player2.weight > 0) {
+			if (weightAdv > 0 && expAdv > 0) {
+				return player1.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+			}
+			if (weightAdv === 0 && expAdv === 0) {
+				return player2.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+			}
+			if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
+				return "No one has points to spend!";
+			}
+			if (weightDif > expDif) {
+				return expAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend"
+					: player1.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
+			}
+			if (expDif > weightDif) {
+				return weightAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend"
+					: player1.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
+			}
+		} else {
+
 		}
 	}
 }
 
-export const PlayerSearchBox = ({ players, player, setPlayer, id }) => {
+export const PlayerSearchBox = ({ players, player, setPlayer, id, setup }) => {
 	if (id !== undefined) {
 		if (id > 0) {
+			if (player !== null) {
+				if (player.weight > 0 && setup !== undefined && setup !== null) {
+					player = calcHandicap(player, setup);
+				}
+			}
+
 			return (
 				<Autocomplete
 					id={("playersearch" + id)}
@@ -89,7 +135,7 @@ export const PlayerSearchBox = ({ players, player, setPlayer, id }) => {
 				temp = players.p2.lName !== undefined && players.p2.lName.length > 0 ? players.p2.name + ' ' + players.p2.lName : players.p2.name;
 				playerArr.push(temp);
 			}
-			
+
 			return (
 				<Autocomplete
 					size="small"

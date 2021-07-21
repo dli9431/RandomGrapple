@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormControlLabel, Checkbox, IconButton, Grid, Paper, Button, TextField, Typography, Box, } from '@material-ui/core';
+import { IconButton, Grid, Paper, Button, TextField, Typography, Box, } from '@material-ui/core';
 import { regStyles } from './styles/styles';
 import { ButtonMenu } from './menu/menu';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
@@ -23,16 +23,16 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 
 	const [renderList, setRenderList] = useState(false);
 	// penalty list
-	const [penaltyType, setPenaltyType] = useState('');
-	const [penaltyCat, setPenaltyCat] = useState(0);
-	const [penaltyDesc, setPenaltyDesc] = useState('');
-	const [penaltyPts, setPenaltyPts] = useState(0);
-	const [penaltyLimit, setPenaltyLimit] = useState(0);
-	const [random, setRandom] = useState(false);
+	// const [penaltyType, setPenaltyType] = useState('');
+	// const [penaltyCat, setPenaltyCat] = useState(0);
+	// const [penaltyDesc, setPenaltyDesc] = useState('');
+	// const [penaltyPts, setPenaltyPts] = useState(0);
+	// const [penaltyLimit, setPenaltyLimit] = useState(0);
+	// const [random, setRandom] = useState(false);
 
-	const handleCheck = (event) => {
-		setRandom(event.target.checked);
-	}
+	// const handleCheck = (event) => {
+	// 	setRandom(event.target.checked);
+	// }
 
 	function addHandicap() {
 		setup.handicaps = [];
@@ -129,33 +129,33 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 		}
 	}
 
-	function removePenalties(index) {
-		setup.listPenalties.splice(index, 1);
-		if (renderList) {
-			setRenderList(false);
-		} else {
-			setRenderList(true);
-		}
-	}
+	// function removePenalties(index) {
+	// 	setup.listPenalties.splice(index, 1);
+	// 	if (renderList) {
+	// 		setRenderList(false);
+	// 	} else {
+	// 		setRenderList(true);
+	// 	}
+	// }
 
 	///TODO: fix this so it fits with new data structure (arr of arrs)
-	function addPenalty() {
-		setup.listPenalties.push({
-			category: parseInt(penaltyCat),
-			limit: parseInt(penaltyLimit),
-			random: random,
-			type: penaltyType,
-			desc: penaltyDesc,
-			pts: parseInt(penaltyPts)
-		});
-		// reset form
-		setPenaltyCat(0);
-		setPenaltyLimit(0);
-		setPenaltyType('');
-		setPenaltyDesc('');
-		setPenaltyPts(0);
-		setRandom(false);
-	}
+	// function addPenalty() {
+	// 	setup.listPenalties.push({
+	// 		category: parseInt(penaltyCat),
+	// 		limit: parseInt(penaltyLimit),
+	// 		random: random,
+	// 		type: penaltyType,
+	// 		desc: penaltyDesc,
+	// 		pts: parseInt(penaltyPts)
+	// 	});
+	// 	// reset form
+	// 	setPenaltyCat(0);
+	// 	setPenaltyLimit(0);
+	// 	setPenaltyType('');
+	// 	setPenaltyDesc('');
+	// 	setPenaltyPts(0);
+	// 	setRandom(false);
+	// }
 
 	const createSheet = async () => {
 		try {
