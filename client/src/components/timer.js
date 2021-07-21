@@ -22,6 +22,7 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 		if (adv > 0) {
 			const temp = { time: time, adv: adv };
 			player.adv.push(temp);
+			console.log(player.adv);
 		}
 		if (penalty > 0) {
 			const temp = { time: time, penalty: penalty };
@@ -38,11 +39,13 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 			}
 		}
 		if (adv > 0) {
-			for (var j = player.adv.length - 1; j >= 0; j--) {
-				if (player.adv[j].adv === adv) {
-					player.adv.splice(j, 1);
-				}
-			}
+			player.adv = player.adv.pop();
+			console.log(player.adv);
+			// for (var j = player.adv.length - 1; j >= 0; j--) {
+			// 	if (player.adv[j].adv === adv) {
+			// 		player.adv.splice(j, 1);
+			// 	}
+			// }
 		}
 		if (penalty > 0) {
 			for (var k = player.penalty.length - 1; k >= 0; k--) {
@@ -347,7 +350,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 					<Box mt={3}>
 						<Grid container spacing={1} direction="row" justify="center" alignItems="flex-start">
 							<Grid item xs={12} sm={6} md={5}>
-								<PlayerSearchBox players={match.players} player={winner} setPlayer={setWinner} />
+								<PlayerSearchBox players={match.players} player={winner} setPlayer={setWinner} id={0} />
 							</Grid>
 							<Grid item xs={12} sm={6} md={5}>
 								<TextField fullWidth={true} size="small" value={finishMethod} onChange={(e) => setFinishMethod(e.target.value)} label="Win method" variant="outlined" />

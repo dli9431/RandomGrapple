@@ -64,7 +64,6 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const matchInfo = (info) => {
 		setMatch({ ...match, info});
-		console.log(match);
 	}
 
 	function checkedInfo(info) {
