@@ -22,7 +22,7 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 		if (adv > 0) {
 			const temp = { time: time, adv: adv };
 			player.adv.push(temp);
-			console.log(player.adv);
+			
 		}
 		if (penalty > 0) {
 			const temp = { time: time, penalty: penalty };
@@ -39,20 +39,10 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 			}
 		}
 		if (adv > 0) {
-			player.adv = player.adv.pop();
-			console.log(player.adv);
-			// for (var j = player.adv.length - 1; j >= 0; j--) {
-			// 	if (player.adv[j].adv === adv) {
-			// 		player.adv.splice(j, 1);
-			// 	}
-			// }
+			player.adv.pop();
 		}
 		if (penalty > 0) {
-			for (var k = player.penalty.length - 1; k >= 0; k--) {
-				if (player.penalty[k].penalty === penalty) {
-					player.penalty.splice(k, 1);
-				}
-			}
+			player.penalty.pop();
 		}
 		matchScore(player);
 	}
