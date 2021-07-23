@@ -63,7 +63,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		let total = 0;
 
 		for (var i = 0; i < info.length; i++) {
-			if (info[i].length > 0) { // for multiple checkboxes
+			if (info[i].length !== undefined) { // for multiple checkboxes
 				for (var k = 0; k < info[i].length; k++) {
 					total += info[i][k].points;
 				}
@@ -80,14 +80,15 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	function finishedPenalties() {
 		let p = [];
+		
 		for (var i = 0; i < formInfo.length; i++) {
 			if (formInfo[i].length !== undefined) { // for multiple checkboxes
 				for (var k = 0; k < formInfo[i].length; k++) {
-					p.push(setup.listPenalties[i][k].desc);
+					p.push(setup.listPenalties[formInfo[i][k].catIndex][formInfo[i][k].checkedIndex].desc);
 				}
 			} else {
-				if (formInfo[i].index >= 0) {
-					p.push(setup.listPenalties[i][formInfo[i].index].desc);
+				if (formInfo[i].selIndex >= 0) {
+					p.push(setup.listPenalties[formInfo[i].catIndex][formInfo[i].selIndex].desc);
 				}
 			}
 		}
