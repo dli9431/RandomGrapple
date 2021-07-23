@@ -5,6 +5,7 @@ import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
 import { defaultMatch, CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
+import { saveMatch } from "./auth/sheets";
 
 export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const classes = regStyles({ night: night });
@@ -32,7 +33,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 			if (setup.listPenalties.length > 0) {
 				for (var i = 0; i < setup.listPenalties.length; i++) {
 					if (setup.listPenalties[i][0].limit === 1) {
-						info.push({ "index": -1, "points": 0 });
+						info.push({ catIndex: i, selIndex: -1, points: 0 });
 					} else {
 						info.push([]);
 					}
@@ -52,16 +53,17 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const matchInfo = (info, save) => {
 		setMatch(info);
 		// setMatch({ ...match, info });
-		console.log(match);
 		// save to sheets
-		setSave(true);
+		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
+			setSave(true);
+		}
 	}
 
-	function checkedInfo(info) {
+	function checkedInfo(info) {	
 		let total = 0;
 
 		for (var i = 0; i < info.length; i++) {
-			if (info[i].length !== undefined) { // for multiple checkboxes
+			if (info[i].length > 0) { // for multiple checkboxes
 				for (var k = 0; k < info[i].length; k++) {
 					total += info[i][k].points;
 				}
@@ -118,7 +120,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 							<Box mb={2}>
 								<Paper className={classes.paper}>
 									<Timer night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
-									{save && <Box>Match saved!</Box>}
+									{save && <Box><Button onClick={() => saveMatch(user, match)}>Save Match</Button></Box>}
 								</Paper>
 							</Box>
 							<Box>
@@ -126,7 +128,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 									<Grid container direction="row" alignItems="flex-start">
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player1} setPlayer={setPlayer1} id={1} setup={setup} />
+												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player1} setPlayer={setPlayer1} id={1} gymAvg={setup.gymAvg} handicaps={setup.handicaps} />
 											</Box>
 										</Grid>
 										{(player1 !== undefined && player1 !== null) &&
@@ -149,7 +151,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 										}
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player2} setPlayer={setPlayer2} id={2} setup={setup} />
+												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player2} setPlayer={setPlayer2} id={2} gymAvg={setup.gymAvg} handicaps={setup.handicaps} />
 											</Box>
 										</Grid>
 										{(player2 !== undefined && player2 !== null) &&
@@ -196,7 +198,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 								<Paper className={classes.paperHandicap}>
 									<Typography variant="h5">Handicaps</Typography>
 									<Box flexGrow="1" mb={1}>
-										<CalcHandicap setup={setup} usedPoints={usedPoints} player1={player1} player2={player2} />
+										<CalcHandicap gymAvg={setup.gymAvg} handicaps={setup.handicaps} usedPoints={usedPoints} player1={player1} player2={player2} />
 									</Box>
 									{finished ?
 										<Box>
@@ -205,7 +207,18 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 										</Box>
 										:
 										<Box>
-											<HandicapCheckList formInfo={formInfo} checkedInfo={checkedInfo} night={night} penalties={setup.listPenalties} />
+											{setup.listPenalties.length > 0 &&
+												setup.listPenalties.map((penalty, index) => {
+													return (<HandicapCheckList 
+														formInfo={formInfo}
+														checkedInfo={checkedInfo}
+														night={night}
+														penalty={penalty}
+														index={index}
+														key={index}
+													/>);
+												})}
+											{/* <HandicapCheckList formInfo={formInfo} checkedInfo={checkedInfo} night={night} penalties={setup.listPenalties} /> */}
 											<Box mt={1}>
 												<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => finishedPenalties()}>Finalize</Button>
 											</Box>

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { TextField, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { TextField, Typography, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 export const defaultMatch = {
@@ -17,9 +17,9 @@ export const defaultMatch = {
 	handicapDiff: 0
 }
 
-export const calcHandicap = (player, setup) => {
-	let weightHandicap = ((player.weight - setup.gymAvg.weight) / setup.handicaps[0].amount) * setup.handicaps[0].pts;
-	let expHandicap = (((player.expYr * 12 + player.expMonth) - setup.gymAvg.exp) / setup.handicaps[1].amount) * setup.handicaps[1].pts;
+export const calcHandicap = (player, gymAvg, handicaps) => {
+	let weightHandicap = ((player.weight - gymAvg.weight) / handicaps[0].amount) * handicaps[0].pts;
+	let expHandicap = (((player.expYr * 12 + player.expMonth) - gymAvg.exp) / handicaps[1].amount) * handicaps[1].pts;
 	weightHandicap *= -1;
 	expHandicap *= -1;
 	let handicap = Math.round(weightHandicap + expHandicap);
@@ -27,27 +27,27 @@ export const calcHandicap = (player, setup) => {
 	return player;
 }
 
-export const CalcHandicap = ({ setup, usedPoints, player1, player2 }) => {
+export const CalcHandicap = ({ gymAvg, handicaps, usedPoints, player1, player2 }) => {
 	// user imported sheet, can mix/match handicaps
-	if (Object.keys(setup.gymAvg).length > 0) {
+	if (Object.keys(gymAvg).length > 0) {
 		if (player1 !== null && player2 !== null) {
 			if (player1.weight > 0 || player2.weight > 0) {
 				// compare to gym avg
 				if (player1.weight > 0) {
 					// calc points vs avg
-					player1 = calcHandicap(player1, setup);
+					player1 = calcHandicap(player1, gymAvg, handicaps);
 				}
 				if (player2.weight > 0) {
-					player2 = calcHandicap(player2, setup);
+					player2 = calcHandicap(player2, gymAvg, handicaps);
 				}
 			}
-			let text = calcHandicapText(setup, usedPoints, player1, player2);
+			let text = calcHandicapText(handicaps, usedPoints, player1, player2);
 			return text;
 		}
 	} else {
 		// only calculate based on entered weight/xp
 		if (player1 !== null && player2 !== null) {
-			let text = calcHandicapText(setup, usedPoints, player1, player2);
+			let text = calcHandicapText(handicaps, usedPoints, player1, player2);
 			return text;
 		}
 	}
@@ -55,78 +55,69 @@ export const CalcHandicap = ({ setup, usedPoints, player1, player2 }) => {
 	return null;
 }
 
-export const calcHandicapText = (setup, usedPoints, player1, player2) => {
+export const calcHandicapText = (handicaps, usedPoints, player1, player2) => {
 	let weightDif = 0;
 	let weightAdv = 0;
 	let expDif = 0;
 	let expAdv = 0;
 
-	if (setup.setHandicaps === true) {
-		// if both players added/not imported
-		if (player1.weight > 0 && player2.weight > 0) {
-			weightDif = player1.weight - player2.weight;
-			if (weightDif < 0) {
-				weightDif *= -1;
-				weightAdv = 1;
-			}
-			weightDif = Math.round((weightDif / setup.handicaps[0].amount));
-			weightDif *= setup.handicaps[0].pts;
+	// if both players added/not imported
+	if (player1.weight > 0 && player2.weight > 0) {
+		weightDif = player1.weight - player2.weight;
+		if (weightDif < 0) {
+			weightDif *= -1;
+			weightAdv = 1;
+		}
+		weightDif = Math.round((weightDif / handicaps[0].amount));
+		weightDif *= handicaps[0].pts;
 
-			expDif = ((player1.expYr * 12) + player1.expMonth) - ((player2.expYr * 12) + player2.expMonth);
-			if (expDif < 0) {
-				expDif *= -1;
-				expAdv = 1;
-			}
-			expDif = Math.round((expDif / setup.handicaps[1].amount));
-			expDif *= setup.handicaps[1].pts;
+		expDif = ((player1.expYr * 12) + player1.expMonth) - ((player2.expYr * 12) + player2.expMonth);
+		if (expDif < 0) {
+			expDif *= -1;
+			expAdv = 1;
+		}
+		expDif = Math.round((expDif / handicaps[1].amount));
+		expDif *= handicaps[1].pts;
+	} else {
+		let handicapDiff = 0;
+		if (player1.handicap < player2.handicap) {
+			// p2 advantage
+			handicapDiff = player2.handicap - player1.handicap;
+			return player2.name + " has " + (usedPoints > 0 ? handicapDiff - usedPoints : handicapDiff) + " points to spend";
 		} else {
-			let handicapDiff = 0;
-			if (player1.handicap < player2.handicap) {
-				// p2 advantage
-				handicapDiff = player2.handicap - player1.handicap;
-				return player2.name + " has " + (usedPoints > 0 ? handicapDiff - usedPoints : handicapDiff) + " points to spend";
-			} else {
-				// p1 advantage
-				handicapDiff = player1.handicap - player2.handicap;
-				return player1.name + " has " + (usedPoints > 0 ? handicapDiff - usedPoints : handicapDiff) + " points to spend";
-			}
+			// p1 advantage
+			handicapDiff = player1.handicap - player2.handicap;
+			return player1.name + " has " + (usedPoints > 0 ? handicapDiff - usedPoints : handicapDiff) + " points to spend";
 		}
 	}
-	if (setup.setHandicaps === false) {
-		return;
-	}
-	else {
-		// if both players added/not imported
-		if (player1.weight > 0 && player2.weight > 0) {
-			if (weightAdv > 0 && expAdv > 0) {
-				return player1.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-			}
-			if (weightAdv === 0 && expAdv === 0) {
-				return player2.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
-			}
-			if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
-				return "No one has points to spend!";
-			}
-			if (weightDif > expDif) {
-				return expAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend"
-					: player1.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
-			}
-			if (expDif > weightDif) {
-				return weightAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend"
-					: player1.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
-			}
-		} else {
 
+	if (player1.weight > 0 && player2.weight > 0) {
+		if (weightAdv > 0 && expAdv > 0) {
+			return player1.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+		}
+		if (weightAdv === 0 && expAdv === 0) {
+			return player2.name + " has " + (usedPoints > 0 ? (weightDif + expDif) - usedPoints : weightDif + expDif) + " points to spend";
+		}
+		if (expDif === weightDif && expAdv !== weightAdv) { // no advantage
+			return "No one has points to spend!";
+		}
+		if (weightDif > expDif) {
+			return expAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend"
+				: player1.name + " has " + (usedPoints > 0 ? (weightDif - expDif) - usedPoints : weightDif - expDif) + " points to spend";
+		}
+		if (expDif > weightDif) {
+			return weightAdv === 1 ? player2.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend"
+				: player1.name + " has " + (usedPoints > 0 ? (expDif - weightDif) - usedPoints : expDif - weightDif) + " points to spend";
 		}
 	}
 }
 
-export const PlayerSearchBox = ({ fullReset, players, player, setPlayer, id, setup }) => {
+export const PlayerSearchBox = ({ fullReset, players, player, setPlayer, id, gymAvg, handicaps }) => {
 	if (id !== undefined) {
 		if (id > 0) {
 			if (player !== null) {
-				if (player.weight > 0 && setup !== undefined && setup !== null) {
-					player = calcHandicap(player, setup);
+				if (player.weight > 0 && gymAvg !== undefined && handicaps !== undefined) {
+					player = calcHandicap(player, gymAvg, handicaps);
 				}
 			}
 
@@ -169,116 +160,118 @@ export const PlayerSearchBox = ({ fullReset, players, player, setPlayer, id, set
 	}
 }
 
-export const HandicapCheckList = ({ checkedInfo, night, penalties, formInfo }) => {
-	const [handicaps, setHandicaps] = useState(formInfo);
-
-	const handleChange = (event, penaltyIndex) => {
+export const HandicapCheckList = ({ checkedInfo, night, penalty, formInfo, index }) => {
+	const [radioValue, setRadioValue] = useState(-1);
+	const [randomed, setRandomed] = useState(null);
+	
+	const handleChange = (event) => {
 		let pts = parseInt(event.target.name.split(":")[1]);
-
 		if (event.target.value === -1) {
-			formInfo[penaltyIndex] = { "index": -1, "points": 0 };
+			formInfo[index] = { catIndex: index, selIndex: -1, points: 0 };
 		} else {
-			formInfo[penaltyIndex] = { "index": parseInt(event.target.value), "points": pts };
+			formInfo[index] = { catIndex: index, selIndex: parseInt(event.target.value), points: pts };
 		}
-		setHandicaps(formInfo);
+		setRadioValue(parseInt(event.target.value));
 		return checkedInfo(formInfo);
 	};
 
-	const handleCheck = (event, penaltyIndex, categoryIndex) => {
+	const handleCheck = (event, checked) => {
 		if (event.target.checked) {
-			formInfo[penaltyIndex].push({
-				index: categoryIndex,
+			formInfo[index].push({
+				catIndex: index,
+				checkedIndex: checked,
 				points: parseInt(event.target.name.split(":")[1])
 			});
-			return checkedInfo(formInfo);
 		} else {
-			let remain = formInfo[penaltyIndex].filter(({ index }) => index !== categoryIndex);
-			formInfo[penaltyIndex] = remain;
-			return checkedInfo(formInfo);
+			let remain = formInfo[index].filter(({ checkedIndex }) => checkedIndex !== checked);
+			formInfo[index] = remain;
 		}
+		return checkedInfo(formInfo);
 	}
 
 	const handleRandomCheck = (event, penaltyIndex) => {
-		let randomIndex = Math.floor(Math.random() * penalties[penaltyIndex].length);
-		let rng = penalties[penaltyIndex][randomIndex];
+		let randomIndex = Math.floor(Math.random() * penalty.length);
 
 		if (event.target.checked) {
-			if (penalties[penaltyIndex][randomIndex].random) {
-				penalties[penaltyIndex][randomIndex].checked = true;
-			}
-			formInfo[penaltyIndex].index = randomIndex;
-			formInfo[penaltyIndex].points = rng.pts;
-			return checkedInfo(formInfo);
+			penalty[randomIndex].checked = true;
+			setRandomed(penalty[randomIndex]);
+			formInfo[index] = { catIndex: index, selIndex: randomIndex, points: penalty[randomIndex].pts };
 		} else {
-			for (var i = 0; i < penalties[penaltyIndex].length; i++) {
-				penalties[penaltyIndex][i].checked = false;
-			}
-			formInfo[penaltyIndex].index = -1;
-			formInfo[penaltyIndex].points = 0;
-			return checkedInfo(formInfo);
+			setRandomed(null);
+			formInfo[index] = { catIndex: index, selIndex: -1, points: 0 };
 		}
+		return checkedInfo(formInfo);
 	};
 
-	return (
-		<Box>
-			{
-				penalties.map((sub, index) => {
+	const first = penalty[0];
+	if (first.random === true && penalty.length > 0) {
+		return (
+			<Box key={index}>
+				<Typography color={night ? "secondary" : "primary"}>{first.type} (Random)</Typography>
+				<FormControl>
+					<FormControlLabel
+						control={
+							<Checkbox
+								onChange={(e) => { handleRandomCheck(e) }}
+								name={"points:" + first.pts}
+								color={night ? "secondary" : "primary"}
+							/>
+						}
+						label={"[" + first.pts + "] " + (randomed !== null ? randomed.desc : "")}
+					/>
+				</FormControl>
+				{penalty.map((sub, i) => {
 					return (
-						<Box key={index}>
-							<FormControl component="fieldset">
-								<FormLabel key={index} focused={true} color={night ? "secondary" : "primary"} component="legend">{sub[0].type}</FormLabel>
-								{sub[0].random ?
-									<Box>
-										<FormControlLabel
-											control={
-												<Checkbox
-													onChange={(e) => { handleRandomCheck(e, index) }}
-													name={"points:" + sub[index].pts}
-													color={night ? "secondary" : "primary"}
-												/>
-											}
-											label={"[" + sub[index].pts + "] " + ((sub.find(({ checked }) => checked === true) === undefined) ? "" : sub.find(({ checked }) => checked === true).desc)}
-										/>
-										{sub.map((p, i) => {
-											return (
-												<Box key={"p" + i}>{p.desc}</Box>
-											)
-										})}
-									</Box>
-									:
-									(sub[0].limit > 1 || sub[0].limit < 0) ? // return checkbox if penalty not limited to 1
-										sub.map((p, i) => {
-											return (
-												<Box key={i}>
-													<FormControlLabel
-														control={
-															<Checkbox
-																onChange={(e) => handleCheck(e, index, i)}
-																name={"points:" + p.pts}
-																color={night ? "secondary" : "primary"}
-															/>
-														}
-														label={"[" + p.pts + "] " + p.desc}
-													/>
-												</Box>
-											)
-										})
-										:
-										<RadioGroup aria-label="" name="" defaultValue={-1} value={handicaps.length > 0 ? handicaps[index].index : -1} onChange={(e) => handleChange(e, index)}>
-											<FormControlLabel key={-1} value={-1} control={<Radio />} label="None" />
-											{sub.map((p, i) => {
-												return (
-													<FormControlLabel name={"p:" + sub[i].pts} key={i} value={i} control={<Radio />} label={"[" + sub[i].pts + "] " + sub[i].desc} />
-												)
-											})
-											}
-										</RadioGroup>
-								}
-							</FormControl>
+						<Box key={i} display="flex" flexDirection="row" mt={1} mb={1}>
+							<Box>{sub.desc}</Box>
 						</Box>
-					)
-				})
-			}
-		</Box>
-	);
+					);
+				})}
+				<hr />
+			</Box>
+		);
+	} else {
+		if (first.limit === 1 && penalty.length > 0) {
+			return (
+				<Box key={index}>
+					<Typography color={night ? "secondary" : "primary"}>{first.type}</Typography>
+					<FormControl>
+						<RadioGroup aria-label="" name="" value={radioValue} onChange={(e) => handleChange(e)}>
+							<FormControlLabel key={-1} value={-1} control={<Radio />} label="None" />
+							{penalty.map((sub, i) => {
+								return (
+									<FormControlLabel name={"p:" + sub.pts} key={i} value={i} control={<Radio />} label={"[" + sub.pts + "] " + sub.desc} />
+								);
+							})}
+						</RadioGroup>
+					</FormControl>
+					<hr />
+				</Box>
+			);
+		} else {
+			return (
+				<Box key={index}>
+					<Typography color={night ? "secondary" : "primary"}>{first.type}</Typography>
+					<FormControl>
+						{penalty.map((p, i) => {
+							return (
+								<Box key={i}>
+									<FormControlLabel
+										control={
+											<Checkbox
+												onChange={(e) => handleCheck(e, i)}
+												name={"points:" + p.pts}
+												color={night ? "secondary" : "primary"}
+											/>
+										}
+										label={"[" + p.pts + "] " + p.desc}
+									/>
+								</Box>
+							)
+						})}
+					</FormControl>
+				</Box>
+			);
+		}
+	}
 }
