@@ -187,7 +187,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 				});
 
 				const data = await res.json();
-
+				
 				if (data.data.valueRanges.length > 0) {
 					const hW = parseInt(data.data.valueRanges[1].values[0][1]);
 					setHandicapWeight(hW);
@@ -250,6 +250,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 
 					// form player obj
 					const playerRes = [...new Set([].concat(...baseArr.map((o, index) => { return (index > 12 ? o.values : []) })))];
+					setup.players = [];
 
 					for (var j = 1; j < playerRes[0].length; j++) {
 						let temp = {};
@@ -271,6 +272,11 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 						weightUnit: res[12][0],
 						exp: parseInt(res[11][1]),
 						expUnit: res[12][1]
+					}
+					
+					// save latest match row
+					setup.matches = {
+						current: data.data.valueRanges[19].values[0].length+1
 					}
 
 					if (renderList) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Grid, Paper, Typography, Box } from "@material-ui/core";
+import { Button, Grid, Paper, Typography, Box, isWidthUp } from "@material-ui/core";
 import { regStyles } from "./styles/styles";
 import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
@@ -30,12 +30,13 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	useEffect(() => {
 		function init() {
 			let info = [];
+			let temp = [];
 			if (setup.listPenalties.length > 0) {
 				for (var i = 0; i < setup.listPenalties.length; i++) {
 					if (setup.listPenalties[i][0].limit === 1) {
 						info.push({ catIndex: i, selIndex: -1, points: 0 });
 					} else {
-						info.push([]);
+						info.push(temp);
 					}
 				}
 			}
@@ -52,6 +53,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const matchInfo = (info, save) => {
 		setMatch(info);
+
 		// setMatch({ ...match, info });
 		// save to sheets
 		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
@@ -59,13 +61,19 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		}
 	}
 
-	function checkedInfo(info) {	
+	function checkedInfo(info) {
 		let total = 0;
 
-		for (var i = 0; i < info.length; i++) {
+		for (var i = 0; i < info.length; i++) {		
+			if (info[i] === null || info[i] === undefined) {
+				continue;
+			}
+
 			if (info[i].length !== undefined) { // for multiple checkboxes
-				for (var k = 0; k < info[i].length; k++) {
-					total += info[i][k].points;
+				if (info[i].length > 0) {
+					for (var k = 0; k < info[i].length; k++) {
+						total += info[i][k].points;
+					}
 				}
 			}
 
@@ -80,7 +88,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	function finishedPenalties() {
 		let p = [];
-		
+
 		for (var i = 0; i < formInfo.length; i++) {
 			if (formInfo[i].length !== undefined) { // for multiple checkboxes
 				for (var k = 0; k < formInfo[i].length; k++) {
@@ -121,7 +129,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 							<Box mb={2}>
 								<Paper className={classes.paper}>
 									<Timer night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
-									{save && <Box><Button onClick={() => saveMatch(user, match)}>Save Match</Button></Box>}
+									{save && <Box><Button onClick={() => saveMatch(user, match, setup.mode, setup.matches.current)}>Save Match</Button></Box>}
 								</Paper>
 							</Box>
 							<Box>
@@ -210,7 +218,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 										<Box>
 											{setup.listPenalties.length > 0 &&
 												setup.listPenalties.map((penalty, index) => {
-													return (<HandicapCheckList 
+													return (<HandicapCheckList
 														formInfo={formInfo}
 														checkedInfo={checkedInfo}
 														night={night}

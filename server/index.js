@@ -153,6 +153,21 @@ app.post('/api/savePlayers', async (req, res) => {
 	}
 });
 
+app.post('/api/saveMatch', async (req, res) => {
+	try {
+		oauth2Client.credentials = { access_token: req.user.accessToken };
+		const update = await updateMatches(oauth2Client, req.body);
+		if (update.status === 200) {
+			res.status(200);
+			res.json(update);
+		} else {
+			res.status(update.status);
+			res.json(update);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
 
 app.post('/api/create', async (req, res) => {
 	try {
@@ -223,7 +238,19 @@ async function readSheet(auth, id) {
 			'Players!C1:C1000', // handicap
 			'Players!D1:D1000', // record
 			'Gym Average!B2:B3', // gym avg amounts (weight/exp)
-			'Gym Average!C2:C3' // gym avg units (default lb/months)
+			'Gym Average!C2:C3', // gym avg units (default lb/months)
+			'Matches!A1:A1000', // Match P1
+			'Matches!B1:B1000', // Match P2
+			'Matches!C1:C1000', // Match Winner
+			'Matches!D1:D1000', // Match point differential
+			'Matches!E1:E1000', // Match handicaps
+			'Matches!F1:F1000', // Match round time (initial)
+			'Matches!G1:G1000', // Match P1 points
+			'Matches!H1:H1000', // Match P2 Points
+			'Matches!I1:I1000', // Match finish time
+			'Matches!J1:J1000', // Match finish method
+			'Matches!K1:K1000', // Match date
+			'Matches!L1:L1000', // Match mode
 		];
 
 		const response = await sheets.spreadsheets.values.batchGet({
@@ -307,6 +334,24 @@ async function updatePlayers(auth, info) {
 
 		const stat = {status: response.status, msg: response.statusText};
 		return stat;
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+async function updateMatches(auth, info) {
+	try {
+		let t = JSON.stringify(info.body);
+		console.log(t);
+		// const sheets = google.sheets({ version: 'v4', auth });
+
+		// const response = await sheets.spreadsheets.values.batchUpdate({
+		// 	spreadsheetId: info.spreadsheetId,
+		// 	requestBody: JSON.stringify(info.body),
+		// });
+
+		// const stat = {status: response.status, msg: response.statusText};
+		// return stat;
 	} catch (err) {
 		console.error(err);
 	}

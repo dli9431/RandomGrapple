@@ -163,7 +163,7 @@ export const PlayerSearchBox = ({ fullReset, players, player, setPlayer, id, gym
 export const HandicapCheckList = ({ checkedInfo, night, penalty, formInfo, index }) => {
 	const [radioValue, setRadioValue] = useState(-1);
 	const [randomed, setRandomed] = useState(null);
-	
+
 	const handleChange = (event) => {
 		let pts = parseInt(event.target.name.split(":")[1]);
 		if (event.target.value === -1) {
@@ -177,11 +177,25 @@ export const HandicapCheckList = ({ checkedInfo, night, penalty, formInfo, index
 
 	const handleCheck = (event, checked) => {
 		if (event.target.checked) {
-			formInfo[index].push({
-				catIndex: index,
-				checkedIndex: checked,
-				points: parseInt(event.target.name.split(":")[1])
-			});
+			if (formInfo[index] === undefined) {
+				formInfo[index] = [];
+			}
+			
+			if (formInfo[index].length > 0) {
+				formInfo[index].push({
+					catIndex: index,
+					checkedIndex: checked,
+					points: parseInt(event.target.name.split(":")[1])
+				});
+			} else {
+				let temp = [];
+				temp.push({
+					catIndex: index,
+					checkedIndex: checked,
+					points: parseInt(event.target.name.split(":")[1])
+				})
+				formInfo[index] = temp;
+			}
 		} else {
 			let remain = formInfo[index].filter(({ checkedIndex }) => checkedIndex !== checked);
 			formInfo[index] = remain;
