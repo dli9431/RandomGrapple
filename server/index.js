@@ -343,15 +343,15 @@ async function updateMatches(auth, info) {
 	try {
 		let t = JSON.stringify(info.body);
 		console.log(t);
-		// const sheets = google.sheets({ version: 'v4', auth });
+		const sheets = google.sheets({ version: 'v4', auth });
 
-		// const response = await sheets.spreadsheets.values.batchUpdate({
-		// 	spreadsheetId: info.spreadsheetId,
-		// 	requestBody: JSON.stringify(info.body),
-		// });
+		const response = await sheets.spreadsheets.values.batchUpdate({
+			spreadsheetId: info.spreadsheetId,
+			requestBody: JSON.stringify(info.body),
+		});
 
-		// const stat = {status: response.status, msg: response.statusText};
-		// return stat;
+		const stat = {status: response.status, msg: response.statusText};
+		return stat;
 	} catch (err) {
 		console.error(err);
 	}

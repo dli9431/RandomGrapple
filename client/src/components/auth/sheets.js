@@ -15,18 +15,21 @@ export const saveMatch = async (user, match, mode, currMatch) => {
 	}
 
 	let data = []; // match data
-	data.push(match.players.p1.lName !== undefined ? match.players.p1.name + " " + match.players.p1.lName : match.players.p1.name); // p1 name
-	data.push(match.players.p2.lName !== undefined ? match.players.p2.name + " " + match.players.p2.lName : match.players.p2.name); // p2 Name
-	data.push(match.winner); // winner
-	data.push(match.handicapDiff); // point differential
-	data.push(match.penalties); // penalties applied
-	data.push(match.initTime); // roundtime
-	data.push(match.p1Score); // p1 points
-	data.push(match.p2Score); // p2 points
-	data.push(match.endTime); // finish time
-	data.push(match.winMethod); // finish method
-	data.push(new Date());
-	data.push(matchType);
+	let tempArr = [];
+	
+	tempArr.push(match.players.p1.lName !== undefined ? match.players.p1.name + " " + match.players.p1.lName : match.players.p1.name); // p1 name
+	tempArr.push(match.players.p2.lName !== undefined ? match.players.p2.name + " " + match.players.p2.lName : match.players.p2.name); // p2 Name
+	tempArr.push(match.winner); // winner
+	tempArr.push(match.handicapDiff); // point differential
+	tempArr.push(JSON.stringify(match.penalties)); // penalties applied
+	tempArr.push(match.initTime); // roundtime
+	tempArr.push(JSON.stringify(match.p1Score)); // p1 points
+	tempArr.push(JSON.stringify(match.p2Score)); // p2 points
+	tempArr.push(match.endTime); // finish time
+	tempArr.push(match.winMethod); // finish method
+	tempArr.push(new Date());
+	tempArr.push(matchType);
+	data.push(tempArr);
 
 	const range = "Matches!A" + currMatch;
 	const info = {

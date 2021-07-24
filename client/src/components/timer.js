@@ -282,7 +282,11 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 		match.winner = winner;
 		match.winMethod = finishMethod;
 		match.p1Score = p1;
+		delete match.p1Score.score;
+		delete match.p1Score.player;
 		match.p2Score = p2;
+		delete match.p2Score.score;
+		delete match.p2Score.player;
 		if (match.players.p1.handicap > match.players.p2.handicap) {
 			match.handicapDiff = match.players.p1.handicap - match.players.p2.handicap;
 		} else {
