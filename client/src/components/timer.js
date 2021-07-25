@@ -126,7 +126,6 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 
 export const Timer = ({ night, user, logged, logout, only, player1, player2, match, matchInfo }) => {
 	const classes = regStyles({ night: night });
-	const [alarm, setAlarm] = useState(false);
 	const [running, setRunning] = useState(false);
 	const [mins, setMins] = useState(0);
 	const [secs, setSecs] = useState(0);
@@ -252,8 +251,36 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 	function stopTimer() {
 		if (running === false) { // restart
 			setTimeLeft(mins * 60 + secs);
+			resetVars();
 		}
 		setRunning(false);
+	}
+
+	function resetVars() {
+		setP1({
+			player: 1,
+			points: [],
+			adv: [],
+			penalty: []
+		});
+		setP2({
+			player: 2,
+			points: [],
+			adv: [],
+			penalty: []
+		});
+		setDisplayP1({
+			points: 0,
+			adv: 0,
+			penalty: 0
+		});
+		setDisplayP2({
+			points: 0,
+			adv: 0,
+			penalty: 0
+		});
+		setFinishMethod('');
+		setWinner(null);
 	}
 
 	function reset() {

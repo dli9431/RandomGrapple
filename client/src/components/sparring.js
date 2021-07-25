@@ -26,6 +26,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	const [player1, setPlayer1] = useState(null);
 	const [player2, setPlayer2] = useState(null);
 	const [save, setSave] = useState(false);
+	const [resetTimer, setResetTimer] = useState(false);
 
 	useEffect(() => {
 		function init() {
@@ -112,10 +113,13 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		setFinished(false);
 	}
 
-	function fullReset() {
-		setMatch(defaultMatch);
-		resetPenalties();
-		setSave(false);
+	function fullReset(r) {
+		if (r) {
+			setResetTimer(true);
+			setMatch(defaultMatch);
+			resetPenalties();
+			setSave(false);
+		}
 	}
 
 	return (
@@ -128,7 +132,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 						<Box display="flex" flexDirection="column">
 							<Box mb={2}>
 								<Paper className={classes.paper}>
-									<Timer night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
+									<Timer resetTimer={resetTimer} night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
 									{save && <Box><Button onClick={() => saveMatch(user, match, setup.mode, setup.matches.current)}>Save Match</Button></Box>}
 								</Paper>
 							</Box>
