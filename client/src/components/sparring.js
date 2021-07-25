@@ -149,8 +149,8 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 														{((player1 !== undefined && player1 !== null) && (player1.lName !== undefined && player1.lName !== undefined && player1.lName.length > 0)) && <span> {player1.lName} </span>}
 													</Typography>
 													<Typography variant="body1">
-														{((player1 !== undefined && player1 !== null) && (player1.handicap !== null && player1.handicap !== undefined)) && <span>Handicap: {player1.handicap} | </span>}
-														{((player1 !== undefined && player1 !== null) && (player1.record !== null && player1.record !== undefined)) && <span>Record: {player1.record} </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.handicap !== null && player1.handicap !== undefined) && (player1.handicap.length > 0)) && <span>Handicap: {player1.handicap} | </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.record !== null && player1.record !== undefined) && (player1.record.length > 0)) && <span>Record: {player1.record} </span>}
 													</Typography>
 												</Box>
 												<Box textAlign="right">
@@ -172,8 +172,8 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 														{((player2 !== undefined && player2 !== null) && (player2.lName !== undefined && player2.lName !== undefined && player2.lName.length > 0)) && <span> {player2.lName} </span>}
 													</Typography>
 													<Typography variant="body1">
-														{((player2 !== undefined && player2 !== null) && (player2.handicap !== null && player2.handicap !== undefined)) && <span>Handicap: {player2.handicap} | </span>}
-														{((player2 !== undefined && player2 !== null) && (player2.record !== null && player2.record !== undefined)) && <span>Record: {player2.record} </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.handicap !== null && player2.handicap !== undefined) && (player2.handicap.length > 0)) && <span>Handicap: {player2.handicap} | </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.record !== null && player2.record !== undefined) && (player2.handicap.length > 0)) && <span>Record: {player2.record} </span>}
 													</Typography>
 												</Box>
 											</Grid>

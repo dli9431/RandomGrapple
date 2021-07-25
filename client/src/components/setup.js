@@ -96,7 +96,8 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 
 	function addPlayer() {
 		setup.players.push({
-			name: playerName,
+			name: playerName.split(" ").length > 0 ? playerName.split(" ")[0] : playerName,
+			lName: playerName.split(" ").length > 0 ? playerName.split(" ")[1] : '',
 			nickname: playerNickname,
 			weight: parseInt(playerWeight),
 			expYr: parseInt(playerExpYr),
