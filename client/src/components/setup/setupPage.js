@@ -1,6 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { TextField, Typography, FormControlLabel, Radio, RadioGroup, FormLabel, FormControl, Checkbox, Box } from "@material-ui/core";
+import React, { useState } from "react";
+import { TextField, Typography, FormControlLabel, Radio, RadioGroup, FormControl, Checkbox, Box } from "@material-ui/core";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+export const SetupHandicapBox = () => {
+	
+}
+
+export const SetupPlayerBox = () => {
+
+}
 
 export const defaultMatch = {
 	players: {

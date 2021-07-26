@@ -65,7 +65,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	function checkedInfo(info) {
 		let total = 0;
 
-		for (var i = 0; i < info.length; i++) {		
+		for (var i = 0; i < info.length; i++) {
 			if (info[i] === null || info[i] === undefined) {
 				continue;
 			}
@@ -88,16 +88,22 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	}
 
 	function finishedPenalties() {
+		console.log(formInfo);
+
 		let p = [];
 
 		for (var i = 0; i < formInfo.length; i++) {
-			if (formInfo[i].length !== undefined) { // for multiple checkboxes
-				for (var k = 0; k < formInfo[i].length; k++) {
-					p.push(setup.listPenalties[formInfo[i][k].catIndex][formInfo[i][k].checkedIndex].desc);
-				}
+			if (formInfo[i] === undefined || formInfo[i] === null) {
+				continue;
 			} else {
-				if (formInfo[i].selIndex >= 0) {
-					p.push(setup.listPenalties[formInfo[i].catIndex][formInfo[i].selIndex].desc);
+				if (formInfo[i].length > 0) { // multicheckbox
+					for (var k = 0; k < formInfo[i].length; k++) {
+						p.push(setup.listPenalties[formInfo[i][k].catIndex][formInfo[i][k].checkedIndex].desc);
+					}
+				} else {
+					if (formInfo[i].selIndex >= 0) {
+						p.push(setup.listPenalties[formInfo[i].catIndex][formInfo[i].selIndex].desc);
+					}
 				}
 			}
 		}
@@ -153,8 +159,8 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 														{((player1 !== undefined && player1 !== null) && (player1.lName !== undefined && player1.lName !== undefined && player1.lName.length > 0)) && <span> {player1.lName} </span>}
 													</Typography>
 													<Typography variant="body1">
-														{((player1 !== undefined && player1 !== null) && (player1.handicap !== null && player1.handicap !== undefined) && (player1.handicap.length > 0)) && <span>Handicap: {player1.handicap} | </span>}
-														{((player1 !== undefined && player1 !== null) && (player1.record !== null && player1.record !== undefined) && (player1.record.length > 0)) && <span>Record: {player1.record} </span>}
+														{((player1 !== undefined && player1 !== null) && (player1.handicap !== null && player1.handicap !== undefined) && (!isNaN(player1.handicap))) && <span>Handicap: {player1.handicap}</span>}
+														{((player1 !== undefined && player1 !== null) && (player1.record !== null && player1.record !== undefined) && (player1.record.length > 0)) && <span> | Record: {player1.record} </span>}
 													</Typography>
 												</Box>
 												<Box textAlign="right">
@@ -176,8 +182,8 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 														{((player2 !== undefined && player2 !== null) && (player2.lName !== undefined && player2.lName !== undefined && player2.lName.length > 0)) && <span> {player2.lName} </span>}
 													</Typography>
 													<Typography variant="body1">
-														{((player2 !== undefined && player2 !== null) && (player2.handicap !== null && player2.handicap !== undefined) && (player2.handicap.length > 0)) && <span>Handicap: {player2.handicap} | </span>}
-														{((player2 !== undefined && player2 !== null) && (player2.record !== null && player2.record !== undefined) && (player2.handicap.length > 0)) && <span>Record: {player2.record} </span>}
+														{((player2 !== undefined && player2 !== null) && (player2.handicap !== null && player2.handicap !== undefined) && (!isNaN(player2.handicap))) && <span>Handicap: {player2.handicap}</span>}
+														{((player2 !== undefined && player2 !== null) && (player2.record !== null && player2.record !== undefined) && (player2.record.length > 0)) && <span> | Record: {player2.record} </span>}
 													</Typography>
 												</Box>
 											</Grid>
