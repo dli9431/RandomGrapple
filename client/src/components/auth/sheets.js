@@ -59,7 +59,7 @@ export const saveMatch = async (user, match, mode, currMatch) => {
 			if (data.status === 200) {
 				// reformat player list
 				// formatPlayers();
-				console.log('ok');
+				return data.rows;
 			}
 		}
 		catch (error) {

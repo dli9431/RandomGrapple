@@ -54,8 +54,6 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const matchInfo = (info, save) => {
 		setMatch(info);
-
-		// setMatch({ ...match, info });
 		// save to sheets
 		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
 			setSave(true);
@@ -88,8 +86,6 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 	}
 
 	function finishedPenalties() {
-		console.log(formInfo);
-
 		let p = [];
 
 		for (var i = 0; i < formInfo.length; i++) {
@@ -128,6 +124,12 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 		}
 	}
 
+	const saveMatchBtn = async () => {
+		let rows = await saveMatch(user, match, setup.mode, setup.matches.current);
+		setup.matches.current += rows;
+		setSetup(setup);
+	}
+
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
@@ -139,7 +141,7 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 							<Box mb={2}>
 								<Paper className={classes.paper}>
 									<Timer resetTimer={resetTimer} night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
-									{save && <Box><Button onClick={() => saveMatch(user, match, setup.mode, setup.matches.current)}>Save Match</Button></Box>}
+									{save && <Box mt={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => saveMatchBtn()}>Save Match</Button></Box>}
 								</Paper>
 							</Box>
 							<Box>

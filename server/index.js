@@ -348,10 +348,7 @@ async function updateMatches(auth, info) {
 			requestBody: JSON.stringify(info.body),
 		});
 
-		console.log('updated match');
-		console.log(response);
-
-		const stat = {status: response.status, msg: response.statusText};
+		const stat = {rows: response.data.totalUpdatedRows, status: response.status, msg: response.statusText};
 		return stat;
 	} catch (err) {
 		console.error(err);

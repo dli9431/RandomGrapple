@@ -188,7 +188,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 				});
 
 				const data = await res.json();
-				console.log(data);
+				
 				if (data.data.valueRanges.length > 0) {
 					const hW = parseInt(data.data.valueRanges[1].values[0][1]);
 					setHandicapWeight(hW);
