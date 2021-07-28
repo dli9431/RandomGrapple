@@ -8,10 +8,15 @@ import { defaultHandicaps, defaultPenalties } from './setup/setupVars';
 import { Category } from './setup/category';
 import { readSheet, createSheet, savePlayers } from './auth/sheets';
 
-const readSheetBtn = async (setupInfo, setImported, user, setup) => {
+const readSheetBtn = async (setupInfo, setImported, user, setup, setError) => {
 	let reSetup = await readSheet(user, setup);
-	setupInfo(reSetup);
-	setImported(true);
+	if (reSetup === 'error') {
+		setImported(false);
+		setError('Error - session ended, please log in again');
+	} else {
+		setupInfo(reSetup);
+		setImported(true);
+	}
 }
 
 const InitialScreen = ({ setup, setupInfo, updateUser, user, logged, night }) => {
@@ -48,11 +53,51 @@ const InitialScreen = ({ setup, setupInfo, updateUser, user, logged, night }) =>
 					</Box>
 			}
 			<Box mt={2}>
-				<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
-					<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
-				</ReachLink>
+
+				{
+					setup.mode > 0 ?
+						<ReachLink to="mode" style={{ textDecoration: 'none' }}>
+							<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+						</ReachLink>
+						:
+						<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
+							<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+						</ReachLink>
+				}
 			</Box>
 		</Box>
+	);
+}
+
+const TournamentScreen = ({ night, setup, setupInfo, user, classes }) => {
+	function modeSelect(version) {
+		setup.mode = version;
+		setupInfo(setup);
+	}
+
+	return (
+		<Grid container spacing={2}>
+			<Grid item xs={12} sm={6}>
+				<Box p={2} border={1} borderColor={night ? "secondary" : "primary"}>
+					<Typography variant="h5">Quintet</Typography>
+					Form teams and battle it out "King of the Hill" style
+					<Box mt={2}>
+						<ReachLink to="../handicaps" style={{ textDecoration: 'none' }}>
+							<Button size="large" onClick={() => modeSelect(1)} color={night ? "secondary" : "primary"} variant="contained">Select</Button>
+						</ReachLink>
+					</Box>
+				</Box>
+			</Grid>
+			<Grid item xs={12} sm={6}>
+				<Box p={2} border={1} borderColor={night ? "secondary" : "primary"}>
+					<Typography variant="h5">Single Elimination</Typography>
+					Standard single elimination with automated brackets
+					<Box mt={2}>
+						<Button disabled={true} size="large" onClick={() => modeSelect(2)} color={night ? "secondary" : "primary"} variant="contained">Coming soon</Button>
+					</Box>
+				</Box>
+			</Grid>
+		</Grid>
 	);
 }
 
@@ -65,6 +110,7 @@ const HandicapPointsScreen = ({ night, setup, setupInfo, user, classes }) => {
 	const [handicapWeightPts, setHandicapWeightPts] = useState(0);
 	const [handicapExp, setHandicapExp] = useState(0);
 	const [handicapExpPts, setHandicapExpPts] = useState(0);
+	const [error, setError] = useState('');
 
 	useEffect(() => {
 		if (setup.handicaps !== undefined && setup.handicaps.length > 0) {
@@ -141,13 +187,14 @@ const HandicapPointsScreen = ({ night, setup, setupInfo, user, classes }) => {
 		<Box>
 			<Typography variant="h5">Handicap Points</Typography>
 			<Grid container direction="row" justify="center">
-				{imported && <Grid item xs={12}><Box mt={2} mb={2}>Spreadsheet handicap settings imported!</Box></Grid>}
+				{imported && <Grid item xs={12}><Box mt={1}>Spreadsheet handicap settings imported!</Box></Grid>}
+				{error.length > 0 && <Grid item xs={12}><Box mt={1}>{error}</Box></Grid>}
 				{handicaps === false ?
 					<>
 						<Grid item xs={12}>
-							<Box mt={2} mb={2} display="flex" flexDirection="row" justifyContent="center">
+							<Box mt={2} mb={3} display="flex" flexDirection="row" justifyContent="center">
 								<Box>
-									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => readSheetBtn(setupInfo, setImported, user, setup)}>Import</Button>
+									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => readSheetBtn(setupInfo, setImported, user, setup, setError)}>Import</Button>
 								</Box>
 								<Box pl={1}>
 									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => importDefaultHandicap()}>Default</Button>
@@ -210,8 +257,8 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 	const [playerExpYr, setPlayerExpYr] = useState(0);
 	const [playerExpMonth, setPlayerExpMonth] = useState(0);
 	const [saved, setSaved] = useState(false);
-	const [added, setAdded] = useState([]);
 	const [imported, setImported] = useState(false);
+	const [error, setError] = useState('');
 
 	function addPlayer() {
 		setup.players.push({
@@ -245,7 +292,6 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 
 	const savePlayersBtn = async () => {
 		setImported(false);
-		setAdded(setup.players);
 		let resSavePlayers = await savePlayers(user, setup);
 		setupInfo(resSavePlayers);
 		setSaved(true);
@@ -260,9 +306,10 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 						<Box>
 							{saved && <Box mb={1}>Players saved to spreadsheet!</Box>}
 							{imported && <Box mb={1}>Spreadsheet players imported!</Box>}
+							{error.length > 0 && <Grid item xs={12}><Box mt={1}>{error}</Box></Grid>}
 							<Box display="flex" flexDirection="row" justifyContent="center">
 								<Box>
-									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => { setSaved(false); readSheetBtn(setupInfo, setImported, user, setup) }}>Import</Button>
+									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => { setSaved(false); readSheetBtn(setupInfo, setImported, user, setup, setError) }}>Import</Button>
 								</Box>
 								<Box pl={1}>
 									<Button onClick={() => savePlayersBtn()} variant="contained" color={night ? "secondary" : "primary"}>Save</Button>
@@ -319,10 +366,56 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 					</ReachLink>
 				</Box>
 				<Box>
-					<ReachLink to="../penalties" style={{ textDecoration: 'none' }}>
-						<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
-					</ReachLink>
+					{
+						setup.mode > 0 ?
+							setup.mode > 1 ?
+								<ReachLink to="../brackets" style={{ textDecoration: 'none' }}>
+									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+								</ReachLink>
+								:
+								<ReachLink to="../teams" style={{ textDecoration: 'none' }}>
+									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+								</ReachLink>
+							:
+							<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
+								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+							</ReachLink>
+					}
 				</Box>
+			</Box>
+		</Box>
+	);
+}
+
+const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, classes }) => {
+	return (
+		<Box>
+			<Typography variant="h5">Teams</Typography>
+			<Grid container>
+				<Grid item xs={12} sm={6}>
+					Team 1
+				</Grid>
+				<Grid item xs={12} sm={6}>
+					Team 2
+				</Grid>
+			</Grid>
+
+			<Box>
+				{
+					setup.mode > 0 ?
+						setup.mode > 1 ?
+							<ReachLink to="brackets" style={{ textDecoration: 'none' }}>
+								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+							</ReachLink>
+							:
+							<ReachLink to="teams" style={{ textDecoration: 'none' }}>
+								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+							</ReachLink>
+						:
+						<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
+							<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+						</ReachLink>
+				}
 			</Box>
 		</Box>
 	);
@@ -461,12 +554,7 @@ const PenaltyScreen = ({ night, setup, setupInfo, setRenderList, renderList }) =
 
 export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logout }) => {
 	const classes = regStyles({ night: night });
-
 	const [renderList, setRenderList] = useState(false);
-
-	const TournamentScreen = () => {
-
-	}
 
 	return (
 		<Box display="flex" flexDirection="column" p={1} textAlign="center">
@@ -475,8 +563,11 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 				<Paper className={classes.paper}>
 					<Router>
 						<InitialScreen path='/' setup={setup} setupInfo={setupInfo} updateUser={updateUser} user={user} logged={logged} night={night} />
+						<TournamentScreen path='mode' classes={classes} setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
 						<HandicapPointsScreen path='handicaps' classes={classes} setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
 						<PlayerScreen path='players' classes={classes} renderList={renderList} setRenderList={setRenderList}
+							setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
+						<TeamScreen path='teams' classes={classes} renderList={renderList} setRenderList={setRenderList}
 							setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
 						<PenaltyScreen path='penalties' renderList={renderList} setRenderList={setRenderList}
 							setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />

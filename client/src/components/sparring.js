@@ -50,8 +50,6 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
-		console.log('og');
-		console.log(setup);
 	}
 
 	const matchInfo = (info, save) => {

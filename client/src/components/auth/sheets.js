@@ -166,9 +166,10 @@ export const readSheet = async (user, setup) => {
 		}
 		catch (error) {
 			console.log(error);
+			return 'error';
 		}
 	} else {
-
+		return 'error';
 	}
 }
 
