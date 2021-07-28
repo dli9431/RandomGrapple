@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Grid, Paper, Typography, Box, isWidthUp } from "@material-ui/core";
+import { Button, Grid, Paper, Typography, Box } from "@material-ui/core";
 import { regStyles } from "./styles/styles";
 import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
@@ -50,6 +50,8 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 
 	const setupInfo = (info) => {
 		setSetup({ ...setup, info });
+		console.log('og');
+		console.log(setup);
 	}
 
 	const matchInfo = (info, save) => {
@@ -193,23 +195,6 @@ export const Sparring = ({ night, user, logged, logout, updateUser }) => {
 									</Grid>
 								</Paper>
 							</Box>
-							{/* {setup.players.length >= 2 &&
-								<Box>
-									<Paper className={classes.paper}>
-										<Box display="flex" flexDirection="row" justifyContent="center" whiteSpace="space-around">
-											<Box flexGrow="1">
-												<Typography variant="h5">{setup.players[0].name}</Typography>
-											</Box>
-											<Box>
-												<Typography variant="h5">vs</Typography>
-											</Box>
-											<Box flexGrow="1">
-												<Typography variant="h5">{setup.players[1].name}</Typography>
-											</Box>
-										</Box>
-									</Paper>
-								</Box>
-							} */}
 						</Box>
 					</Grid>
 					{

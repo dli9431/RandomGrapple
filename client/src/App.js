@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Router } from '@reach/router';
+import { Router, Link as RouterLink } from '@reach/router';
 import { Button, Switch, Typography, Box } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
@@ -106,8 +106,15 @@ function App() {
 				<Router>
 					<Home path='/' />
 					<Start path='start' night={night} user={user} logged={logged} logout={logoutFn} />
-					<Sparring path='sparring' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
-					<Tournament path='tournament' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
+					{/* <Setup path='setup' night={night} user={user} logged={logged} logout={logoutFn}>
+						<InitialScreen path='/' />
+						<HandicapPointsScreen path='handicaps' />
+						<PlayerScreen path='players' />
+						<PenaltyScreen path='penalties' />
+					</Setup> */}
+
+					<Sparring path='sparring/*' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
+					<Tournament path='tournament/*' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
 					<Timer path='timer' night={night} user={user} logged={logged} logout={logoutFn} updateUser={updateUser} />
 					<Home path='/oauth2callback' />
 				</Router>
