@@ -7,12 +7,15 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { defaultHandicaps, defaultPenalties } from './setup/setupVars';
 import { Category } from './setup/category';
 import { readSheet, createSheet, savePlayers } from './auth/sheets';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import RemoveIcon from '@material-ui/icons/Remove';
 
 const readSheetBtn = async (setupInfo, setImported, user, setup, setError) => {
 	let reSetup = await readSheet(user, setup);
-	if (reSetup === 'error') {
+	if (reSetup.length > 0) {
 		setImported(false);
-		setError('Error - session ended, please log in again');
+		setError(reSetup);
 	} else {
 		setupInfo(reSetup);
 		setImported(true);
@@ -163,6 +166,7 @@ const HandicapPointsScreen = ({ night, setup, setupInfo, user, classes }) => {
 	}
 
 	function importDefaultHandicap() {
+		setError('');
 		setHandicapWeight(20);
 		setHandicapWeightPts(1);
 		setHandicapExp(3);
@@ -173,6 +177,7 @@ const HandicapPointsScreen = ({ night, setup, setupInfo, user, classes }) => {
 	}
 
 	function resetHandicap() {
+		setError('');
 		setup.handicaps = [];
 		setHandicaps(false);
 		setup.setHandicaps = false;
@@ -293,8 +298,18 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 	const savePlayersBtn = async () => {
 		setImported(false);
 		let resSavePlayers = await savePlayers(user, setup);
-		setupInfo(resSavePlayers);
-		setSaved(true);
+		if (resSavePlayers === undefined) {
+			setError('Not logged in.');
+		} else {
+			setupInfo(resSavePlayers);
+			setSaved(true);
+		}
+	}
+
+	function preserveIndex() {
+		for (var i = 0; i < setup.players.length; i++) {
+			setup.players[i].originalIndex = i;
+		}
 	}
 
 	return (
@@ -306,7 +321,7 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 						<Box>
 							{saved && <Box mb={1}>Players saved to spreadsheet!</Box>}
 							{imported && <Box mb={1}>Spreadsheet players imported!</Box>}
-							{error.length > 0 && <Grid item xs={12}><Box mt={1}>{error}</Box></Grid>}
+							{error.length > 0 && <Grid item xs={12}><Box mb={1}>{error}</Box></Grid>}
 							<Box display="flex" flexDirection="row" justifyContent="center">
 								<Box>
 									<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => { setSaved(false); readSheetBtn(setupInfo, setImported, user, setup, setError) }}>Import</Button>
@@ -374,7 +389,7 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 								</ReachLink>
 								:
 								<ReachLink to="../teams" style={{ textDecoration: 'none' }}>
-									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+									<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => preserveIndex()}>Next</Button>
 								</ReachLink>
 							:
 							<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
@@ -388,34 +403,176 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 }
 
 const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, classes }) => {
+	const [playerList, setPlayerList] = useState(setup.players);
+	const [t1Name, setT1Name] = useState('');
+	const [t2Name, setT2Name] = useState('');
+	const [t1, setT1] = useState([]);
+	const [t2, setT2] = useState([]);
+
+	function addTeam(playerIndex, team) {
+		if (team === 1) {
+			let temp = playerList;
+			setT1(t1 => [...t1, playerList[playerIndex]]);
+			temp.splice(playerIndex, 1);
+			setPlayerList(temp);
+		} else {
+			let temp = playerList;
+			setT2(t2 => [...t2, playerList[playerIndex]]);
+			temp.splice(playerIndex, 1);
+			setPlayerList(temp);
+		}
+	}
+
+	function switchTeam(index, currTeam, newTeam) {
+		if (newTeam === 0) { // move back to pool of players
+			if (currTeam === 1) {
+				let temp = t1;
+				let removed = temp.splice(index, 1);
+				setT1(temp);
+				// add to pool
+				setPlayerList(playerList => [...playerList, removed[0]]);
+			} else {
+				let temp = t2;
+				let removed = temp.splice(index, 1);
+				setT2(temp);
+				// add to pool
+				setPlayerList(playerList => [...playerList, removed[0]]);
+			}
+		} else {
+			if (newTeam === 1) {
+				let temp = t2;
+				let removed = temp.splice(index, 1);
+				setT2(temp);
+				// add to pool
+				setT1(t1 => [...t1, removed[0]]);
+			} else {
+				let temp = t1;
+				let removed = temp.splice(index, 1);
+				setT1(temp);
+				// add to pool
+				setT2(t2 => [...t2, removed[0]]);
+			}
+		}
+	}
+
+	function totalHandicap(team) {
+		let total = 0;
+		if (team === 1) {
+			for (var i = 0; i < t1.length; i++) {
+				total += t1[i].handicap;
+			}
+		} else {
+			for (var k = 0; k < t2.length; k++) {
+				total += t2[k].handicap;
+			}
+		}
+		return total;
+	}
+
+	function finalizeTeams() {
+		let team1 = {};
+		team1.name = t1Name;
+		team1.players = t1;
+		let team2 = {};
+		team2.name = t2Name;
+		team2.players = t2;
+
+		setup.team1 = team1;
+		setup.team2 = team2;
+		setup.isSet = true;
+		setupInfo(setup);
+	}
+
 	return (
 		<Box>
 			<Typography variant="h5">Teams</Typography>
-			<Grid container>
+			<Grid container spacing={2}>
 				<Grid item xs={12} sm={6}>
-					Team 1
+					<Box border={1} borderColor={night ? "secondary" : "primary"} p={2}>
+						<Typography variant="h6">Players</Typography>
+						{
+							(playerList !== undefined && playerList.length > 0) &&
+							playerList.map((player, index) => {
+								return (
+									<Box key={index} mb={1}>
+										{player.name} (Handicap: {player.handicap})&nbsp;
+										<Button size="small" variant="outlined" color={night ? "secondary" : "primary"} onClick={() => addTeam(index, 1)}>Team 1</Button>&nbsp;
+										<Button size="small" variant="outlined" color={night ? "secondary" : "primary"} onClick={() => addTeam(index, 2)}>Team 2</Button>
+									</Box>
+								);
+							})
+						}
+					</Box>
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					Team 2
+					<Box display="flex" flexDirection="column">
+						<Box border={1} borderColor={night ? "secondary" : "primary"} p={2}>
+							<Box mb={1}><Typography>{t1Name.length > 0 ? 'Team 1: ' + t1Name : 'Team 1'}</Typography></Box>
+							<Box color={totalHandicap(1) > 0 ? "green" : "red"} mt={1} mb={1}>Total Handicap: {totalHandicap(1)}</Box>
+							<TextField value={t1Name} onChange={(e) => { setT1Name(e.target.value) }} label="Team 1 Name" variant="outlined" fullWidth={true} />
+							<Box mt={1}>
+								{
+									(t1 !== undefined && t1.length > 0) &&
+									t1.map((player, index) => {
+										return (
+											<Box key={index} mb={1}>
+												{player.name} (Handicap: {player.handicap})&nbsp;
+												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 1, 2)}><KeyboardArrowDownIcon /></IconButton>
+												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 1, 0)}><RemoveIcon /></IconButton>
+											</Box>
+										);
+									})
+								}
+							</Box>
+						</Box>
+						<Box border={1} borderColor={night ? "secondary" : "primary"} p={2} mt={2}>
+							<Box mb={1}><Typography>{t2Name.length > 0 ? 'Team 2: ' + t2Name : 'Team 2'}</Typography></Box>
+							<Box color={totalHandicap(2) > 0 ? "green" : "red"} mt={1} mb={1}>Total Handicap: {totalHandicap(2)}</Box>
+							<TextField value={t2Name} onChange={(e) => { setT2Name(e.target.value) }} label="Team 2 Name" variant="outlined" fullWidth={true} />
+							<Box mt={1}>
+								{
+									(t2 !== undefined && t2.length > 0) &&
+									t2.map((player, index) => {
+										return (
+											<Box key={index} mb={1}>
+												{player.name} (Handicap: {player.handicap})&nbsp;
+												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 2, 1)}><KeyboardArrowUpIcon /></IconButton>
+												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 2, 0)}><RemoveIcon /></IconButton>
+											</Box>
+										);
+									})
+								}
+							</Box>
+						</Box>
+					</Box>
 				</Grid>
 			</Grid>
 
-			<Box>
-				{
-					setup.mode > 0 ?
-						setup.mode > 1 ?
-							<ReachLink to="brackets" style={{ textDecoration: 'none' }}>
-								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
-							</ReachLink>
+			<Box mt={2} mb={2}>
+				<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => finalizeTeams()}>Finalize Teams</Button>
+			</Box>
+
+			<Box mt={2} display="flex" flexDirection="row" justifyContent="center">
+				<Box>
+					<ReachLink to="../players" style={{ textDecoration: 'none' }}>
+						<Button color={night ? "secondary" : "primary"} variant="contained">Back</Button>
+					</ReachLink>
+				</Box>
+				<Box pl={1}>
+					{
+						setup.mode > 0 ?
+							setup.mode > 1 ?
+								<ReachLink to="brackets" style={{ textDecoration: 'none' }}>
+									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
+								</ReachLink>
+								:
+								<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => finalizeTeams()}>Next</Button>
 							:
-							<ReachLink to="teams" style={{ textDecoration: 'none' }}>
+							<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
 								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
 							</ReachLink>
-						:
-						<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
-							<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
-						</ReachLink>
-				}
+					}
+				</Box>
 			</Box>
 		</Box>
 	);

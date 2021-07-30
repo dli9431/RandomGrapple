@@ -166,10 +166,10 @@ export const readSheet = async (user, setup) => {
 		}
 		catch (error) {
 			console.log(error);
-			return 'error';
+			return 'Session ended, please log in again.';
 		}
 	} else {
-		return 'error';
+		return 'Not logged in.';
 	}
 }
 
