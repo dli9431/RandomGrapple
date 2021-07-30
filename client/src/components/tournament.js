@@ -29,6 +29,8 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	const [resetTimer, setResetTimer] = useState(false);
 	const [matches, setMatches] = useState([]);
 	const [force, setForce] = useState(false);
+	const [saveTournMsg, setSaveTournMsg] = useState('');
+	const [saveMatchMsg, setSaveMatchMsg] = useState('');
 
 	useEffect(() => {
 		function init() {
@@ -77,6 +79,8 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
 			setSave(true);
 		}
+
+		setSaveTournMsg('');
 	}
 
 	function checkedInfo(info) {
@@ -140,12 +144,16 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 			setMatch(defaultQuintetMatch);
 			resetPenalties();
 			setSave(false);
+			setSaveMatchMsg('');
 		}
 	}
 
 	const saveMatchBtn = async () => {
 		let rows = await saveMatch(user, match, setup.mode, setup.matches.current);
 		setup.matches.current += rows;
+		if (rows > 0) {
+			setSaveMatchMsg('Match saved!');
+		}
 		setSetup(setup);
 	}
 
@@ -163,9 +171,9 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 			setup.tournamentInfo.winnerTeam = setup.tournamentInfo.team1;
 		}
 		let saved = await saveTournament(user, matches, setup);
-		// let rows = await saveMatch(user, match, setup.mode, setup.matches.current);
-		// setup.matches.current += rows;
-		// setSetup(setup);
+		if (saved > 0) {
+			setSaveTournMsg('Tournament saved!');
+		}
 	}
 
 	return (
@@ -180,6 +188,9 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 								<Paper className={classes.paper}>
 									<Timer resetTimer={resetTimer} night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
 									{save && <Box mt={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => saveMatchBtn()}>Save Match</Button></Box>}
+									{
+										saveMatchMsg.length > 0 && <Box>{saveMatchMsg}</Box>
+									}
 								</Paper>
 							</Box>
 							{
@@ -244,6 +255,9 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 											save &&
 											<Box mt={2}>
 												<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => saveTournBtn()}>Save Tournament</Button>
+												{
+													saveTournMsg.length > 0 && <Box>{saveTournMsg}</Box>
+												}
 											</Box>
 										}
 									</Paper>
