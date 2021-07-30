@@ -278,27 +278,27 @@ export const saveTournament = async (user, matches, setup) => {
 	for (var i = 0; i < setup.tournamentInfo.players.length; i++) {
 		playerArr.push(setup.tournamentInfo.players[i].name);
 	}
-	tempArr.push(playerArr); // all players
+	tempArr.push(JSON.stringify(playerArr)); // all players
 	tempArr.push(setup.tournamentInfo.team1); // team 1 name
 	playerArr = [];
 	for (var j = 0; j < setup.tournamentInfo.team1players.length; j++) {
 		if (setup.tournamentInfo.team1players[j].name === setup.tournamentInfo.t1Cap.name) {
-			playerArr.push(setup.tournamentInfo.team1players[j] + ' (c)');
+			playerArr.push(setup.tournamentInfo.team1players[j].name + ' (c)');
 		} else {
-			playerArr.push(setup.tournamentInfo.team1players[j]);
+			playerArr.push(setup.tournamentInfo.team1players[j].name);
 		}
 	}
-	tempArr.push(playerArr); // team 1 players
+	tempArr.push(JSON.stringify(playerArr)); // team 1 players
 	tempArr.push(setup.tournamentInfo.team2); // team 2 name
 	playerArr = [];
 	for (var k = 0; k < setup.tournamentInfo.team2players.length; k++) {
 		if (setup.tournamentInfo.team2players[k].name === setup.tournamentInfo.t2Cap.name) {
-			playerArr.push(setup.tournamentInfo.team2players[k] + ' (c)');
+			playerArr.push(setup.tournamentInfo.team2players[k].name + ' (c)');
 		} else {
-			playerArr.push(setup.tournamentInfo.team2players[k]);
+			playerArr.push(setup.tournamentInfo.team2players[k].name);
 		}
 	}
-	tempArr.push(playerArr); // team 2 players
+	tempArr.push(JSON.stringify(playerArr)); // team 2 players
 	tempArr.push(setup.tournamentInfo.winnerTeam);
 	data.push(tempArr);
 
