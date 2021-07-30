@@ -10,6 +10,7 @@ import { readSheet, createSheet, savePlayers } from './auth/sheets';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import RemoveIcon from '@material-ui/icons/Remove';
+import StarIcon from '@material-ui/icons/Star';
 
 const readSheetBtn = async (setupInfo, setImported, user, setup, setError) => {
 	let reSetup = await readSheet(user, setup);
@@ -361,7 +362,7 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 		}
 	}
 
-	function finishSparringPlayers () {
+	function finishSparringPlayers() {
 		setup.isSet = true;
 		setupInfo(setup);
 	}
@@ -460,6 +461,8 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 	const [t2Name, setT2Name] = useState('');
 	const [t1, setT1] = useState([]);
 	const [t2, setT2] = useState([]);
+	const [t1Cap, setT1Cap] = useState(-1);
+	const [t2Cap, setT2Cap] = useState(-1);
 
 	function addTeam(playerIndex, team) {
 		if (team === 1) {
@@ -533,10 +536,28 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 		setup.tournamentInfo.players = team1.players.concat(team2.players);
 		setup.tournamentInfo.team1 = t1Name;
 		setup.tournamentInfo.team1players = t1;
+		setup.tournamentInfo.t1Cap = t1[t1Cap];
 		setup.tournamentInfo.team2 = t2Name;
 		setup.tournamentInfo.team2players = t2;
+		setup.tournamentInfo.t2Cap = t2[t2Cap];
 		setup.isSet = true;
 		setupInfo(setup);
+	}
+
+	function selCaptain(team, i, unsel) {
+		if (unsel) {
+			if (team === 1) {
+				setT1Cap(-1);
+			} else {
+				setT2Cap(-1);
+			}
+		} else {
+			if (team === 1) {
+				setT1Cap(i);
+			} else {
+				setT2Cap(i);
+			}
+		}
 	}
 
 	return (
@@ -572,6 +593,15 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 									t1.map((player, index) => {
 										return (
 											<Box key={index} mb={1}>
+												{
+													t1Cap >= 0 ?
+														t1Cap === index ?
+															<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => selCaptain(1, index, true)}><StarIcon /></IconButton>
+															:
+															''
+														:
+														<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => selCaptain(1, index, false)}><StarIcon /></IconButton>
+												}
 												{player.name} ({player.handicap})&nbsp;
 												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 1, 2)}><KeyboardArrowDownIcon /></IconButton>
 												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 1, 0)}><RemoveIcon /></IconButton>
@@ -591,7 +621,16 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 									t2.map((player, index) => {
 										return (
 											<Box key={index} mb={1}>
-												{player.name} (Handicap: {player.handicap})&nbsp;
+												{
+													t2Cap >= 0 ?
+														t2Cap === index ?
+															<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => selCaptain(2, index, true)}><StarIcon /></IconButton>
+															:
+															''
+														:
+														<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => selCaptain(2, index, false)}><StarIcon /></IconButton>
+												}
+												{player.name} ({player.handicap})&nbsp;
 												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 2, 1)}><KeyboardArrowUpIcon /></IconButton>
 												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 2, 0)}><RemoveIcon /></IconButton>
 											</Box>

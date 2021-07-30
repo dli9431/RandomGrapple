@@ -5,7 +5,7 @@ import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
 import { defaultQuintetMatch, CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
-import { saveMatch } from "./auth/sheets";
+import { saveMatch, saveTournament } from "./auth/sheets";
 
 export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	const classes = regStyles({ night: night });
@@ -28,6 +28,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	const [save, setSave] = useState(false);
 	const [resetTimer, setResetTimer] = useState(false);
 	const [matches, setMatches] = useState([]);
+	const [force, setForce] = useState(false);
 
 	useEffect(() => {
 		function init() {
@@ -65,6 +66,12 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 		let currMatch = matches;
 		currMatch.push(match);
 		setMatches(currMatch);
+
+		if (force) {
+			setForce(false);
+		} else {
+			setForce(true);
+		}
 
 		// save to sheets
 		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
@@ -142,6 +149,25 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 		setSetup(setup);
 	}
 
+	const saveTournBtn = async () => {
+		// check winner
+		let lost = 0;
+		for (var i = 0; i < setup.team1.players.length; i++) {
+			if (setup.team1.players[i].lost === true) {
+				lost++;
+			}
+		}
+		if (lost === setup.team1.players.length) {
+			setup.tournamentInfo.winnerTeam = setup.tournamentInfo.team2;
+		} else {
+			setup.tournamentInfo.winnerTeam = setup.tournamentInfo.team1;
+		}
+		let saved = await saveTournament(user, matches, setup);
+		// let rows = await saveMatch(user, match, setup.mode, setup.matches.current);
+		// setup.matches.current += rows;
+		// setSetup(setup);
+	}
+
 	return (
 		<Box width="90vw">
 			{!setup.isSet ?
@@ -183,10 +209,6 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 																	({p.handicap})
 																</Box>
 															}
-															{/* <span>{p.name}</span>&nbsp;
-															{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"</span>}&nbsp;
-															{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}</span>}&nbsp;
-															({p.handicap}) */}
 														</Box>
 													);
 												})}
@@ -198,15 +220,32 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 												{setup.team2.players.map((p, i) => {
 													return (
 														<Box key={i}>
-															<span>{p.name}&nbsp;</span>
-															{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"&nbsp;</span>}
-															{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}&nbsp;</span>}
-															({p.handicap})
+															{p.lost ?
+																<Box className={classes.teamLost}>
+																	<span>{p.name}&nbsp;</span>
+																	{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"&nbsp;</span>}
+																	{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}&nbsp;</span>}
+																	({p.handicap})
+																</Box>
+																:
+																<Box>
+																	<span>{p.name}&nbsp;</span>
+																	{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"&nbsp;</span>}
+																	{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}&nbsp;</span>}
+																	({p.handicap})
+																</Box>
+															}
 														</Box>
 													);
 												})}
 											</Box>
 										</Box>
+										{
+											save &&
+											<Box mt={2}>
+												<Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => saveTournBtn()}>Save Tournament</Button>
+											</Box>
+										}
 									</Paper>
 								</Box>
 							}

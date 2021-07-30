@@ -158,7 +158,8 @@ export const readSheet = async (user, setup) => {
 
 				// save latest match row
 				setup.matches = {
-					current: data.data.valueRanges[19].values[0].length + 1
+					current: data.data.valueRanges[19].values[0].length + 1,
+					tournaments: data.data.valueRanges[31].values[0].length + 1
 				}
 
 				return setup;
@@ -199,10 +200,10 @@ export const saveMatch = async (user, match, mode, currMatch) => {
 			matchType = 'sparring';
 			break;
 		case 1:
-			matchType = 'single elimination';
+			matchType = 'quintet';
 			break;
 		case 2:
-			matchType = 'quintet';
+			matchType = 'single elimination';
 			break;
 		default:
 			break;
@@ -241,6 +242,82 @@ export const saveMatch = async (user, match, mode, currMatch) => {
 	if (user.spreadsheetId.length > 0) {
 		try {
 			const res = await fetch("/api/saveMatch", {
+				method: "POST",
+				body: JSON.stringify(info),
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				}
+			});
+
+			const data = await res.json();
+			if (data.status === 200) {
+				// reformat player list
+				// formatPlayers();
+				return data.rows;
+			}
+		}
+		catch (error) {
+			console.log(error);
+		}
+	} else {
+
+	}
+}
+
+export const saveTournament = async (user, matches, setup) => {
+	let data = []; // match data
+	let tempArr = [];
+	
+	tempArr.push(setup.tournamentInfo.title);
+	tempArr.push(setup.tournamentInfo.date);
+	tempArr.push(setup.tournamentInfo.mode);
+	tempArr.push(setup.tournamentInfo.location);
+	
+	let playerArr = [];
+	for (var i = 0; i < setup.tournamentInfo.players.length; i++) {
+		playerArr.push(setup.tournamentInfo.players[i].name);
+	}
+	tempArr.push(playerArr); // all players
+	tempArr.push(setup.tournamentInfo.team1); // team 1 name
+	playerArr = [];
+	for (var j = 0; j < setup.tournamentInfo.team1players.length; j++) {
+		if (setup.tournamentInfo.team1players[j].name === setup.tournamentInfo.t1Cap.name) {
+			playerArr.push(setup.tournamentInfo.team1players[j] + ' (c)');
+		} else {
+			playerArr.push(setup.tournamentInfo.team1players[j]);
+		}
+	}
+	tempArr.push(playerArr); // team 1 players
+	tempArr.push(setup.tournamentInfo.team2); // team 2 name
+	playerArr = [];
+	for (var k = 0; k < setup.tournamentInfo.team2players.length; k++) {
+		if (setup.tournamentInfo.team2players[k].name === setup.tournamentInfo.t2Cap.name) {
+			playerArr.push(setup.tournamentInfo.team2players[k] + ' (c)');
+		} else {
+			playerArr.push(setup.tournamentInfo.team2players[k]);
+		}
+	}
+	tempArr.push(playerArr); // team 2 players
+	tempArr.push(setup.tournamentInfo.winnerTeam);
+	data.push(tempArr);
+
+	const range = "Tournament!A" + setup.matches.tournaments;
+	const info = {
+		spreadsheetId: user.spreadsheetId,
+		body: {
+			valueInputOption: 'RAW',
+			data: {
+				range: range,
+				majorDimension: "ROWS",
+				values: data
+			}
+		}
+	}
+
+	if (user.spreadsheetId.length > 0) {
+		try {
+			const res = await fetch("/api/saveTournament", {
 				method: "POST",
 				body: JSON.stringify(info),
 				headers: {

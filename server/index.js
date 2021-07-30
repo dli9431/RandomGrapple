@@ -169,6 +169,23 @@ app.post('/api/saveMatch', async (req, res) => {
 	}
 });
 
+app.post('/api/saveTournament', async (req, res) => {
+	try {
+		oauth2Client.credentials = { access_token: req.user.accessToken };
+		const update = await updateTournaments(oauth2Client, req.body);
+		if (update.status === 200) {
+			res.status(200);
+			res.json(update);
+		} else {
+			res.status(update.status);
+			res.json(update);
+		}
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+
 app.post('/api/create', async (req, res) => {
 	try {
 		oauth2Client.credentials = { access_token: req.user.accessToken };
@@ -251,6 +268,7 @@ async function readSheet(auth, id) {
 			'Matches!J1:J1000', // Match finish method
 			'Matches!K1:K1000', // Match date
 			'Matches!L1:L1000', // Match mode
+			'Tournament!A1:A1000', // total tournaments
 		];
 
 		const response = await sheets.spreadsheets.values.batchGet({
@@ -340,6 +358,22 @@ async function updatePlayers(auth, info) {
 }
 
 async function updateMatches(auth, info) {
+	try {
+		const sheets = google.sheets({ version: 'v4', auth });
+
+		const response = await sheets.spreadsheets.values.batchUpdate({
+			spreadsheetId: info.spreadsheetId,
+			requestBody: JSON.stringify(info.body),
+		});
+
+		const stat = {rows: response.data.totalUpdatedRows, status: response.status, msg: response.statusText};
+		return stat;
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+async function updateTournaments(auth, info) {
 	try {
 		const sheets = google.sheets({ version: 'v4', auth });
 
