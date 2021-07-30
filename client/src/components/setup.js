@@ -306,12 +306,6 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 		}
 	}
 
-	function preserveIndex() {
-		for (var i = 0; i < setup.players.length; i++) {
-			setup.players[i].originalIndex = i;
-		}
-	}
-
 	return (
 		<Box>
 			<Typography variant="h5">Players</Typography>
@@ -389,7 +383,7 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 								</ReachLink>
 								:
 								<ReachLink to="../teams" style={{ textDecoration: 'none' }}>
-									<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => preserveIndex()}>Next</Button>
+									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
 								</ReachLink>
 							:
 							<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
@@ -566,7 +560,9 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
 								</ReachLink>
 								:
-								<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => finalizeTeams()}>Next</Button>
+								<ReachLink to="../" style={{ textDecoration: 'none' }}>
+									<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => finalizeTeams()}>Next</Button>
+								</ReachLink>
 							:
 							<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
 								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>

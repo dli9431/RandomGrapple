@@ -28,6 +28,8 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	const [save, setSave] = useState(false);
 	const [resetTimer, setResetTimer] = useState(false);
 
+	console.log(setup);
+
 	useEffect(() => {
 		function init() {
 			let info = [];
