@@ -4,7 +4,7 @@ import { regStyles } from "./styles/styles";
 import { ButtonMenu } from "./menu/menu";
 import { Setup } from "./setup";
 import { Timer } from "./timer";
-import { defaultMatch, CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
+import { defaultQuintetMatch, CalcHandicap, HandicapCheckList, PlayerSearchBox } from "./setup/setupPage";
 import { saveMatch } from "./auth/sheets";
 
 export const Tournament = ({ night, user, logged, logout, updateUser }) => {
@@ -18,7 +18,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 		listPenalties: [],
 		gymAvg: {}
 	});
-	const [match, setMatch] = useState(defaultMatch);
+	const [match, setMatch] = useState(defaultQuintetMatch);
 	const [usedPoints, setUsedPoints] = useState(0);
 	const [formInfo, setFormInfo] = useState([]);
 	const [finished, setFinished] = useState(false);
@@ -27,8 +27,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	const [player2, setPlayer2] = useState(null);
 	const [save, setSave] = useState(false);
 	const [resetTimer, setResetTimer] = useState(false);
-
-	console.log(setup);
+	const [matches, setMatches] = useState([]);
 
 	useEffect(() => {
 		function init() {
@@ -51,11 +50,22 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	}, [setup.listPenalties, finished])
 
 	const setupInfo = (info) => {
-		setSetup({ ...setup, info });
+		setSetup(info);
+		// setSetup({ ...setup, info });
 	}
 
 	const matchInfo = (info, save) => {
 		setMatch(info);
+		// add prop to losing team player 
+		if (match.winnerTeam === 1) {
+			setup.team2.players.find(p => p.name === match.players.p2.name).lost = true;
+		} else {
+			setup.team1.players.find(p => p.name === match.players.p1.name).lost = true;
+		}
+		let currMatch = matches;
+		currMatch.push(match);
+		setMatches(currMatch);
+
 		// save to sheets
 		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
 			setSave(true);
@@ -120,7 +130,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	function fullReset(r) {
 		if (r) {
 			setResetTimer(true);
-			setMatch(defaultMatch);
+			setMatch(defaultQuintetMatch);
 			resetPenalties();
 			setSave(false);
 		}
@@ -146,12 +156,66 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 									{save && <Box mt={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => saveMatchBtn()}>Save Match</Button></Box>}
 								</Paper>
 							</Box>
+							{
+								(setup.team1 !== undefined && setup.team2 !== undefined) &&
+								<Box mb={2}>
+									<Paper className={classes.paper}>
+										<Box display="flex" flexDirection="row" justifyContent="space-between" className={classes.teamBox}>
+											<Box>
+												<Typography variant="h5">
+													Team 1: {setup.team1.name}
+												</Typography>
+												{setup.team1.players.map((p, i) => {
+													return (
+														<Box key={i}>
+															{p.lost ?
+																<Box className={classes.teamLost}>
+																	<span>{p.name}&nbsp;</span>
+																	{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"&nbsp;</span>}
+																	{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}&nbsp;</span>}
+																	({p.handicap})
+																</Box>
+																:
+																<Box>
+																	<span>{p.name}&nbsp;</span>
+																	{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"&nbsp;</span>}
+																	{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}&nbsp;</span>}
+																	({p.handicap})
+																</Box>
+															}
+															{/* <span>{p.name}</span>&nbsp;
+															{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"</span>}&nbsp;
+															{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}</span>}&nbsp;
+															({p.handicap}) */}
+														</Box>
+													);
+												})}
+											</Box>
+											<Box className={classes.teamBoxSpace}>
+												<Typography variant="h5">
+													Team 2: {setup.team2.name}
+												</Typography>
+												{setup.team2.players.map((p, i) => {
+													return (
+														<Box key={i}>
+															<span>{p.name}&nbsp;</span>
+															{(p.nickname !== undefined && p.nickname.length > 0) && <span>"{p.nickname}"&nbsp;</span>}
+															{(p.lName !== undefined && p.lName.length > 0) && <span>{p.lName}&nbsp;</span>}
+															({p.handicap})
+														</Box>
+													);
+												})}
+											</Box>
+										</Box>
+									</Paper>
+								</Box>
+							}
 							<Box>
 								<Paper className={classes.paper}>
 									<Grid container direction="row" alignItems="flex-start">
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player1} setPlayer={setPlayer1} id={1} gymAvg={setup.gymAvg} handicaps={setup.handicaps} />
+												<PlayerSearchBox fullReset={fullReset} players={setup.team1.players} player={player1} setPlayer={setPlayer1} id={1} gymAvg={setup.gymAvg} handicaps={setup.handicaps} />
 											</Box>
 										</Grid>
 										{(player1 !== undefined && player1 !== null) &&
@@ -174,7 +238,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 										}
 										<Grid item xs={12} sm={6} md={4}>
 											<Box p={1}>
-												<PlayerSearchBox fullReset={fullReset} players={setup.players} player={player2} setPlayer={setPlayer2} id={2} gymAvg={setup.gymAvg} handicaps={setup.handicaps} />
+												<PlayerSearchBox fullReset={fullReset} players={setup.team2.players} player={player2} setPlayer={setPlayer2} id={2} gymAvg={setup.gymAvg} handicaps={setup.handicaps} />
 											</Box>
 										</Grid>
 										{(player2 !== undefined && player2 !== null) &&
@@ -242,8 +306,8 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 			}
 		</Box>
 	);
-	
-	
+
+
 	// const classes = regStyles({ night: night });
 	// const [setup, setSetup] = useState({
 	// 	isSet: false,
@@ -284,7 +348,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 	// const setupInfo = (info) => {
 	// 	setSetup({ ...setup, info });
 	// }
-	
+
 
 	// return (
 	// 	<Box display="flex" flexDirection="column" height="90vh" p={1} width="90vw">

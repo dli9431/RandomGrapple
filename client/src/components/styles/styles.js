@@ -47,6 +47,19 @@ export const regStyles = makeStyles((theme) => ({
 			order: -1
 		}
 	},
+	teamBox: {
+		[theme.breakpoints.down('xs')]: {
+			flexDirection: 'column',
+		},
+	},
+	teamBoxSpace: {
+		[theme.breakpoints.down('xs')]: {
+			paddingTop: '15px'
+		},	
+	},
+	teamLost: {
+		textDecoration: 'line-through'
+	},
 	timer: {
 		fontSize: '6em',
 		[theme.breakpoints.up('sm')]: {

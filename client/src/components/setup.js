@@ -85,7 +85,7 @@ const TournamentScreen = ({ night, setup, setupInfo, user, classes }) => {
 					<Typography variant="h5">Quintet</Typography>
 					Form teams and battle it out "King of the Hill" style
 					<Box mt={2}>
-						<ReachLink to="../handicaps" style={{ textDecoration: 'none' }}>
+						<ReachLink to="../info" style={{ textDecoration: 'none' }}>
 							<Button size="large" onClick={() => modeSelect(1)} color={night ? "secondary" : "primary"} variant="contained">Select</Button>
 						</ReachLink>
 					</Box>
@@ -101,6 +101,54 @@ const TournamentScreen = ({ night, setup, setupInfo, user, classes }) => {
 				</Box>
 			</Grid>
 		</Grid>
+	);
+}
+
+const TournamentInfoScreen = ({ night, setup, setupInfo, user, classes }) => {
+	const [title, setTitle] = useState('');
+	const [location, setLocation] = useState('');
+
+	if (setup.mode > 0) {
+		if (setup.mode > 1) {
+			setup.tournamentInfo = {};
+			setup.tournamentInfo.mode = 'Single Elimination';
+		} else {
+			setup.tournamentInfo = {};
+			setup.tournamentInfo.mode = 'Quintet';
+		}
+	}
+
+	function info() {
+		setup.tournamentInfo.title = title;
+		setup.tournamentInfo.location = location;
+		setup.tournamentInfo.date = new Date();
+		setupInfo(setup);
+	}
+
+	return (
+		<Box>
+			<Typography variant="h5">Info</Typography>
+			<Box mb={2} display="flex" flexDirection="column" justifyContent="center">
+				<Box>
+					<TextField value={title} onChange={(e) => { setTitle(e.target.value) }} label="Tournament Name" variant="outlined" />
+				</Box>
+				<Box mt={1}>
+					<TextField value={location} onChange={(e) => { setLocation(e.target.value) }} label="Location" variant="outlined" />
+				</Box>
+			</Box>
+			<Box mt={2} display="flex" flexDirection="row" justifyContent="center">
+				<Box pr={1}>
+					<ReachLink to="../mode" style={{ textDecoration: 'none' }}>
+						<Button color={night ? "secondary" : "primary"} variant="contained">Back</Button>
+					</ReachLink>
+				</Box>
+				<Box>
+					<ReachLink to="../handicaps" style={{ textDecoration: 'none' }}>
+						<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => info()}>Next</Button>
+					</ReachLink>
+				</Box>
+			</Box>
+		</Box>
 	);
 }
 
@@ -240,9 +288,16 @@ const HandicapPointsScreen = ({ night, setup, setupInfo, user, classes }) => {
 			</Grid>
 			<Box mt={2} display="flex" flexDirection="row" justifyContent="center">
 				<Box pr={1}>
-					<ReachLink to="../" style={{ textDecoration: 'none' }}>
-						<Button color={night ? "secondary" : "primary"} variant="contained">Back</Button>
-					</ReachLink>
+					{
+						setup.mode === 0 ?
+							<ReachLink to="../" style={{ textDecoration: 'none' }}>
+								<Button color={night ? "secondary" : "primary"} variant="contained">Back</Button>
+							</ReachLink>
+							:
+							<ReachLink to="../info" style={{ textDecoration: 'none' }}>
+								<Button color={night ? "secondary" : "primary"} variant="contained">Back</Button>
+							</ReachLink>
+					}
 				</Box>
 				<Box>
 					<ReachLink to="../players" style={{ textDecoration: 'none' }}>
@@ -304,6 +359,11 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 			setupInfo(resSavePlayers);
 			setSaved(true);
 		}
+	}
+
+	function finishSparringPlayers () {
+		setup.isSet = true;
+		setupInfo(setup);
 	}
 
 	return (
@@ -386,9 +446,7 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 									<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
 								</ReachLink>
 							:
-							<ReachLink to="handicaps" style={{ textDecoration: 'none' }}>
-								<Button color={night ? "secondary" : "primary"} variant="contained">Next</Button>
-							</ReachLink>
+							<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => finishSparringPlayers()}>Next</Button>
 					}
 				</Box>
 			</Box>
@@ -470,9 +528,13 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 		let team2 = {};
 		team2.name = t2Name;
 		team2.players = t2;
-
 		setup.team1 = team1;
 		setup.team2 = team2;
+		setup.tournamentInfo.players = team1.players.concat(team2.players);
+		setup.tournamentInfo.team1 = t1Name;
+		setup.tournamentInfo.team1players = t1;
+		setup.tournamentInfo.team2 = t2Name;
+		setup.tournamentInfo.team2players = t2;
 		setup.isSet = true;
 		setupInfo(setup);
 	}
@@ -481,7 +543,7 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 		<Box>
 			<Typography variant="h5">Teams</Typography>
 			<Grid container spacing={2}>
-				<Grid item xs={12} sm={6}>
+				<Grid item xs={12} sm={8} md={6}>
 					<Box border={1} borderColor={night ? "secondary" : "primary"} p={2}>
 						<Typography variant="h6">Players</Typography>
 						{
@@ -489,7 +551,7 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 							playerList.map((player, index) => {
 								return (
 									<Box key={index} mb={1}>
-										{player.name} (Handicap: {player.handicap})&nbsp;
+										{player.name} ({player.handicap})&nbsp;
 										<Button size="small" variant="outlined" color={night ? "secondary" : "primary"} onClick={() => addTeam(index, 1)}>Team 1</Button>&nbsp;
 										<Button size="small" variant="outlined" color={night ? "secondary" : "primary"} onClick={() => addTeam(index, 2)}>Team 2</Button>
 									</Box>
@@ -498,10 +560,10 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 						}
 					</Box>
 				</Grid>
-				<Grid item xs={12} sm={6}>
+				<Grid item xs={12} sm={4} md={6}>
 					<Box display="flex" flexDirection="column">
 						<Box border={1} borderColor={night ? "secondary" : "primary"} p={2}>
-							<Box mb={1}><Typography>{t1Name.length > 0 ? 'Team 1: ' + t1Name : 'Team 1'}</Typography></Box>
+							<Box mb={1}><Typography>{t1Name.length > 0 ? 'Team 1: ' + t1Name : 'Team 1'} {t1.length > 0 && <span>({t1.length})</span>}</Typography></Box>
 							<Box color={totalHandicap(1) > 0 ? "green" : "red"} mt={1} mb={1}>Total Handicap: {totalHandicap(1)}</Box>
 							<TextField value={t1Name} onChange={(e) => { setT1Name(e.target.value) }} label="Team 1 Name" variant="outlined" fullWidth={true} />
 							<Box mt={1}>
@@ -510,7 +572,7 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 									t1.map((player, index) => {
 										return (
 											<Box key={index} mb={1}>
-												{player.name} (Handicap: {player.handicap})&nbsp;
+												{player.name} ({player.handicap})&nbsp;
 												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 1, 2)}><KeyboardArrowDownIcon /></IconButton>
 												<IconButton color={night ? "secondary" : "primary"} size="small" onClick={() => switchTeam(index, 1, 0)}><RemoveIcon /></IconButton>
 											</Box>
@@ -520,7 +582,7 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 							</Box>
 						</Box>
 						<Box border={1} borderColor={night ? "secondary" : "primary"} p={2} mt={2}>
-							<Box mb={1}><Typography>{t2Name.length > 0 ? 'Team 2: ' + t2Name : 'Team 2'}</Typography></Box>
+							<Box mb={1}><Typography>{t2Name.length > 0 ? 'Team 2: ' + t2Name : 'Team 2'} {t2.length > 0 && <span>({t2.length})</span>}</Typography></Box>
 							<Box color={totalHandicap(2) > 0 ? "green" : "red"} mt={1} mb={1}>Total Handicap: {totalHandicap(2)}</Box>
 							<TextField value={t2Name} onChange={(e) => { setT2Name(e.target.value) }} label="Team 2 Name" variant="outlined" fullWidth={true} />
 							<Box mt={1}>
@@ -541,10 +603,6 @@ const TeamScreen = ({ setup, night, user, setupInfo, renderList, setRenderList, 
 					</Box>
 				</Grid>
 			</Grid>
-
-			<Box mt={2} mb={2}>
-				<Button color={night ? "secondary" : "primary"} variant="contained" onClick={() => finalizeTeams()}>Finalize Teams</Button>
-			</Box>
 
 			<Box mt={2} display="flex" flexDirection="row" justifyContent="center">
 				<Box>
@@ -717,6 +775,7 @@ export const Setup = ({ updateUser, setupInfo, setup, night, logged, user, logou
 					<Router>
 						<InitialScreen path='/' setup={setup} setupInfo={setupInfo} updateUser={updateUser} user={user} logged={logged} night={night} />
 						<TournamentScreen path='mode' classes={classes} setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
+						<TournamentInfoScreen path='info' classes={classes} setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
 						<HandicapPointsScreen path='handicaps' classes={classes} setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />
 						<PlayerScreen path='players' classes={classes} renderList={renderList} setRenderList={setRenderList}
 							setup={setup} setupInfo={setupInfo} user={user} logged={logged} night={night} />

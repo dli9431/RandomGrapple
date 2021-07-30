@@ -319,6 +319,18 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 		} else {
 			match.handicapDiff = match.players.p2.handicap - match.players.p1.handicap;
 		}
+
+		// for tournaments
+		if (match.mode > 0) {
+			// set quintet winning team
+			let p1f = player1.lName === undefined ? player1.name : player1.name + " " + player1.lName;
+			
+			if (winner === p1f) {
+				match.winnerTeam = 1;
+			} else {
+				match.winnerTeam = 2;
+			}
+		}
 		matchInfo(match);
 	}
 

@@ -22,7 +22,24 @@ export const defaultMatch = {
 	p1Score: {},
 	p2Score: {},
 	penalties: [],
-	handicapDiff: 0
+	handicapDiff: 0,
+	mode: 0
+}
+
+export const defaultQuintetMatch = {
+	players: {
+		p1: {},
+		p2: {}
+	},
+	winner: '',
+	winMethod: '',
+	initTime: 0, // time in seconds
+	endTime: 0, // match end time
+	p1Score: {},
+	p2Score: {},
+	penalties: [],
+	handicapDiff: 0,
+	mode: 1
 }
 
 export const calcHandicap = (player, gymAvg, handicaps) => {
