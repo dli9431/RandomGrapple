@@ -359,6 +359,7 @@ const PlayerScreen = ({ setup, night, user, setupInfo, renderList, setRenderList
 		} else {
 			setupInfo(resSavePlayers);
 			setSaved(true);
+			setError('');
 		}
 	}
 

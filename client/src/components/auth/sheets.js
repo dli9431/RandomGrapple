@@ -44,7 +44,7 @@ export const savePlayers = async (user, setup) => {
 			const data = await res.json();
 			if (data.status === 200) {
 				// reformat player list
-				let formatted = formatPlayers(setup);
+				let formatted = await formatPlayers(setup);
 				return formatted;
 			}
 		}

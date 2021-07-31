@@ -1,13 +1,18 @@
-export function formatPlayers(setup) {
-	for (var i = 0; i < setup.players.length; i++) {
-		if (setup.players[i].weight > 0) {
-			let name = setup.players[i].name;
-			if (setup.players[i].name.split(' ').length > 1) // split first/last name
-			{
-				setup.players[i].name = name.split(' ')[0];
-				setup.players[i].lName = name.split(' ')[1];
+export const formatPlayers = async (setup) => {
+	try {
+		for (var i = 0; i < setup.players.length; i++) {
+			if (setup.players[i].weight > 0) {
+				let name = setup.players[i].name;
+				if (setup.players[i].name.split(' ').length > 1) // split first/last name
+				{
+					setup.players[i].name = name.split(' ')[0];
+					setup.players[i].lName = name.split(' ')[1];
+				}
 			}
 		}
+		return setup;
+	} catch(err) {
+		console.error(err);
 	}
 }
 
