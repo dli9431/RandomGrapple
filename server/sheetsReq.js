@@ -1056,7 +1056,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1095,7 +1095,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1134,7 +1134,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1173,7 +1173,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1212,7 +1212,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1251,7 +1251,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1290,7 +1290,7 @@ module.exports = {
 											},
 											{
 												userEnteredValue: {
-													numberValue: 4
+													numberValue: 7
 												}
 											},
 											{
@@ -1356,6 +1356,106 @@ module.exports = {
 											{
 												userEnteredValue: {
 													stringValue: "Handicaps"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Round Time"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "P1 Points"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "P2 Points"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Finish Time"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Finish Method"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Date"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Mode"
+												}
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					{
+						properties: {
+							title: "Tournament",
+						},
+						data: [
+							{
+								rowData: [
+									{
+										values: [
+											{
+												userEnteredValue: {
+													stringValue: "Title"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Date"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Mode"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Location"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Players"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Team 1"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "T1 Players"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Team 2"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "T2 Players"
+												}
+											},
+											{
+												userEnteredValue: {
+													stringValue: "Winning Team"
 												}
 											}
 										]
