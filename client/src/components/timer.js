@@ -6,6 +6,7 @@ import StopIcon from '@material-ui/icons/Stop';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import DoneIcon from '@material-ui/icons/Done';
+import SaveIcon from '@material-ui/icons/Save';
 import { regStyles } from './styles/styles';
 import { ButtonMenu } from './menu/menu';
 import { PlayerSearchBox } from './setup/setupPage';
@@ -124,7 +125,7 @@ export const MatchPoints = ({ night, matchScore, player, time }) => {
 	);
 }
 
-export const Timer = ({ night, user, logged, logout, only, player1, player2, match, matchInfo }) => {
+export const Timer = ({ night, user, logged, logout, only, player1, player2, match, matchInfo, resetTimer, setResetTimer }) => {
 	const classes = regStyles({ night: night });
 	const [running, setRunning] = useState(false);
 	const [mins, setMins] = useState(0);
@@ -216,6 +217,11 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 	var finalTime = str_pad_left(Math.floor(timeLeft / 60), '0', 2) + ':' + str_pad_left(timeLeft - Math.floor(timeLeft / 60) * 60, '0', 2);
 
 	useEffect(() => {
+		if (resetTimer) {
+			resetVars();
+			setResetTimer(false);
+		}
+
 		function play() {
 			let buzz1 = new Audio('/buzz1.mp3');
 			buzz1.loop = true;
@@ -234,7 +240,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 			}
 			return () => clearInterval(timer);
 		}
-	}, [timeLeft, running]);
+	}, [timeLeft, running, resetTimer]);
 
 	function runTimer() {
 		if (match !== null && match !== undefined) {
@@ -406,7 +412,7 @@ export const Timer = ({ night, user, logged, logout, only, player1, player2, mat
 								<TextField fullWidth={true} size="small" value={finishMethod} onChange={(e) => setFinishMethod(e.target.value)} label="Win method" variant="outlined" />
 							</Grid>
 							<Grid item xs={12} sm={6} md={2}>
-								<Button onClick={() => finishMatch()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<DoneIcon />}>Finish</Button>
+								<Button onClick={() => finishMatch()} variant="contained" color={night ? "secondary" : "primary"} startIcon={<SaveIcon />}>Save</Button>
 							</Grid>
 						</Grid>
 					</Box>

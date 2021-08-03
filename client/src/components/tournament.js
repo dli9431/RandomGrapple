@@ -57,7 +57,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 		// setSetup({ ...setup, info });
 	}
 
-	const matchInfo = (info, save) => {
+	const matchInfo = async (info, save) => {
 		setMatch(info);
 		// add prop to losing team player 
 		if (match.winnerTeam === 1) {
@@ -77,7 +77,7 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 
 		// save to sheets
 		if (user.spreadsheetId !== undefined && user.spreadsheetId.length > 0) {
-			setSave(true);
+			await saveMatchBtn();
 		}
 
 		setSaveTournMsg('');
@@ -143,7 +143,6 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 			setResetTimer(true);
 			setMatch(defaultQuintetMatch);
 			resetPenalties();
-			setSave(false);
 			setSaveMatchMsg('');
 		}
 	}
@@ -186,10 +185,9 @@ export const Tournament = ({ night, user, logged, logout, updateUser }) => {
 						<Box display="flex" flexDirection="column">
 							<Box mb={2}>
 								<Paper className={classes.paper}>
-									<Timer resetTimer={resetTimer} night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
-									{save && <Box mt={1}><Button variant="contained" color={night ? "secondary" : "primary"} onClick={() => saveMatchBtn()}>Save Match</Button></Box>}
+									<Timer resetTimer={resetTimer} setResetTimer={setResetTimer} night={night} only={false} player1={player1} player2={player2} match={match} matchInfo={matchInfo} />
 									{
-										saveMatchMsg.length > 0 && <Box>{saveMatchMsg}</Box>
+										saveMatchMsg.length > 0 && <Box mt={1}>{saveMatchMsg}</Box>
 									}
 								</Paper>
 							</Box>
